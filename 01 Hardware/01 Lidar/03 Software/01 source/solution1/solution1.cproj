@@ -120,9 +120,59 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ATMegaXX09\ATMegaXX09Clock.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ATMegaXX09\ATMegaXX09Clock.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ATMegaXX09\EEPROM\EEPROM.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ATMegaXX09\FIFO\FIFO.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ATMegaXX09\FIFO\FIFO.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ATMegaXX09\Port\Port.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ATMegaXX09\Port\Port.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ATMegaXX09\USART\USART.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ATMegaXX09\USART\USART.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ATMegaXX09\USART\USART_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="dataprep.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="dataprep.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="main.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Math\MinMax.h">
+      <SubType>compile</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ATMegaXX09" />
+    <Folder Include="ATMegaXX09\FIFO" />
+    <Folder Include="ATMegaXX09\EEPROM" />
+    <Folder Include="ATMegaXX09\Port" />
+    <Folder Include="ATMegaXX09\USART" />
+    <Folder Include="Math" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

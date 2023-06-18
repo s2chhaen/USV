@@ -14,7 +14,7 @@
 *Werte werden zu Distanzen verrechnet, resultierendes Array enthält 361 Daten (0,5° je Messpunkt, 180° gesamt)
 *************************************************************/
 uint8_t* bytes_to_values(uint8_t received[]) {
-	uint8_t data[361] = NULL;
+	uint8_t data[361];
 	int i = 0;
 	
 	for (i=0; i<=722; i+=2) {
@@ -34,7 +34,7 @@ uint8_t* bytes_to_values(uint8_t received[]) {
 *aus Sicherheitsgründen: immer abrunden
 *************************************************************/
 uint8_t* round_values(uint8_t data[]) {
-	uint8_t rounded_data[361] = NULL;
+	uint8_t rounded_data[361];
 	int i = 0;
 	
 	for (i=0; i<=361; i++) {
@@ -54,7 +54,7 @@ uint8_t* round_values(uint8_t data[]) {
 *gemäß Forderung werden die Daten mit 2 multipliziert, um ganzzahlige Werte an Slave senden zu können
 *************************************************************/
 uint8_t* cm_to_m (uint8_t data[]) {
-	uint8_t converted_data[361] = NULL;
+	uint8_t converted_data[361];
 	int i = 0;
 	
 	for (i=0; i<=361; i++) {
