@@ -29,11 +29,11 @@ UART RS422 - ATMega: iUSART2
 *bool state = false : Abarbeitungsstatus der empfangenen Daten; ist true, wenn Daten gesendet werden können
 *************************************************************/
 volatile uint8_t ack = 0x0;
-volatile uint8_t *datastream;
-volatile uint8_t *filtered_data;
-volatile uint8_t *distances;
-volatile uint8_t *rounded_distances;
-volatile uint8_t *converted_distances;
+volatile uint8_t datastream[MAX_FRAME_LENGTH] = {0};
+volatile uint8_t filtered_data[DATA_STREAM_SIZE] = {0};
+volatile uint8_t distances[DATA_STREAM_SIZE] = {0};
+volatile uint8_t rounded_distances[DATA_STREAM_SIZE] = {0};
+volatile uint8_t converted_distances[DATA_STREAM_SIZE] = {0};
 volatile bool state = false;
 
 //Implementation von CRC16-Checksum durch Anpassung Muster-Program in Buch von Hersteller
@@ -226,6 +226,7 @@ uint8_t init(){
 	uint8_t checksumValueL = (uint8_t)(checksumValue & 0x00FF);
 	uint8_t checksumValueH = (uint8_t)(checksumValue & 0xFF00);
 	uint8_t start_command[] = {STX_SYMBOL, SENSOR_ADR, 0x02, 0x00, SET_OP_MODE, ALL_VALUE_COUNTINUE, checksumValueL, checksumValueH};
+	datastream = (volatile uint8_t *) malloc(DATA_STREAM_SIZE*sizeof(uint8_t));
 	init_Core_CLK();
 	bool sensorUartInit = USART_init(iUSART0,BAUDRATE_SENSOR, USART_CHSIZE_8BIT_gc, USART_PMODE_DISABLED_gc, USART_SBMODE_1BIT_gc, SYNC_TX,MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
 	USART_set_receive_Array_callback_fnc(iUSART0,&dataReceive);
