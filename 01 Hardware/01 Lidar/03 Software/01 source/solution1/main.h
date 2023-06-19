@@ -44,6 +44,11 @@
 #define MPC_MODE false
 #define SYNC_TX false
 #define SENSOR_ADR 0x80
+
+#define DATA_STREAM_SIZE 361
+#define MAX_FRAME_LENGTH 732
+#define BYTE_FOR_CRC 2
+#define BYTE_FOR_STATUS 1
 	
 typedef struct{
 	uint8_t *datastream;
