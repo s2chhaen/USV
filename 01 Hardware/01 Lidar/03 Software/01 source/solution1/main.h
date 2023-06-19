@@ -15,8 +15,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include ".\ATMegaXX09\ATMegaXX09Clock.h"
-#include ".\ATMegaXX09\USART\USART.h"
+#include "./ATMegaXX09/ATMegaXX09Clock.h"
+#include "./ATMegaXX09/USART/USART.h"
 #include "dataprep.h"
 
 //Header
@@ -24,6 +24,7 @@
 //Symbol in Telegram
 #define TELG_LENGTH 732
 #define ACK_SYMBOL 0x06
+#define NACK_SYMBOL 0xA2
 #define STX_SYMBOL 0x02
 #define ADR_SLV 0x80
 #define LENGTH_LOW 0xD6
@@ -36,6 +37,9 @@
 //Commands and response
 #define DATA_REQ_RESP 0xB0
 #define SETUP_MODE 0x0
+
+#define SET_OP_MODE 0x20
+#define ALL_VALUE_COUNTINUE 0x24
 
 #define MPC_MODE false
 #define SYNC_TX false
