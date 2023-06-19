@@ -36,9 +36,7 @@ volatile uint8_t *rounded_distances;
 volatile uint8_t *converted_distances;
 volatile bool state = false;
 
-
-
-//Implementation von CRC16-Checksum durch Anpassung Muster-Program in Buch "Telegramme zur Konfiguration und//Bedienung der Lasermesssysteme LMS2xx" von Hersteller
+//Implementation von CRC16-Checksum durch Anpassung Muster-Program in Buch von Hersteller
 uint16_t checksumCrc16(uint8_t input[], uint32_t length){
 	const uint16_t genPolynom = 0x8005;
 	uint16_t uCrc16=0;
@@ -52,9 +50,30 @@ uint16_t checksumCrc16(uint8_t input[], uint32_t length){
 			} else{
 			uCrc16<<=1;
 		}
-		uCrc16 ^= (input[0]|(input[1]<<8));
+		uCrc16 ^= (temp[0]|(temp[1]<<8));
 	}
 	return uCrc16;
+}
+
+/*CRC8**********************************************************
+*Funktion bildet eine Checksumme
+*************************************************************/
+uint8_t CRC8( uint8_t *addr, uint8_t len){
+	uint8_t crc = 0;
+	while (len--){
+		uint8_t inbyte = *addr++;
+		uint8_t i;
+		for (i = 8; i; i--){
+			uint8_t mix = ( crc ^ inbyte ) & 0x80;
+			crc <<= 1;
+			if (mix)
+			{
+				crc ^= 0xD5;	// Generatorpolynom 0xD5
+			}
+			inbyte <<= 1;
+		}
+	}
+	return crc;
 }
 
 /*daten_empfangen**********************************************************
@@ -169,7 +188,17 @@ bool daten_senden(uint8_t adress, uint8_t data[], uint8_t length)
 }
 
 bool dataSend(uint8_t adress, uint8_t data[], uint8_t length){
-	bool result = true;
+	static uint8_t counter=3;
+	bool result = false;
+	
+	if((data[0]==NACK_SYMBOL)&&(counter)){
+		length = sizeof(converted_distances);
+		result = USART_send_Array(iUSART1 , 0, (uint8_t *)converted_distances, length);
+		counter--;
+	} else{
+		ack = (data[0]==ACK_SYMBOL)?1:0;
+		counter = 3;
+	}
 	return result;
 }
 
@@ -207,34 +236,16 @@ uint8_t init(){
 	return sensorUartInit&&slaveUartInit;
 }
 
-/*CRC8**********************************************************
-*Funktion bildet eine Checksumme
-*************************************************************/
-uint8_t CRC8( uint8_t *addr, uint8_t len){
-	uint8_t crc = 0;
-	while (len--){
-		uint8_t inbyte = *addr++;
-		uint8_t i;
-		for (i = 8; i; i--){
-			uint8_t mix = ( crc ^ inbyte ) & 0x80;
-			crc <<= 1;
-			if (mix)
-			{
-				crc ^= 0xD5;	// Generatorpolynom 0xD5
-			}
-			inbyte <<= 1;
-		}
-	}
-	return crc;
-}
+
 
 
 int main(void) {
-	uint16_t adress = 0x203;	//Stand: Januar 2023; muss ggf. nochmal geändert werden, falls sich die Zuordnung ändert
+	uint16_t adress = 0x203;	//Stand: Januar 2023; muss ggf. nochmal geändert werden, falls sich die Zuordnung ändert, Slave-Adresse
 	uint8_t crc8;
 	size_t length = 0;
 	int i = 0;
-	setup();
+	init();
+	//setup();
 	int temp1=1460/32+1;//jedes FIFO ist 32 Byte groß
 	
     while (1) {
