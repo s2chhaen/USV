@@ -15,8 +15,10 @@
 *************************************************************/
 processVal_t bytes_to_values(uint8_t input[], uint16_t inLength, uint8_t output[], uint16_t outLength) {
 	processVal_t returnValue = NO_ERROR;
+#ifndef DEBUGGING
 	uint8_t rounded_data[361];
-	if ((input==NULL)||(outLength==NULL)){
+#endif
+	if ((input==NULL)||(output==NULL)){
 		returnValue = NULL_POINTER;
 	} else if(inLength>(outLength*2)){
 		returnValue = NOT_ENOUGH_OUTPUT_SPACE;
@@ -39,13 +41,18 @@ processVal_t bytes_to_values(uint8_t input[], uint16_t inLength, uint8_t output[
 *************************************************************/
 processVal_t round_values(uint8_t data[],uint16_t length) {
 	processVal_t returnValue = NO_ERROR;
+#ifndef DEBUGGING
 	uint8_t rounded_data[361];
-	
-	for (int i=0; i<=length; i++) {
-		data[i] = (data[i]/500)*500; /*immer auf 0,5m genau abrunden aus Sicherheitsgründen: 3412cm --> 3000cm, 2976cm --> 2500cm, 891cm --> 500cm*/
-	}
-	
-	return rounded_data;
+#endif
+	if (data!=NULL){
+		for (int i=0; i<=length; i++) {
+			/*abrunden wie folgt: 3412cm --> 3000cm, 2976cm --> 2500cm, 891cm --> 500cm*/
+			data[i] = (data[i]/500)*500;
+		}
+	} else{
+		returnValue = NULL_POINTER;
+	}	
+	return returnValue;
 }
 
 /*cm_to_m**********************************************************
@@ -54,16 +61,18 @@ processVal_t round_values(uint8_t data[],uint16_t length) {
 *
 *Output:
 *uint8_t* : gibt Zeiger auf Array zurück
-*Funktion konvertiert die Messwerte (liegen in cm vor) in m
+*Funktion konvertiert die Messwerte (in cm) zu m
 *gemäß Forderung werden die Daten mit 2 multipliziert, um ganzzahlige Werte an Slave senden zu können
 *************************************************************/
-uint8_t* cm_to_m (uint8_t data[]) {
+processVal_t cm_to_m (uint8_t data[],uint16_t length) {
+	processVal_t returnValue = NO_ERROR;
+#ifndef DEBUGGING
 	uint8_t converted_data[361];
-	int i = 0;
-	
-	for (i=0; i<=361; i++) {
-		converted_data[i] = data[i]*2/100;
+#endif
+	for (int i=0; i<=length; i++) {
+		//Abrunden wie folgt: kleiner als 0,5 zu 0,5 und sonst zu 1
+		data[i] = data[i]*2/100;
 	}
 	
-	return converted_data;
+	return returnValue;
 }
