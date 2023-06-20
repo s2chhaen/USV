@@ -76,6 +76,7 @@ uint8_t CRC8( uint8_t *addr, uint8_t len){
 	return crc;
 }
 
+#ifdef OLD_FUNCTION_USING
 /*daten_empfangen**********************************************************
 *Input:
 *uint8_t adress
@@ -124,6 +125,7 @@ bool daten_empfangen(uint8_t adress, uint8_t data[], uint8_t length)
 	
 	return true;
 }
+#endif
 
 //refactoring of function daten_empfangen
 bool dataReceive(uint8_t adress, uint8_t data[], uint8_t length){
@@ -147,16 +149,16 @@ bool dataReceive(uint8_t adress, uint8_t data[], uint8_t length){
 		for (int i = HEADER_LENGTH;i<HEADER_LENGTH+722;i++){
 			filtered_data[i] = datastream[i];
 		}
-		distances = bytes_to_values((uint8_t *)filtered_data);
-		rounded_distances = round_values((uint8_t *)distances);
-		converted_distances = cm_to_m((uint8_t *)rounded_distances);
+		processVal_t byteConvert = bytes_to_values((uint8_t *)filtered_data,MAX_FRAME_LENGTH,(uint8_t *)distances,DATA_STREAM_SIZE);
+		processVal_t roundValue = round_values((uint8_t *)distances,DATA_STREAM_SIZE);
+		processVal_t distancesConvert = cm_to_m((uint8_t *)rounded_distances,DATA_STREAM_SIZE);
 		state = true;
 	}
 	USART_set_Bytes_to_receive(iUSART1,1);
 	return result;
 }
 
-
+#ifdef OLD_FUNCTION_USING
 /*daten_senden**********************************************************
 *Input:
 *uint8_t adress
@@ -186,6 +188,7 @@ bool daten_senden(uint8_t adress, uint8_t data[], uint8_t length)
 	//}
 	return true;
 }
+#endif
 
 bool dataSend(uint8_t adress, uint8_t data[], uint8_t length){
 	static uint8_t counter=3;
@@ -215,7 +218,8 @@ void setup() {
 	USART_init(iUSART1,BAUDRATE_SLAVE, USART_CHSIZE_8BIT_gc, USART_PMODE_ODD_gc, USART_SBMODE_1BIT_gc,false,0,0,PORTMUX_USARTx_DEFAULT_gc);	//UART für Slave Modul
 	USART_set_Bytes_to_receive(iUSART1,1);
 	USART_set_receive_Array_callback_fnc(iUSART1,&daten_senden);
-	USART_send_Array(iUSART0, 0x0, start_command, sizeof(start_command));	//Startkommando senden, um Messung zu starten
+	//Startkommando senden, um Messung zu starten
+	USART_send_Array(iUSART0, 0x0, start_command, sizeof(start_command));	
 	//TODO: Konfiguration des LIDARS über Kommandos, falls Einstellungen nicht mehr wirksam sind
 }
 
@@ -228,6 +232,7 @@ uint8_t init(){
 	uint8_t start_command[] = {STX_SYMBOL, SENSOR_ADR, 0x02, 0x00, SET_OP_MODE, ALL_VALUE_COUNTINUE, checksumValueL, checksumValueH};
 	datastream = (volatile uint8_t *) malloc(DATA_STREAM_SIZE*sizeof(uint8_t));
 	init_Core_CLK();
+	//UART-Init für Sensor-Seite
 	bool sensorUartInit = USART_init(iUSART0,BAUDRATE_SENSOR, USART_CHSIZE_8BIT_gc, USART_PMODE_DISABLED_gc, USART_SBMODE_1BIT_gc, SYNC_TX,MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
 	USART_set_receive_Array_callback_fnc(iUSART0,&dataReceive);
 	bool slaveUartInit = USART_init(iUSART1,BAUDRATE_SLAVE, USART_CHSIZE_8BIT_gc, USART_PMODE_ODD_gc, USART_SBMODE_1BIT_gc, SYNC_TX, MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
@@ -250,9 +255,6 @@ int main(void) {
 	int temp1=1460/32+1;//jedes FIFO ist 32 Byte groß
 	
     while (1) {
-		for(int i=0;i<temp1;i++){
-			USART_set_Bytes_to_receive(iUSART0,32);
-		}
 		//USART_set_Bytes_to_receive(iUSART0,1460); //Setzen der Buffergröße, bevor Callback ausgelöst wird: 1460 = 2x Gesamtgröße Datenstream (8 Byte Header + 722 Byte Daten)
 		//TODO: Startup Message herausfinden, scheint mit Datenblatt nicht übereinzustimmen
 		//wenn Sendestatus = true, dann bilde Checksumme und sende Daten an Slave
