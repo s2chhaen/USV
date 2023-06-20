@@ -13,15 +13,19 @@
 *gefilterte Daten bestehen aus 722 Byte in der Form (LSB, MSB) pro Datenpunkt
 *Werte werden zu Distanzen verrechnet, resultierendes Array enthält 361 Daten (0,5° je Messpunkt, 180° gesamt)
 *************************************************************/
-uint8_t* bytes_to_values(uint8_t received[]) {
-	uint8_t data[361];
-	int i = 0;
-	
-	for (i=0; i<=722; i+=2) {
-		data[i/2] = received[i] + 256*received[i+1];
+processVal_t bytes_to_values(uint8_t input[], uint16_t inLength, uint8_t output[], uint16_t outLength) {
+	processVal_t returnValue = NO_ERROR;
+	uint8_t rounded_data[361];
+	if ((input==NULL)||(outLength==NULL)){
+		returnValue = NULL_POINTER;
+	} else if(inLength>(outLength*2)){
+		returnValue = NOT_ENOUGH_OUTPUT_SPACE;
+	} else{
+		for (int i=0; i<=inLength; i+=2) {
+			output[i/2] = input[i] + 256*input[i+1];
+		}
 	}
-	
-	return data;
+	return returnValue;
 }
 
 /*round_values**********************************************************
@@ -33,12 +37,12 @@ uint8_t* bytes_to_values(uint8_t received[]) {
 *gemäß Forderung werden die Messwerte (liegen in cm vor) auf 50cm genau gerundet
 *aus Sicherheitsgründen: immer abrunden
 *************************************************************/
-uint8_t* round_values(uint8_t data[]) {
+processVal_t round_values(uint8_t data[],uint16_t length) {
+	processVal_t returnValue = NO_ERROR;
 	uint8_t rounded_data[361];
-	int i = 0;
 	
-	for (i=0; i<=361; i++) {
-		rounded_data[i] = (data[i]/500)*500; /*immer auf 0,5m genau abrunden aus Sicherheitsgründen: 3412cm --> 3000cm, 2976cm --> 2500cm, 891cm --> 500cm*/
+	for (int i=0; i<=length; i++) {
+		data[i] = (data[i]/500)*500; /*immer auf 0,5m genau abrunden aus Sicherheitsgründen: 3412cm --> 3000cm, 2976cm --> 2500cm, 891cm --> 500cm*/
 	}
 	
 	return rounded_data;
