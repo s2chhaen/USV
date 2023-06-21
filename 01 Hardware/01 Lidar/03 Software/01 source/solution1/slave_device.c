@@ -3,6 +3,7 @@
  *
  * Created: 21.06.2023 13:01:53
  * Author: hathach
+ * Version: 0.1
  */ 
 
 #include "slave_device.h"

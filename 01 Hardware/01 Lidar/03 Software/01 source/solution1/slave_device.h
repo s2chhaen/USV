@@ -2,7 +2,8 @@
  * slave.h
  * Für die Slave-Gerät
  * Created: 21.06.2023 12:38:43
- *  Author: hathach
+ * Author: hathach
+ * Version: 0.1
  */ 
 
 
