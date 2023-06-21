@@ -45,11 +45,17 @@ uint8_t DataTx(uint8_t length, uint8_t* data){
 		result = NULL_POINTER;
 	} else{
 		obj.txTime = (length/obj.txLenMax) + ((length%obj.txLenMax)?1:0);
-		uint16_t toTxByte = length; 
+		uint16_t toTxByte = length;
+		uint16_t position = 0; 
 		while(obj.txTime){
 			if(toTxByte<32){
-				USART_send_Array(iUSART1, 0, obj.txBuffer, toTxByte);
+				USART_send_Array(iUSART1, 0, &(obj.txBuffer[position]), toTxByte);
+				position = 0;
 				//TODO noch zu schreiben
+			} else{
+				USART_send_Array(iUSART1, 0, &(obj.txBuffer[position]), 32);
+				position+=32;
+				toTxByte-=32;
 			}
 		}
 	}
