@@ -37,7 +37,7 @@ bool sync, bool MPCM, uint8_t address, PORTMUX_USARTx_t PortMux){
 	return result;
 }
 
-uint8_t DataTx(uint8_t length, uint8_t* data){
+processResult_t dataTx(uint8_t length, uint8_t* data){
 	uint8_t result = NO_ERROR;
 	if(length>obj.txLenMax){
 		result = LENGTH_EXCESS;
@@ -49,11 +49,9 @@ uint8_t DataTx(uint8_t length, uint8_t* data){
 		uint16_t position = 0; 
 		while(obj.txTime){
 			if(toTxByte<32){
-				USART_send_Array(iUSART1, 0, &(obj.txBuffer[position]), toTxByte);
-				position = 0;
-				//TODO noch zu schreiben
+				USART_send_Array(iUSART1, 0, (uint8_t*)(&(obj.txBuffer[position])), toTxByte);
 			} else{
-				USART_send_Array(iUSART1, 0, &(obj.txBuffer[position]), 32);
+				USART_send_Array(iUSART1, 0, (uint8_t*)(&(obj.txBuffer[position])), 32);
 				position+=32;
 				toTxByte-=32;
 			}
