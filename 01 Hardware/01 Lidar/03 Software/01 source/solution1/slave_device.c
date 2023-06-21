@@ -50,14 +50,19 @@ processResult_t dataTx(uint8_t length, uint8_t* data){
 		uint16_t position = 0; 
 		while(obj.txTime){
 			if(toTxByte<32){
-				USART_send_Array(iUSART1, 0, (uint8_t*)(&(obj.txBuffer[position])), toTxByte);
+				USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[position])), toTxByte);
 			} else{
-				USART_send_Array(iUSART1, 0, (uint8_t*)(&(obj.txBuffer[position])), 32);
+				USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[position])), 32);
 				position+=32;
 				toTxByte-=32;
 			}
 		}
 	}
+	return result;
+}
+
+processResult_t dataRx(uint8_t length, uint8_t* data){
+	uint8_t result = NO_ERROR;
 	return result;
 }
 
