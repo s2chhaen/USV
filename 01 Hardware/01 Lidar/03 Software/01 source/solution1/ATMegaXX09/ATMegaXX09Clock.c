@@ -48,7 +48,6 @@ void get_CPU_CLK(void)
 void init_Core_CLK(uint8_t type, uint8_t prescaler)
 {
 	register uint8_t reg_val = 0;
-	uint8_t prescaler_bm=0;
 	//Nur eine Art von Taktgeber darf gleichzeitig ausgewaehaelt werden
 	switch (prescaler){
 	case 1:
@@ -59,7 +58,6 @@ void init_Core_CLK(uint8_t type, uint8_t prescaler)
 		break;
 	case 4:
 		prescaler = (CLKCTRL_PEN_bm)|(CLKCTRL_PDIV_4X_gc);
-		prescaler = SET_PRESCALE(CLKCTRL_PEN_bm,4);
 		break;
 	case 6:
 		prescaler = (CLKCTRL_PEN_bm)|(CLKCTRL_PDIV_6X_gc);
@@ -89,6 +87,7 @@ void init_Core_CLK(uint8_t type, uint8_t prescaler)
 		prescaler = (CLKCTRL_PEN_bm)|(CLKCTRL_PDIV_64X_gc);
 		break;
 	default:
+		prescaler = ~CLKCTRL_PEN_bm;
 		break;
 	}
 	switch(type){
