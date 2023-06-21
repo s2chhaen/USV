@@ -15,9 +15,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <avr/interrupt.h>
 #include "./ATMegaXX09/ATMegaXX09Clock.h"
 #include "./ATMegaXX09/USART/USART.h"
 #include "dataprep.h"
+#include "slave_device.h"
 
 //Header
 #define HEADER_LENGTH 8
