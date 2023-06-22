@@ -129,47 +129,34 @@ bool dataSend(uint8_t adress, uint8_t data[], uint8_t length){
 
 //refactoring of function setup()
 uint8_t init(){
-	/**
-	static uint8_t start_command_wth_checksum[]={STX_SYMBOL, SENSOR_ADR, 0x02, 0x00, SET_OP_MODE, ALL_VALUE_COUNTINUE};
-	uint16_t checksumValue = checksumCrc16(start_command_wth_checksum, sizeof(start_command_wth_checksum)/sizeof(uint8_t));
-	uint8_t checksumValueL = (uint8_t)(checksumValue & 0x00FF);
-	uint8_t checksumValueH = (uint8_t)(checksumValue & 0xFF00);
-	uint8_t start_command[] = {STX_SYMBOL, SENSOR_ADR, 0x02, 0x00, SET_OP_MODE, ALL_VALUE_COUNTINUE, checksumValueL, checksumValueH};
-	**/
+	uint8_t result;
 	uint8_t prescaler = 1;
 	uint8_t rxLength = 100;
 	uint8_t txLength = 100;
 	uint32_t baudrateSlave = 250000;
 	init_Core_CLK(INTERN_CLK,prescaler);
-	initDev(rxLength,txLength,iUSART1,baudrateSlave, USART_CHSIZE_8BIT_gc, USART_PMODE_ODD_gc, USART_SBMODE_1BIT_gc, SYNC_TX, MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
-	//UART-Init für Sensor-Seite
-	//bool sensorUartInit = !USART_init(iUSART0,9600, USART_CHSIZE_8BIT_gc, USART_PMODE_DISABLED_gc, USART_SBMODE_1BIT_gc, SYNC_TX,MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
-	//USART_set_receive_Array_callback_fnc(iUSART1,&dataReceive);
-	//bool slaveUartInit = !USART_init(iUSART1,baudrateSlave, USART_CHSIZE_8BIT_gc, USART_PMODE_ODD_gc, USART_SBMODE_1BIT_gc, SYNC_TX, MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
-	//USART_set_send_Array_callback_fnc(iUSART1,&dataSend);
-	//USART_set_Bytes_to_receive(iUSART1,32);
+	result = initDev(rxLength, txLength, iUSART1, baudrateSlave, USART_CHSIZE_8BIT_gc, USART_PMODE_ODD_gc,USART_SBMODE_1BIT_gc, SYNC_TX, MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
 	sei();//active the global interrupt, weil es bisher nicht aktiviert wird
 	//volatile bool check = USART_send_Array(iUSART1, 0, start_command, sizeof(start_command));
-	return true;//sensorUartInit&&slaveUartInit;
+	return result;//sensorUartInit&&slaveUartInit;
 }
 
 int main(void) {
 	uint8_t testMsg[16]={0x02,0x00,0x0A,0x00,0x20,0x00,0x53,0x49,0x43,0x4B,0x5F,0x4C,0x4D,0x53,0x5F,0xB2};
 	txDataLength = 16;
-	counter = 16/32 + (((16%32)==0)?0:1);
 	volatile uint8_t initCheck = init();
 	volatile unsigned int i =0;
-	//volatile bool checkSend;
+	volatile uint8_t checkSend = dataTx(txDataLength,testMsg);
 	
 #ifdef DEBUG_ACTIVE
 	uint8_t testRx[732]={0};
 	uint8_t rxLength;
 	USART_receive_Array(iUSART0, 0, testRx, 732,&rxLength);
 #endif
-	USART_send_Array(iUSART1, 0, testMsg, 16);
+	//USART_send_Array(iUSART1, 0, testMsg, 16);
     while (1) {
 		//checkSend = USART_send_Array(iUSART1, 0, testMsg, 16);
-		if(initCheck){
+		if(initCheck&&checkSend){
 			i++;
 		}
 #ifdef DEBUG_ACTIVE

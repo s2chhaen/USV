@@ -39,8 +39,8 @@ extern processResult_t initDev(uint16_t rxLength, uint16_t txLength,uint8_t USAR
 					USART_CHSIZE_t bits, USART_PMODE_t parity,USART_SBMODE_t stopbit, \
 					bool sync, bool MPCM, uint8_t address, PORTMUX_USARTx_t PortMux);
 
-extern processResult_t dataTx(uint8_t length, uint8_t* data);
-extern processResult_t dataRx(uint8_t length, uint8_t* data);
+extern processResult_t dataTx(uint16_t length, uint8_t* data);
+extern processResult_t dataRx(uint16_t length, uint8_t* data);
 
 extern bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length);
 extern bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length);
