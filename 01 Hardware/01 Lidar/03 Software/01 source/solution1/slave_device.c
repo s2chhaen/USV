@@ -47,23 +47,25 @@ processResult_t dataTx(uint16_t length, uint8_t* data){
 	} else if(data==NULL){
 		result = NULL_POINTER;
 	} else{
-		for (int i = 1;i<length;i++){
+		for (int i = 0;i<length;i++){
 			obj.txBuffer[i] = data[i];
 		}
 		obj.txTime = (length/32) + ((length%32)?1:0);
 		uint16_t toTxByte = length;
 		uint16_t position = 0; 
-		//while(obj.txTime){
+		while(obj.txTime!=0){
 			if(toTxByte<32){
 				send=1;
 				USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[position])), toTxByte);
 				while(send!=0);
 			} else{
+				send=1;
 				USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[position])), 32);
 				position+=32;
 				toTxByte-=32;
+				while(send!=0);
 			}
-		//}
+		}
 	}
 	return result;
 }

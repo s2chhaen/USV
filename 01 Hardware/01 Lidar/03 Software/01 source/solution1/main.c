@@ -133,7 +133,7 @@ uint8_t init(){
 	uint8_t prescaler = 1;
 	uint8_t rxLength = 100;
 	uint8_t txLength = 100;
-	uint32_t baudrateSlave = 250000;
+	uint32_t baudrateSlave = 9600;
 	init_Core_CLK(INTERN_CLK,prescaler);
 	result = initDev(rxLength, txLength, iUSART1, baudrateSlave, USART_CHSIZE_8BIT_gc, USART_PMODE_ODD_gc,USART_SBMODE_1BIT_gc, SYNC_TX, MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
 	sei();//active the global interrupt, weil es bisher nicht aktiviert wird
@@ -143,10 +143,15 @@ uint8_t init(){
 
 int main(void) {
 	uint8_t testMsg[16]={0x02,0x00,0x0A,0x00,0x20,0x00,0x53,0x49,0x43,0x4B,0x5F,0x4C,0x4D,0x53,0x5F,0xB2};
+	uint8_t test[35]={0};
+	for (uint8_t i = 0;i<35;i++){
+		test[i] = i;
+	}
 	txDataLength = 16;
 	volatile uint8_t initCheck = init();
-	volatile unsigned int i =0;
-	volatile uint8_t checkSend = dataTx(txDataLength,testMsg);
+	//volatile unsigned int i =0;
+	//volatile uint8_t checkSend1 = dataTx(txDataLength,testMsg);
+	volatile uint8_t checkSend2 = dataTx(35,test);
 	
 #ifdef DEBUG_ACTIVE
 	uint8_t testRx[732]={0};
@@ -156,8 +161,8 @@ int main(void) {
 	//USART_send_Array(iUSART1, 0, testMsg, 16);
     while (1) {
 		//checkSend = USART_send_Array(iUSART1, 0, testMsg, 16);
-		if(initCheck&&checkSend){
-			i++;
+		if(initCheck/*&&checkSend1*/&&checkSend2){
+			//i++;
 		}
 #ifdef DEBUG_ACTIVE
 		USART_receive_Array(iUSART0, 0, testRx, 732,&rxLength);
