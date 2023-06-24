@@ -21,6 +21,7 @@
  //#define SLAVE_STATIC 0
 
 #define MAX_BYTE_SEND 16
+//#define VERSION_1
 
 #ifdef SLAVE_DYNAMIC
 typedef struct {
