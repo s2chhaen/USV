@@ -16,6 +16,10 @@ slaveDevice_t obj ={
 	.txPtrPosition=0
 };
 
+#ifdef VERSION_1
+bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length) __attribute__((deprecated("funtcion is in debug time")));
+#endif
+
 processResult_t dataTx(uint8_t* data,uint16_t length){
 	uint8_t result = NO_ERROR;
 	if(length>obj.txLenMax){
@@ -42,11 +46,12 @@ processResult_t dataTx(uint8_t* data,uint16_t length){
 	return result;
 }
 
+#ifdef VERSION_1
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
 	if (obj.txTime!=0)
 	{
-		uint8_t temp1 = 0;
-		uint8_t temp2 = 0;
+		uint16_t temp1 = 0;
+		uint16_t temp2 = 0;
 		if (obj.toTxByte<MAX_BYTE_SEND)
 		{
 			temp1 = obj.toTxByte;
@@ -65,8 +70,31 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 		}
 	}
 	
-	return false;
+	return true;
 }
+#endif
+
+#ifndef VERSION_1
+bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
+	uint8_t lengthForSend = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
+	uint8_t sizeOfArray = 1;
+	uint8_t** temp = (uint8_t**)malloc(sizeOfArray*sizeof(uint8_t*));
+	temp[1] = (uint8_t*)&(obj.txBuffer[obj.txPtrPosition]);
+	data = temp;
+	if (obj.toTxByte<lengthForSend){
+		*length = (uint8_t)(obj.toTxByte);
+		obj.toTxByte = 0;
+		obj.txPtrPosition = 0;
+		obj.txTime=0;
+	} else{
+		*length = (uint8_t)lengthForSend;
+		obj.toTxByte-=lengthForSend;
+		obj.txPtrPosition+=MAX_BYTE_SEND;
+		obj.txTime--;
+	}
+	return true;
+}
+#endif
 
 static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	obj.rxTime--;
