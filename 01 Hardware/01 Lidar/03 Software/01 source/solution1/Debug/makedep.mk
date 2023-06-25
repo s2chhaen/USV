@@ -14,5 +14,7 @@ dataprep.c
 
 main.c
 
+lockList.c
+
 slave_device.c
 

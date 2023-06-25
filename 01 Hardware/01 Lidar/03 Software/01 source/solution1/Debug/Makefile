@@ -49,6 +49,7 @@ C_SRCS +=  \
 ../ATMegaXX09/USART/USART.c \
 ../dataprep.c \
 ../main.c \
+../lockList.c \
 ../slave_device.c
 
 
@@ -65,6 +66,7 @@ ATMegaXX09/Port/Port.o \
 ATMegaXX09/USART/USART.o \
 dataprep.o \
 main.o \
+lockList.o \
 slave_device.o
 
 OBJS_AS_ARGS +=  \
@@ -74,6 +76,7 @@ ATMegaXX09/Port/Port.o \
 ATMegaXX09/USART/USART.o \
 dataprep.o \
 main.o \
+lockList.o \
 slave_device.o
 
 C_DEPS +=  \
@@ -83,6 +86,7 @@ ATMegaXX09/Port/Port.d \
 ATMegaXX09/USART/USART.d \
 dataprep.d \
 main.d \
+lockList.d \
 slave_device.d
 
 C_DEPS_AS_ARGS +=  \
@@ -92,6 +96,7 @@ ATMegaXX09/Port/Port.d \
 ATMegaXX09/USART/USART.d \
 dataprep.d \
 main.d \
+lockList.d \
 slave_device.d
 
 OUTPUT_FILE_PATH +=solution1.elf
@@ -144,6 +149,13 @@ ATMegaXX09/USART/USART.o: ../ATMegaXX09/USART/USART.c
 	
 
 ./main.o: .././main.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\Atmel\ATmega_DFP\1.7.374\include"  -Og -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega4808 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\Atmel\ATmega_DFP\1.7.374\gcc\dev\atmega4808" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+./lockList.o: .././lockList.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\Atmel\ATmega_DFP\1.7.374\include"  -Og -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega4808 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\Atmel\ATmega_DFP\1.7.374\gcc\dev\atmega4808" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

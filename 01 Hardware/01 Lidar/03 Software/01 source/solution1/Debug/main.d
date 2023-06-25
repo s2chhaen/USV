@@ -20,7 +20,7 @@ main.d main.o: .././main.c .././main.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h \
  ../././ATMegaXX09/ATMegaXX09Clock.h ../././ATMegaXX09/USART/USART.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\eeprom.h \
- .././dataprep.h .././error_list.h .././slave_device.h \
+ .././dataprep.h .././error_list.h .././slave_device.h .././lock.h \
  .././ATMegaXX09/USART/USART.h
 
 .././main.h:
@@ -74,5 +74,7 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 .././error_list.h:
 
 .././slave_device.h:
+
+.././lock.h:
 
 .././ATMegaXX09/USART/USART.h:

@@ -24,9 +24,9 @@ processResult_t dataTx(uint8_t* data,uint16_t length){
 	uint8_t result = NO_ERROR;
 	if(length>obj.txLenMax){
 		result = LENGTH_EXCESS;
-		} else if (data==NULL){
+	} else if (data==NULL){
 		result = NULL_POINTER;
-		} else{
+	} else{
 		for (int i = 0;i<length;i++){
 			obj.txBuffer[i] = data[i];
 		}
@@ -39,8 +39,7 @@ processResult_t dataTx(uint8_t* data,uint16_t length){
 			} else{
 			obj.toTxByte-=MAX_BYTE_SEND;
 			obj.txPtrPosition+=MAX_BYTE_SEND;
-			USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[0])), MAX_BYTE_SEND);
-			
+			USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[0])), MAX_BYTE_SEND);	
 		}
 	}
 	return result;
