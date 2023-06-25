@@ -21,6 +21,7 @@
 #include "dataprep.h"
 #include "slave_device.h"
 
+
 //Header
 #define HEADER_LENGTH 8
 //Symbol in Telegram
@@ -43,8 +44,8 @@
 #define SET_OP_MODE 0x20
 #define ALL_VALUE_COUNTINUE 0x24
 
-#define MPC_MODE false
-#define SYNC_TX false
+#define DISBL_MPC_MODE false
+#define DISBL_SYNC_TX false
 #define SENSOR_ADR 0x80
 
 #define DATA_STREAM_SIZE 361
