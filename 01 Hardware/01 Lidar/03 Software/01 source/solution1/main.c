@@ -37,6 +37,7 @@ volatile bool state = false;
 volatile uint16_t counter = 0;
 static uint16_t txDataLength = 0;
 
+
 //Implementation von CRC16-Checksum durch Anpassung Muster-Program in Buch von Hersteller
 uint16_t checksumCrc16(uint8_t input[], uint32_t length){
 	const uint16_t genPolynom = 0x8005;
@@ -131,42 +132,45 @@ bool dataSend(uint8_t adress, uint8_t data[], uint8_t length){
 uint8_t init(){
 	uint8_t result;
 	uint8_t prescaler = 1;
-	uint8_t rxLength = 100;
-	uint8_t txLength = 100;
-	uint32_t baudrateSlave = 9600;
+	uint16_t rxLength = 900;
+	uint16_t txLength = 900;
+	uint32_t baudrateSlave = 250000;
 	init_Core_CLK(INTERN_CLK,prescaler);
-	result = initDev(rxLength, txLength, iUSART1, baudrateSlave, USART_CHSIZE_8BIT_gc, USART_PMODE_ODD_gc,USART_SBMODE_1BIT_gc, SYNC_TX, MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
+	//result = USART_init(iUSART1,250000, USART_CHSIZE_8BIT_gc, USART_PMODE_ODD_gc, USART_SBMODE_1BIT_gc, DISBL_SYNC_TX, DISBL_MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
+	result = initDev(rxLength, txLength, iUSART1, baudrateSlave, USART_CHSIZE_8BIT_gc, USART_PMODE_ODD_gc, USART_SBMODE_1BIT_gc, DISBL_MPC_MODE, DISBL_MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
 	sei();//active the global interrupt, weil es bisher nicht aktiviert wird
-	//volatile bool check = USART_send_Array(iUSART1, 0, start_command, sizeof(start_command));
-	return result;//sensorUartInit&&slaveUartInit;
+	return result;
 }
 
 int main(void) {
-	uint8_t testMsg[16]={0x02,0x00,0x0A,0x00,0x20,0x00,0x53,0x49,0x43,0x4B,0x5F,0x4C,0x4D,0x53,0x5F,0xB2};
-	uint8_t test[35]={0};
-	for (uint8_t i = 0;i<35;i++){
+	//uint8_t testMsg[16]={0x02,0x00,0x0A,0x00,0x20,0x00,0x53,0x49,0x43,0x4B,0x5F,0x4C,0x4D,0x53,0x5F,0xB2};
+	//txDataLength = sizeof(testMsg)/sizeof(uint8_t);
+#define DATA_FOR_TEST 1
+//#define TEST_USART_HAL 1
+
+#ifdef DATA_FOR_TEST
+#define MAX_VALUE_TEST 64
+	uint8_t test[MAX_VALUE_TEST]={0};
+	for (int i = 0; i < MAX_VALUE_TEST; i++){
 		test[i] = i;
 	}
-	txDataLength = 16;
-	volatile uint8_t initCheck = init();
-	//volatile unsigned int i =0;
-	//volatile uint8_t checkSend1 = dataTx(txDataLength,testMsg);
-	volatile uint8_t checkSend2 = dataTx(35,test);
-	
-#ifdef DEBUG_ACTIVE
-	uint8_t testRx[732]={0};
-	uint8_t rxLength;
-	USART_receive_Array(iUSART0, 0, testRx, 732,&rxLength);
+	txDataLength = sizeof(test)/sizeof(uint8_t);
 #endif
-	//USART_send_Array(iUSART1, 0, testMsg, 16);
-    while (1) {
-		//checkSend = USART_send_Array(iUSART1, 0, testMsg, 16);
-		if(initCheck/*&&checkSend1*/&&checkSend2){
-			//i++;
+
+	volatile bool test1=false;
+	volatile uint8_t i=0;
+	init();
+#ifdef TEST_USART_HAL
+	USART_send_Array(iUSART1, 0x0, test, txDataLength);
+#else
+	dataTx(test,txDataLength);
+#endif	
+
+    while (1){
+		i=0;
+		if (!test1){
+			i++;
 		}
-#ifdef DEBUG_ACTIVE
-		USART_receive_Array(iUSART0, 0, testRx, 732,&rxLength);
-#endif
     }
 	return 0;
 }
