@@ -15,9 +15,20 @@ slaveDevice_t obj ={
 	.txTime=0,
 	.txPtrPosition=0
 };
+static uint8_t temp3 = 0;
+
+#define  VERSION_3 1
 
 #ifdef VERSION_1
-bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length) __attribute__((deprecated("funtcion is in debug time")));
+bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length) /*__attribute__((deprecated("funtcion is in debug time")))*/;
+#endif
+
+#ifdef VERSION_2
+bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length) /*__attribute__((deprecated("funtcion is in debug time")))*/;
+#endif
+
+#ifdef VERSION_3
+bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length) /*__attribute__((deprecated("funtcion is in debug time")))*/;
 #endif
 
 processResult_t dataTx(uint8_t* data,uint16_t length){
@@ -31,8 +42,10 @@ processResult_t dataTx(uint8_t* data,uint16_t length){
 			obj.txBuffer[i] = data[i];
 		}
 		obj.toTxByte = length;
+#ifdef VERSION_1
 		obj.txTime = (length/MAX_BYTE_SEND) + ((length%MAX_BYTE_SEND)?1:0);
 		obj.txTime--;
+#endif
 		if(obj.toTxByte<MAX_BYTE_SEND){
 			obj.toTxByte = 0;
 			USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[0])), length);
@@ -73,7 +86,8 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 }
 #endif
 
-#ifndef VERSION_1
+
+#ifdef VERSION_2
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
 	uint8_t lengthForSend = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
 	uint8_t sizeOfArray = 1;
@@ -90,6 +104,33 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 		obj.toTxByte-=lengthForSend;
 		obj.txPtrPosition+=MAX_BYTE_SEND;
 		obj.txTime--;
+	}
+	return true;
+}
+#endif
+
+#ifdef VERSION_3
+bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
+	temp3 = max_length;
+	uint8_t sendByte = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
+	if (obj.toTxByte!=0)
+	{
+		uint16_t temp1 = 0;
+		uint16_t temp2 = 0;
+		if (obj.toTxByte<sendByte)
+		{
+			temp1 = obj.toTxByte;
+			temp2 = obj.txPtrPosition;
+			obj.toTxByte = 0;
+			obj.txPtrPosition = 0;
+			USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[temp2])), temp1);//Nach dieser Funktion, keine Code mehr schreiben, sonst Stack-overflow-Fehler
+		} else
+		{
+			temp2 = obj.txPtrPosition;
+			obj.toTxByte-=sendByte;
+			obj.txPtrPosition+=sendByte;
+			USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[temp2])), MAX_BYTE_SEND);
+		}
 	}
 	return true;
 }
