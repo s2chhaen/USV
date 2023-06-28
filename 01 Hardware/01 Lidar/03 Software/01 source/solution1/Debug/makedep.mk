@@ -18,3 +18,5 @@ lockList.c
 
 slave_device.c
 
+USART_1_Beta\usart1Beta.c
+

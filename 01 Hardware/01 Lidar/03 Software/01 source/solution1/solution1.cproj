@@ -196,6 +196,12 @@
     <Compile Include="slave_device.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="USART_1_Beta\usart1Beta.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="USART_1_Beta\usart1Beta.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ATMegaXX09" />
@@ -204,6 +210,7 @@
     <Folder Include="ATMegaXX09\Port" />
     <Folder Include="ATMegaXX09\USART" />
     <Folder Include="Math" />
+    <Folder Include="USART_1_Beta" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
