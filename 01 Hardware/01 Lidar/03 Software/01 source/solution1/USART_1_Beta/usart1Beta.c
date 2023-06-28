@@ -128,7 +128,7 @@ uint8_t usartSendData(uint8_t* data, uint8_t length){
 	//while(!((obj1.adr_p->STATUS)&(1<<5)));//check if DREIF  = 1 (empty)
 	while(temp->Register.DREIF == 0);
 	obj1.adr_p->TXDATAL = data[0];//Can only transmit 1 byte per time
-	return result
+	return result;
 }
 #else
 uint8_t usartSendData(uint8_t* data, uint8_t length){
