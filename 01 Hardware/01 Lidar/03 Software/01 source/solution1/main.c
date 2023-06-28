@@ -146,10 +146,10 @@ int main(void) {
 	//uint8_t testMsg[16]={0x02,0x00,0x0A,0x00,0x20,0x00,0x53,0x49,0x43,0x4B,0x5F,0x4C,0x4D,0x53,0x5F,0xB2};
 	//txDataLength = sizeof(testMsg)/sizeof(uint8_t);
 #define DATA_FOR_TEST 1
-//#define TEST_USART_HAL 1
+#define TEST_USART_HAL 1
 
 #ifdef DATA_FOR_TEST
-#define MAX_VALUE_TEST 64
+#define MAX_VALUE_TEST 32
 	uint8_t test[MAX_VALUE_TEST]={0};
 	for (int i = 0; i < MAX_VALUE_TEST; i++){
 		test[i] = i;
@@ -161,7 +161,11 @@ int main(void) {
 	volatile uint8_t i=0;
 	init();
 #ifdef TEST_USART_HAL
+for (uint8_t u = 0;u<10;u++)
+{
 	USART_send_Array(iUSART1, 0x0, test, txDataLength);
+	for (uint32_t i = 0; i<300000;i++){}
+}
 #else
 	dataTx(test,txDataLength);
 #endif	
