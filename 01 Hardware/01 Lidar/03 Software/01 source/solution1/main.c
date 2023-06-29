@@ -135,6 +135,7 @@ uint8_t init(){
 	uint16_t rxLength = 900;
 	uint16_t txLength = 900;
 	uint32_t baudrateSlave = 250000;
+	//uint32_t baudrateSlave = 115200;
 	init_Core_CLK(INTERN_CLK,prescaler);
 	//result = USART_init(iUSART1,250000, USART_CHSIZE_8BIT_gc, USART_PMODE_ODD_gc, USART_SBMODE_1BIT_gc, DISBL_SYNC_TX, DISBL_MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
 	result = initDev(rxLength, txLength, iUSART1, baudrateSlave, USART_CHSIZE_8BIT_gc, USART_PMODE_ODD_gc, USART_SBMODE_1BIT_gc, DISBL_MPC_MODE, DISBL_MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
@@ -143,13 +144,8 @@ uint8_t init(){
 }
 
 int main(void) {
-	//uint8_t testMsg[16]={0x02,0x00,0x0A,0x00,0x20,0x00,0x53,0x49,0x43,0x4B,0x5F,0x4C,0x4D,0x53,0x5F,0xB2};
-	//txDataLength = sizeof(testMsg)/sizeof(uint8_t);
-#define DATA_FOR_TEST 1
-#define TEST_USART_HAL 1
-
 #ifdef DATA_FOR_TEST
-#define MAX_VALUE_TEST 32
+#define MAX_VALUE_TEST 31
 	uint8_t test[MAX_VALUE_TEST]={0};
 	for (int i = 0; i < MAX_VALUE_TEST; i++){
 		test[i] = i;
@@ -157,24 +153,22 @@ int main(void) {
 	txDataLength = sizeof(test)/sizeof(uint8_t);
 #endif
 
-	volatile bool test1=false;
-	volatile uint8_t i=0;
 	init();
-#ifdef TEST_USART_HAL
+
+#ifdef ACTIVE_HAL_USART_TEST_SEG
 for (uint8_t u = 0;u<10;u++)
 {
 	USART_send_Array(iUSART1, 0x0, test, txDataLength);
-	for (uint32_t i = 0; i<300000;i++){}
+	for (uint32_t i = 0; i<30000;i++){}//warte 30 000 cycles
 }
-#else
-	dataTx(test,txDataLength);
 #endif	
 
+#ifdef ACTIVE_SLV_DEVICE_SEND_TEST_SEG
+	dataTx(test,txDataLength);
+#endif
+	//Finally freq = 20MHz
+	
     while (1){
-		i=0;
-		if (!test1){
-			i++;
-		}
     }
 	return 0;
 }
