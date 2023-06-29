@@ -20,7 +20,7 @@
  
  //#define SLAVE_STATIC 0
 
-#define MAX_BYTE_SEND 32
+#define MAX_BYTE_SEND 31
 //#define VERSION_1
 
 #ifdef SLAVE_DYNAMIC
