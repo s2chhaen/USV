@@ -43,7 +43,7 @@ void get_CPU_CLK(void)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// init Core Clock with 20Mhz and start the external 32,768 Crystal Oscillator
+// init Core Clock with 20Mhz und/oder start the external 32,768 Crystal Oscillator
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void init_Core_CLK(uint8_t type, uint8_t prescaler)
 {
@@ -103,7 +103,7 @@ void init_Core_CLK(uint8_t type, uint8_t prescaler)
 			while((CLKCTRL.MCLKSTATUS & CLKCTRL_XOSC32KS_bm) != CLKCTRL_XOSC32KS_bm);
 			break;
 		case INTERN_CLK:
-			//16/20MHz Internal oscillator
+			//20MHz Internal oscillator
 			reg_val = CLKCTRL.MCLKCTRLA;
 			reg_val |= CLKCTRL_CLKSEL_OSC20M_gc;
 			reg_val &= ~CLKCTRL_CLKOUT_bm;

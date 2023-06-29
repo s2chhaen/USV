@@ -196,6 +196,15 @@
     <Compile Include="slave_device.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="testConfig.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="timerUnit.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="timerUnit.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="USART_1_Beta\usart1Beta.c">
       <SubType>compile</SubType>
     </Compile>

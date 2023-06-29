@@ -108,7 +108,7 @@ void initUsart1(){
 	};
 	//Ordnung BAUD,C,B,A
 	PORTMUX.USARTROUTEA = 0;//choose Portmux default
-	obj1.adr_p->BAUD = 256;//set 250kBaud;
+	obj1.adr_p->BAUD = 256;//320;//set 250kBaud;
 	PORTC.DIR |= (1<<0);//Set TX/PC0 as output
 	PORTC.PIN0CTRL |= (0x4<<0);//Disable input in PC0
 	obj1.adr_p->DBGCTRL = 0x00;//set debug
@@ -121,7 +121,7 @@ void initUsart1(){
 #ifdef POLLING_METHOD
 uint8_t usartSendData(uint8_t* data, uint8_t length){
 	uint8_t result = 0;
-	length = length%32;//now can only transfer 32 Byte per time
+	//length = length%32;//now can only transfer 32 Byte per time
 	//another way
 	STATUS_t* temp=NULL;
 	getRegister8Bit(STATUS_en,(register8Bit_t*)temp);
