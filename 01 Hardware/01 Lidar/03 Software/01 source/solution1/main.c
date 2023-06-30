@@ -134,8 +134,8 @@ uint8_t init(){
 	uint8_t prescaler = 1;
 	uint16_t rxLength = 900;
 	uint16_t txLength = 900;
-	uint32_t baudrateSlave = 250000;
-	//uint32_t baudrateSlave = 115200;
+	//uint32_t baudrateSlave = 250000;
+	uint32_t baudrateSlave = 115200;
 	init_Core_CLK(INTERN_CLK,prescaler);
 	//result = USART_init(iUSART1,250000, USART_CHSIZE_8BIT_gc, USART_PMODE_ODD_gc, USART_SBMODE_1BIT_gc, DISBL_SYNC_TX, DISBL_MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
 	result = initDev(rxLength, txLength, iUSART1, baudrateSlave, USART_CHSIZE_8BIT_gc, USART_PMODE_ODD_gc, USART_SBMODE_1BIT_gc, DISBL_MPC_MODE, DISBL_MPC_MODE, 0, PORTMUX_USARTx_DEFAULT_gc);
@@ -155,7 +155,7 @@ int main(void) {
 
 	init();
 
-#ifdef ACTIVE_HAL_USART_TEST_SEG
+#ifdef ACTIVE_HAL_USART_TEST_SEG_1
 for (uint8_t u = 0;u<10;u++)
 {
 	USART_send_Array(iUSART1, 0x0, test, txDataLength);
@@ -163,12 +163,30 @@ for (uint8_t u = 0;u<10;u++)
 }
 #endif	
 
+#ifdef ACTIVE_HAL_USART_TEST_SEG_2
+#define MAX_LENGTH_BUFFER 50
+	USART_set_Bytes_to_receive(iUSART1,31);
+	volatile uint8_t rxBuffer[MAX_LENGTH_BUFFER]={0};
+	volatile uint8_t* temp[1];
+	temp[0] = &rxBuffer;
+	volatile uint8_t rxLength;
+	volatile uint8_t rxPtr=0;
+	uint8_t adr = 0;
+#endif
+		
 #ifdef ACTIVE_SLV_DEVICE_SEND_TEST_SEG
 	dataTx(test,txDataLength);
 #endif
-	//Finally freq = 20MHz
-	
+	volatile uint8_t ix = 0;
+	volatile bool checkRx = false;
     while (1){
+		ix++;
+#ifdef ACTIVE_HAL_USART_TEST_SEG_2
+		checkRx = USART_receive_Array(iUSART1,&adr,(uint8_t**)temp,MAX_LENGTH_BUFFER,(uint8_t*)&rxLength);
+		if(rxLength!=0){
+			USART_send_Array(iUSART1, 0x0, rxBuffer,rxLength);
+		}
+#endif
     }
 	return 0;
 }
