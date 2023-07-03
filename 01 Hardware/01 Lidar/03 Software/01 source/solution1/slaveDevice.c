@@ -15,6 +15,7 @@ slaveDevice_t obj ={
 	.txTime=0,
 	.txPtrPosition=0
 };
+//make a lastRxTime here
 static uint8_t temp3 = 0;
 
 #define  VERSION_3 1
@@ -49,7 +50,7 @@ processResult_t dataTx(uint8_t* data,uint16_t length){
 		if(obj.toTxByte<MAX_BYTE_SEND){
 			obj.toTxByte = 0;
 			USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[0])), length);
-			} else{
+		} else{
 			obj.toTxByte-=MAX_BYTE_SEND;
 			obj.txPtrPosition+=MAX_BYTE_SEND;
 			USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[0])), MAX_BYTE_SEND);	
@@ -58,7 +59,25 @@ processResult_t dataTx(uint8_t* data,uint16_t length){
 	return result;
 }
 
+processResult_t dataRx(uint16_t length, uint8_t* data){
+	processResult_t result = NO_ERROR;
+	if(data == NULL){
+		result = NULL_POINTER;
+	} else if(length > obj.rxLenMax){
+		result = LENGTH_EXCESS;
+	} else if (length<obj.rxBuffer){
+		result = LENGTH_EXCESS;
+	}else{
+		uint8_t adr=0;
+		uint8_t temp4 =0;
+		USART_receive_Array(obj.uart,&adr,&obj.rxBuffer,900,(uint8_t*)&temp4);
+		obj.rxPtrPosition += temp4;
+	}
+	return result;
+}
+
 #ifdef VERSION_1
+//zu sendende Byte wird konstant in FIFO jedes Interrupt hinzugefügt 
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
 	if (obj.txTime!=0)
 	{
@@ -88,11 +107,12 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 
 
 #ifdef VERSION_2
+//wie oben aber lässt es die Sendung für TX_Callback function in Interrupt
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
 	uint8_t lengthForSend = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
 	uint8_t sizeOfArray = 1;
 	uint8_t** temp = (uint8_t**)malloc(sizeOfArray*sizeof(uint8_t*));
-	temp[1] = (uint8_t*)&(obj.txBuffer[obj.txPtrPosition]);
+	temp[0] = (uint8_t*)&(obj.txBuffer[obj.txPtrPosition]);
 	data = temp;
 	if (obj.toTxByte<lengthForSend){
 		*length = (uint8_t)(obj.toTxByte);
@@ -110,6 +130,7 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 #endif
 
 #ifdef VERSION_3
+//zu sendende Byte wird angepasst mit den freien Stellen in FIFO. Die Sendung wird hier durchgefuehrt
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
 	temp3 = max_length;
 	uint8_t sendByte = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
@@ -123,7 +144,7 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 			temp2 = obj.txPtrPosition;
 			obj.toTxByte = 0;
 			obj.txPtrPosition = 0;
-			USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[temp2])), temp1);//Nach dieser Funktion, keine Code mehr schreiben, sonst Stack-overflow-Fehler
+			USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[temp2])), temp1);
 		} else
 		{
 			temp2 = obj.txPtrPosition;
@@ -137,7 +158,15 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 #endif
 
 static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
-	obj.rxTime--;
+	for (uint8_t i = 0;i<length;i++){
+		obj.rxBuffer[obj.rxPtrPosition] = data[i];
+	}
+	obj.rxPtrPosition+=length;//TODO to correct later
+	//get last time in system
+	//get time now in system too
+	//time interval = now - last
+	//if time interval > 10*(Byte-sending-time) then set newCommando
+	//Copy to IncommingCommand-Array (will be made later) and reset obj.rxPtrPosition
 	return false;
 }
 
@@ -171,43 +200,6 @@ processResult_t initDev(uint16_t rxLength, uint16_t txLength,uint8_t USARTnumber
 		result = (!slaveUartInit)?NO_ERROR:PROCESS_FAIL;
 		}else{
 		result = LENGTH_INVALID;
-	}
-	return result;
-}
-
-
-
-processResult_t dataRx(uint16_t length, uint8_t* data){
-	processResult_t result = NO_ERROR;
-	if(data == NULL){
-		result = NULL_POINTER;
-		} else if(length > obj.rxLenMax){
-		result = LENGTH_EXCESS;
-		} else{
-		//obj.rxTime = (length/32) + ((length%32)?1:0);
-		uint16_t position = 0;
-		uint16_t rxLength = 0;
-		uint8_t address = 0;
-		uint8_t rxDatalength = 0;
-		volatile uint8_t *temp = (uint8_t*)&(obj.rxBuffer[position]);
-		volatile uint8_t *temp1[] = {temp};
-		result=!USART_receive_Array(obj.uart,&address,(uint8_t**)temp1,obj.rxLenMax,&rxDatalength);
-		while((result)&&(rxDatalength)){
-			rxLength+=rxDatalength;
-			rxDatalength = 0;
-			position+=32;
-			if((rxLength>obj.rxLenMax)||(rxLength>length)){
-				result = LENGTH_EXCESS;
-				break;
-			}
-			temp = (uint8_t*)&(obj.rxBuffer[position]);
-			result=!USART_receive_Array(obj.uart,&address,(uint8_t**)temp1,obj.rxLenMax,&rxDatalength);
-		}
-		if(!result){
-			for (int i = 0;i<length;i++){
-				data[i] = obj.rxBuffer[i];
-			}
-		}
 	}
 	return result;
 }

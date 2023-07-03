@@ -53,7 +53,7 @@ typedef struct {
 	volatile uint16_t txPtrPosition;
 	uint16_t rxLenMax;
 	volatile uint8_t rxBuffer[900];
-	//volatile uint16_t rxPtrPosition;
+	volatile uint16_t rxPtrPosition;
 	uint8_t initState:1;
 	uint8_t crcActive:1;
 }slaveDevice_t;
