@@ -6,7 +6,9 @@
  * Version: 0.1
  */ 
 
-#include "slave_device.h"
+#include "slaveDevice.h"
+
+//Refaktorisierung in Bearbeitung
 
 slaveDevice_t obj ={
 	.initState=OFF,
@@ -59,7 +61,7 @@ processResult_t dataTx(uint8_t* data,uint16_t length){
 	return result;
 }
 
-processResult_t dataRx(uint16_t length, uint8_t* data){
+processResult_t dataRx(uint8_t* data, uint16_t length){
 	processResult_t result = NO_ERROR;
 	if(data == NULL){
 		result = NULL_POINTER;
