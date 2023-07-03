@@ -17,11 +17,13 @@
 #include "lock.h"
 #include "error_list.h"
 #include "ATMegaXX09/USART/USART.h"
+#include "slaveDeviceConfig.h"
  
- //#define SLAVE_STATIC 0
 
 #define MAX_BYTE_SEND 31
 //#define VERSION_1
+
+//Refaktorisierung in Bearbeitung
 
 #ifdef SLAVE_DYNAMIC
 typedef struct {
@@ -49,13 +51,49 @@ typedef struct {
 	volatile uint16_t toRxByte;
 	
 	uint16_t txLenMax;
-	volatile uint8_t txBuffer[900];
+	volatile uint8_t txBuffer[TX_BUFFER_LEN];
 	volatile uint16_t txPtrPosition;
 	uint16_t rxLenMax;
-	volatile uint8_t rxBuffer[900];
+	volatile uint8_t rxBuffer[RX_BUFFER_LEN];
 	volatile uint16_t rxPtrPosition;
 	uint8_t initState:1;
 	uint8_t crcActive:1;
+}slaveDevice_t;
+#endif
+
+#ifndef MAX_BYTE_SEND
+typedef enum{
+	EMPTY,
+	FILLED,
+	FULL,
+}BufferState_t;
+
+typedef processResult_t (*txRxFunc)(uint8_t*, uint16_t) dataTxRxPtr_t;
+
+typedef struct {
+	dataTxRxPtr_t dataTx_p;
+	dataTxRxPtr_t dataRx_p;
+	struct rxUnit{
+		volatile uint8_t rxBuffer[NO_OF_RX_BUFFER][RX_BUFFER_LEN];
+		volatile uint16_t toRxByte;
+		uint16_t rxLenMax;
+		volatile uint16_t readValuePtr;
+		volatile uint8_t readFIFOPtr;
+		volatile uint8_t writeFIFOPtr;
+	}rxObj;
+	struct txUnit{
+		volatile uint8_t txBuffer[TX_BUFFER_LEN];
+		volatile uint16_t toTxByte;
+		uint16_t txLenMax;
+		volatile uint16_t readValuePtr;
+	}txObj;
+	struct flag{
+		uint8_t uart:2;
+		uint8_t initState:1;
+		uint8_t crcActive:1;
+		uint8_t rxBufferState:2;
+		uint8_t msgAvaliable:1;
+	}flagObj;
 }slaveDevice_t;
 #endif
 
@@ -69,6 +107,6 @@ extern processResult_t initDev(uint16_t rxLength, uint16_t txLength,uint8_t USAR
 					bool sync, bool MPCM, uint8_t address, PORTMUX_USARTx_t PortMux);
 
 extern processResult_t dataTx(uint8_t* data, uint16_t length);
-extern processResult_t dataRx(uint16_t length, uint8_t* data);
+extern processResult_t dataRx(uint8_t* data, uint16_t length);
 
 #endif /* SLAVE_H_ */
