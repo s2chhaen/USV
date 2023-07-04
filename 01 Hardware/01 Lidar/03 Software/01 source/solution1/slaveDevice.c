@@ -204,19 +204,6 @@ void deinitDev(){
 	USART_set_receive_Array_callback_fnc(obj.statusObj.uart,NULL);
 	obj.statusObj.uart = 0;
 	obj.statusObj.initState = 0;
-	
-}
-
-
-processResult_t resetDev(){
-	processResult_t result= NO_ERROR;
-	obj.rxLenMax=0;
-	obj.txLenMax=0;
-	#ifdef SLAVE_DYNAMIC
-	free((void*)(obj.rxBuffer));
-	free((void*)(obj.txBuffer));
-	#endif
-	return result;
 }
 
 
