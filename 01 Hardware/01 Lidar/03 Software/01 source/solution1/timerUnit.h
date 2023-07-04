@@ -108,6 +108,7 @@ enum prescaler{
 };
 
 extern void timerInit(uint8_t resolutionUs, uint16_t prescaler);
+extern void setUsartWatcherTimeout(uint8_t usartNr, uint32_t us);
 extern uint8_t waitUs(uint32_t us);
 extern void waitCycle(uint32_t cycle);
 
