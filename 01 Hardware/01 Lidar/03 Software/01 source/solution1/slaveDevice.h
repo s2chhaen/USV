@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <avr/interrupt.h>
+#include <string.h>
 #include "lock.h"
 #include "error_list.h"
 #include "ATMegaXX09/USART/USART.h"
@@ -42,7 +43,8 @@ typedef struct {
 	uint8_t initState:1;
 	uint8_t crcActive:1;
 }slaveDevice_t;
-#else
+#endif
+#ifndef FULL_STRUCT
 typedef struct {
 	uint8_t uart;
 	volatile uint16_t txTime;
@@ -61,39 +63,36 @@ typedef struct {
 }slaveDevice_t;
 #endif
 
-#ifndef MAX_BYTE_SEND
-typedef enum{
-	EMPTY,
-	FILLED,
-	FULL,
-}BufferState_t;
+#ifdef FULL_STRUCT
 
-typedef processResult_t (*txRxFunc)(uint8_t*, uint16_t) dataTxRxPtr_t;
+typedef processResult_t (*txRxData_t)(uint8_t*, uint16_t);
 
 typedef struct {
-	dataTxRxPtr_t dataTx_p;
-	dataTxRxPtr_t dataRx_p;
+	txRxData_t dataTx_p;
+	txRxData_t dataRx_p;
 	struct rxUnit{
 		volatile uint8_t rxBuffer[NO_OF_RX_BUFFER][RX_BUFFER_LEN];
 		volatile uint16_t toRxByte;
-		uint16_t rxLenMax;
-		volatile uint16_t readValuePtr;
+		volatile uint16_t strReadPtr;
+		const uint16_t rxLenMax;
+		const uint8_t fifoLenMax;
 		volatile uint8_t readFIFOPtr;
 		volatile uint8_t writeFIFOPtr;
 	}rxObj;
 	struct txUnit{
 		volatile uint8_t txBuffer[TX_BUFFER_LEN];
 		volatile uint16_t toTxByte;
-		uint16_t txLenMax;
-		volatile uint16_t readValuePtr;
+		volatile uint16_t strReadPtr;
+		const uint16_t txLenMax;
+		
 	}txObj;
-	struct flag{
+	struct status{
 		uint8_t uart:2;
 		uint8_t initState:1;
 		uint8_t crcActive:1;
 		uint8_t rxBufferState:2;
 		uint8_t msgAvaliable:1;
-	}flagObj;
+	}statusObj;
 }slaveDevice_t;
 #endif
 
