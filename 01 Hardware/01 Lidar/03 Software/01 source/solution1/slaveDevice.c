@@ -11,11 +11,23 @@
 //Refaktorisierung in Bearbeitung
 
 slaveDevice_t obj ={
-	.initState=OFF,
-	.crcActive=OFF,
-	.rxTime=0,
-	.txTime=0,
-	.txPtrPosition=0
+	//preinit rxObj
+	.rxObj.toRxByte = 0,
+	.rxObj.strReadPtr = 0,
+	.rxObj.rxLenMax=RX_BUFFER_LEN,
+	.rxObj.fifoLenMax=NO_OF_RX_BUFFER,
+	.rxObj.readFIFOPtr = 0,
+	.rxObj.writeFIFOPtr = 0,
+	//preinit txObj
+	.txObj.toTxByte = 0,
+	.txObj.strReadPtr = 0,
+	.txObj.txLenMax = TX_BUFFER_LEN,
+	//preinit status
+	.statusObj.uart = 0,
+	.statusObj.initState= 0,
+	.statusObj.crcActive= 0,
+	.statusObj.rxBufferState = EMPTY,
+	.statusObj.msgAvaliable = 0
 };
 //make a lastRxTime here
 static uint8_t temp3 = 0;
@@ -36,14 +48,12 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 
 processResult_t dataTx(uint8_t* data,uint16_t length){
 	uint8_t result = NO_ERROR;
-	if(length>obj.txLenMax){
+	if(length>obj.txObj.txLenMax){
 		result = LENGTH_EXCESS;
 	} else if (data==NULL){
 		result = NULL_POINTER;
 	} else{
-		for (int i = 0;i<length;i++){
-			obj.txBuffer[i] = data[i];
-		}
+		//TODO copy data into txBuffer
 		obj.toTxByte = length;
 #ifdef VERSION_1
 		obj.txTime = (length/MAX_BYTE_SEND) + ((length%MAX_BYTE_SEND)?1:0);
@@ -172,39 +182,31 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	return false;
 }
 
+//Refaktorisierung fertig, dynamische Eigenschaft wird vorlaeufig deaktiviert
 processResult_t initDev(uint16_t rxLength, uint16_t txLength,uint8_t USARTnumber, uint32_t baudrate,USART_CHSIZE_t bits, USART_PMODE_t parity,USART_SBMODE_t stopbit,bool sync, bool MPCM, uint8_t address, PORTMUX_USARTx_t PortMux){
 	uint8_t result;
-	if((rxLength!=0)&&(txLength!=0)){
-		if(obj.initState==ON){
-			#ifdef SLAVE_DYNAMIC
-			free((void*)(obj.rxBuffer));
-			free((void*)(obj.txBuffer));
-			#endif
-			} else{
-			obj.initState=ON;
-		}
-		//set maximal length of rx- and tx-Buffer
-		obj.uart = USARTnumber;
-		#ifdef SLAVE_DYNAMIC
-		obj.rxLenMax = rxLength;
-		obj.txLenMax = txLength;
-		obj.rxBuffer = (uint8_t *)malloc(rxLength*sizeof(uint8_t));
-		obj.txBuffer = (uint8_t *)malloc(txLength*sizeof(uint8_t));
-		#else
-		obj.rxLenMax = 900;
-		obj.txLenMax = 900;
-		#endif
-		bool slaveUartInit = USART_init(USARTnumber,baudrate, bits, parity, \
-		stopbit, sync, MPCM,address, PortMux);
-		USART_set_send_Array_callback_fnc(USARTnumber,&callbackTx);
-		//USART_set_receive_Array_callback_fnc(USARTnumber,&callbackRx);
-		USART_set_Bytes_to_receive(USARTnumber,32);
-		result = (!slaveUartInit)?NO_ERROR:PROCESS_FAIL;
-		}else{
-		result = LENGTH_INVALID;
-	}
+	//initialisieren der zwei rx- und tx-Buffer
+	memset((int**)obj.rxObj.rxBuffer,0,sizeof(obj.rxObj.rxBuffer));
+	memset((int*)obj.txObj.txBuffer,0,sizeof(obj.txObj.txBuffer));
+	obj.statusObj.uart = USARTnumber;
+	bool slaveUartInit = USART_init(USARTnumber,baudrate, bits, parity, stopbit, sync, MPCM,address, PortMux);
+	USART_set_send_Array_callback_fnc(USARTnumber,&callbackTx);
+	USART_set_Bytes_to_receive(USARTnumber,31);
+	USART_set_receive_Array_callback_fnc(USARTnumber,&callbackRx);
+	obj.statusObj.initState = (!slaveUartInit)?1:0;
+	result = (!slaveUartInit)?NO_ERROR:PROCESS_FAIL;
 	return result;
 }
+
+void deinitDev(){
+	USART_set_send_Array_callback_fnc(obj.statusObj.uart,NULL);
+	USART_set_Bytes_to_receive(obj.statusObj.uart,0);
+	USART_set_receive_Array_callback_fnc(obj.statusObj.uart,NULL);
+	obj.statusObj.uart = 0;
+	obj.statusObj.initState = 0;
+	
+}
+
 
 processResult_t resetDev(){
 	processResult_t result= NO_ERROR;
