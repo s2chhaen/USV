@@ -15,7 +15,7 @@
 #include "ATMegaXX09/USART/USART.h"
 #include "Math/MinMax.h"
 #include "error_list.h"
-
+#include "slaveDeviceAPI.h"
 
 #define NO_OF_SUBTIMER 2
 #define NO_OF_USART 4
@@ -109,7 +109,9 @@ enum prescaler{
 
 extern void timerInit(uint8_t resolutionUs, uint16_t prescaler);
 extern void setUsartWatcherTimeout(uint8_t usartNr, uint32_t us);
+extern uint32_t getUsartWatcherTimeout(uint8_t usartNr);
 extern uint8_t waitUs(uint32_t us);
 extern void waitCycle(uint32_t cycle);
+extern uint8_t setWatchedObj(slaveDevice_t* input_p);
 
 #endif /* TIMERUNIT_H_ */
