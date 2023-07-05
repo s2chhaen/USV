@@ -19,8 +19,9 @@
 #include "./ATMegaXX09/ATMegaXX09Clock.h"
 #include "./ATMegaXX09/USART/USART.h"
 #include "dataprep.h"
-#include "slave_device.h"
-#include "testConfig.h"
+#include "slaveDevice.h"
+#include "DebugAndTestHeader.h"
+#include "timerUnit.h"
 
 //Header
 #define HEADER_LENGTH 8
