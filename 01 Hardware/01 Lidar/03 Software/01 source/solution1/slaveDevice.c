@@ -28,8 +28,8 @@ slaveDevice_t obj ={
 	.statusObj.uart = 0,
 	.statusObj.initState= 0,
 	.statusObj.crcActive= 0,
-	.statusObj.rxBufferState = NO_FULL,
-	.statusObj.msgAvaliable = 0
+	.statusObj.rxBufferState = EMPTY,
+	.statusObj.nextPhase = 0
 };
 //make a lastRxTime here
 static uint8_t temp3 = 0;
@@ -85,17 +85,17 @@ processResult_t dataRx(uint8_t* data, uint16_t* length){
 		result = NULL_POINTER;
 	} else if((*length) > obj.rxObj.rxLenMax){//checken die Laenge
 		result = LENGTH_EXCESS;
-	} else if ((obj.rxObj.readFIFOPtr == obj.rxObj.writeFIFOPtr)&&(obj.statusObj.rxBufferState == NO_FULL)){//checken leer
+	} else if (obj.statusObj.rxBufferState == EMPTY){//checken leer
 		result = FIFO_EMPTY;
 	}else{
+		while (getUsartWatcherTimeout(obj.statusObj.uart)!=0);//Warte bis rxBuffer total geschrieben wird
+		*length = obj.rxObj.toRxByte[obj.rxObj.readFIFOPtr];
 		for (uint16_t i = 0;i<(*length);i++){
 			data[i] = obj.rxObj.rxBuffer[obj.rxObj.readFIFOPtr][i];
 		}
-		*length = obj.rxObj.toRxByte[obj.rxObj.readFIFOPtr];
-		if(obj.statusObj.rxBufferState == FULL){
-			obj.statusObj.rxBufferState = NO_FULL;
-		}
+		obj.rxObj.toRxByte[obj.rxObj.readFIFOPtr]=0;//Nach dem Lesen wird diese Byte als gelesen markiert
 		obj.rxObj.readFIFOPtr = (obj.rxObj.readFIFOPtr+1)%NO_OF_RX_BUFFER;
+		obj.statusObj.rxBufferState = (obj.rxObj.readFIFOPtr == obj.rxObj.writeFIFOPtr)?EMPTY:FILLED;
 	}
 	return result;
 }
@@ -183,14 +183,11 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 #ifdef ACTIVE_USART_WATCHER
 	uint32_t remainTime = getUsartWatcherTimeout(obj.statusObj.uart);
-#else
-	uint32_t remainTime = 1;
-#endif
-	//checken, ob timeOut erloest wird oder nicht
 	if (remainTime)
 	{
+		//Weiter bis zum Ende der Schreibphase
 		/*wenn die zu empfangenden Daten laenge als die Laenge von rxBuffer,kopieren bis zum Buffer voll, 
-		  die uebrigen werden in neues Buffer kopiert*/
+		  die uebrigen werden weggeworfen*/
 		if ((obj.rxObj.strReadPtr+length)<RX_BUFFER_LEN)
 		{
 			for (uint8_t i = 0;i<length;i++){//TODO benutzt memset hier
@@ -198,41 +195,29 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 			}
 			obj.rxObj.strReadPtr+=length;
 			obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]=obj.rxObj.strReadPtr;
-		}else
-		{
-			length = RX_BUFFER_LEN - obj.rxObj.strReadPtr;
-			for (uint8_t i = 0;i<length;i++){
+		} else{
+			uint8_t temp = RX_BUFFER_LEN-obj.rxObj.strReadPtr;
+			for (uint8_t i = 0;i<temp;i++){//TODO benutzt memset hier
 				obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];
 			}
-			obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr] = RX_BUFFER_LEN;
-			obj.rxObj.strReadPtr = 0;
-			obj.rxObj.writeFIFOPtr=(obj.rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
-			if (obj.rxObj.writeFIFOPtr != obj.rxObj.readFIFOPtr){
-				for (uint8_t i = 0;i<length;i++){
-					obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];
-				}
-				obj.rxObj.strReadPtr+=length;
-				obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]=obj.rxObj.strReadPtr;
-			} else{
-				obj.statusObj.rxBufferState=FULL;
-			}
-		} 
+			obj.rxObj.strReadPtr=0;
+			obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]=RX_BUFFER_LEN;
+		}
+		obj.statusObj.nextPhase = 1;
 	} else{
+		//Anfang der Schreibphase
 		obj.rxObj.strReadPtr = 0;
-		obj.rxObj.writeFIFOPtr=(obj.rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
 		//wenn FIFO nicht voll, dann schreibt, sonst nicht
-		if (obj.rxObj.writeFIFOPtr != obj.rxObj.readFIFOPtr){
+		if (obj.statusObj.rxBufferState!=FULL){
 			for (uint8_t i = 0; i<length; i++){
 				obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];
 			}
 			obj.rxObj.strReadPtr = (obj.rxObj.strReadPtr+length);
 			obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]=obj.rxObj.strReadPtr;
-		} else{
-			obj.statusObj.rxBufferState=FULL;
 		}
 	}
-#ifdef ACTIVE_USART_WATCHER
 	setUsartWatcherTimeout(obj.statusObj.uart,(USART_TIME_PRO_BYTE_US*3));
+#else
 #endif
 	return false;
 }
@@ -260,6 +245,7 @@ processResult_t initDev(uint16_t rxLength, uint16_t txLength,uint8_t USARTnumber
 #ifdef ACTIVE_USART_WATCHER
 	setUsartWatcherTimeout(obj.statusObj.uart,(USART_TIME_PRO_BYTE_US*3));
 #endif
+	setWatchedObj(&obj);
 	result = (!slaveUartInit)?NO_ERROR:PROCESS_FAIL;
 	return result;
 }
@@ -270,23 +256,6 @@ void deinitDev(){
 	USART_set_receive_Array_callback_fnc(obj.statusObj.uart,NULL);
 	obj.statusObj.uart = 0;
 	obj.statusObj.initState = 0;
-}
-
-void echoTest(){
-	volatile uint8_t data[50]={0};
-	volatile uint16_t rxLength = sizeof(data)/sizeof(uint8_t);
-	volatile bool checkReceive = dataRx((uint8_t*)data,(uint16_t*)&rxLength);
-	volatile uint16_t temp1 = 48;
-	volatile uint16_t temp2 = 48;
-	if(checkReceive==NO_ERROR){
-		dataTx((uint8_t*)data,(uint16_t)rxLength);
-		waitUs(1000000);
-		temp1+=rxLength/10;
-		temp2+=rxLength%10;
-		data[0]=temp1;
-		data[1]=temp2;
-		dataTx((uint8_t*)data,2);
-	}
 }
 
 
