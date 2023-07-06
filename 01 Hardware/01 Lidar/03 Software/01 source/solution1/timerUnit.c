@@ -9,10 +9,12 @@
 
 volatile timer_t objTCA ={
 	.adr=&(TCA0),
-	.resolutionUs=3
+	.resolutionUs=1
 };
+
+slaveDevice_t* obj_p;
 volatile tickGenerator counter[NO_OF_SUBTIMER];
-volatile uint32_t usartWatcher[NO_OF_USART] = {0}; 
+volatile uint32_t usartWatcher[NO_OF_USART] = {0};
 
 static void resetAllGenerator(){
 	for (uint8_t i = 0; i<NO_OF_SUBTIMER;i++)
@@ -44,7 +46,31 @@ void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	for (uint8_t i = 0;i<4;i++){
 		usartWatcher[i] = 0;
 	}
-	TCA0_CTRLA_t configCTRLA;//prescaler = 4, enable timer
+	if (prescaler==0)
+	{
+		prescaler = 1;
+	} else if ((prescaler>2)&&(prescaler<4))
+	{
+		prescaler = 4;
+	} else if ((prescaler>4)&&(prescaler<8))
+	{
+		prescaler = 8;
+	} else if ((prescaler>8)&&(prescaler<16))
+	{
+		prescaler = 16;
+	} else if ((prescaler>16)&&(prescaler<64))
+	{
+		prescaler = 64;
+	} else if ((prescaler>64)&&(prescaler<256))
+	{
+		prescaler = 256;
+	} else if ((prescaler>256)&&(prescaler<1024))
+	{
+		prescaler = 1024;
+	} else{
+		prescaler = 1024;
+	}
+	TCA0_CTRLA_t configCTRLA;
 	switch(prescaler){
 		case 1:
 			configCTRLA.valueBitField.CLKSEL = DIV1;
@@ -78,18 +104,36 @@ void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	TCA0_INTCTRL_t configINTCTRL = {.valueBitField.OVF=1};
 	objTCA.resolutionUs = resolutionUs;
 	//Berechnung des Wertes fuer PER
-	objTCA.adr->SINGLE.PER = (uint16_t)(0xff/(CLK_CPU/10000000UL/prescaler*resolutionUs));
+	uint16_t value = (uint16_t)((CLK_CPU/prescaler)*(resolutionUs));
+	uint16_t compensation = (CLK_CPU%prescaler)?1:0;
+	objTCA.adr->SINGLE.PER = (value+compensation);
 	objTCA.initStatus = 1;
 	//immer am Ende
 	objTCA.adr->SINGLE.CTRLA = configCTRLA.value;
 	objTCA.adr->SINGLE.INTCTRL = configINTCTRL.value;//Overflow-Interrupt wird wieder aktiviert 
 }
 
+uint8_t setWatchedObj(slaveDevice_t *input_p){
+	uint8_t result = NO_ERROR;
+	if (input_p!=NULL)
+	{
+		obj_p = input_p;
+	} else{
+		result = NULL_POINTER;
+	}
+	return result;
+}
+
 void setUsartWatcherTimeout(uint8_t usartNr, uint32_t us){
-	usartNr%=4;
+	usartNr=usartNr%4;
 	objTCA.adr->SINGLE.INTCTRL &= ~(1<<0);//Vorlaeufig deaktiviert wird Overflow-Interrupt
 	usartWatcher[usartNr] = us/objTCA.resolutionUs + (us%objTCA.resolutionUs)?1:0;
 	objTCA.adr->SINGLE.INTCTRL |= (1<<0);//Overflow-Interrupt wird wieder aktiviert 
+}
+
+uint32_t getUsartWatcherTimeout(uint8_t usartNr){
+	usartNr=usartNr%4;
+	return usartWatcher[usartNr];
 }
 
 uint8_t waitUs(uint32_t us){
@@ -127,9 +171,16 @@ ISR(TCA0_OVF_vect){
 		if (i<(NO_OF_USART-1)){
 			if (usartWatcher[i]){
 				usartWatcher[i]--;
-			}	
+			} else{
+				//Lese-Flag checken
+				if ((obj_p->rxObj.toRxByte[obj_p->rxObj.writeFIFOPtr] != 0)){
+					//noch nicht gelesen, dann schreibt in naechste leere Zelle, wenn keine leere mehre, dann Voll-Flag gesetzt
+					obj_p->rxObj.writeFIFOPtr = (obj_p->rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
+					obj_p->statusObj.rxBufferState = (obj_p->rxObj.writeFIFOPtr == obj_p->rxObj.readFIFOPtr)?FULL:FILLED;
+				}
+			}
 		}
 	}
-	//objTCA.adr->SINGLE.INTFLAGS &= ~(1<<1);//Loeschen von Interrupt-Flag
+	objTCA.adr->SINGLE.INTFLAGS |=  TCA_SINGLE_OVF_bm;//Loeschen von Interrupt-Flag
 }
 
