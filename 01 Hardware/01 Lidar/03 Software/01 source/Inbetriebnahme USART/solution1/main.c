@@ -8,7 +8,13 @@
 
 #include "main.h"
 
-//Implementation von CRC16-Checksum durch Anpassung Muster-Program in Buch von Hersteller
+
+/**
+ * \brief Bilden einer Checksum-Code für ein beliebiges Datenrahmen
+ * \param input das zu checkende Array (Datenrahmen)
+ * \param length seine Länge
+ * \return uint16_t das Checksum-Code für das eingegebene Array
+ */
 uint16_t checksumCrc16(uint8_t input[], uint32_t length){
 	const uint16_t genPolynom = 0x8005;
 	uint16_t uCrc16=0;
@@ -48,7 +54,11 @@ uint8_t CRC8( uint8_t *addr, uint8_t len){
 	return crc;
 }
 
-uint8_t init(){
+/**
+ * \brief Initalisierung für das ganze Programm
+ * \return uint8_t 0:Fehlerfrei, sonst Fehler
+ */
+static uint8_t init(){
 	uint8_t result;
 	uint8_t prescaler = 1;
 	uint16_t rxLength = 900;
@@ -70,6 +80,11 @@ uint8_t init(){
 #define DATA_LENGTH 100
 static uint8_t data[DATA_LENGTH]={0};
 static uint16_t rxLength = sizeof(data)/sizeof(uint8_t);
+
+/**
+ * \brief empfangen eine Zeichenfolge mit beliebiger Länge und schicke sie mit ihrer Länge zurück 
+ * \return void
+ */
 static void echoTest(){
 	volatile bool checkReceive = dataRx((uint8_t*)data,(uint16_t*)&rxLength)==NO_ERROR;
 	volatile uint16_t temp1 = 48;
