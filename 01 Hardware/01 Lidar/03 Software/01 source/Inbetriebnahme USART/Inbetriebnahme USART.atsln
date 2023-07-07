@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "Source code", "solution1\Source code.cproj", "{DCE6C7E3-EE26-4D79-826B-08594B9AD897}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "USART", "USART", "{BB4A85E9-60B6-4801-A0B1-3F301FB03C40}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution 1", "solution 1", "{BB4A85E9-60B6-4801-A0B1-3F301FB03C40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
