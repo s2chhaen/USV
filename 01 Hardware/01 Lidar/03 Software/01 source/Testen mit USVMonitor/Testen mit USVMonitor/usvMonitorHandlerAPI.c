@@ -84,7 +84,7 @@ uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRxFunc_p, dataTx_t inp
 	
 }
 
-
+//Refaktirisierung in Bearbeitung
 uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev){
 	uint8_t result = NO_ERROR;
 	int8_t index = searchReg(reg);
@@ -97,11 +97,24 @@ uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev){
 	return result;
 }
 
-//empfangen die Daten aus dem Slave-Gerät, inklusiv CRC-Byte
-uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev, uint8_t* output, uint16_t outputLen){
+/**
+ * \brief Empfangen die Daten aus dem Slave-Gerät, inklusiv CRC-Byte
+ * 
+ * \param add die Adresse vom Slave
+ * \param reg die slavespezifische ID (Adresse von Register vom Slave)
+ * \param dev_p der Zeiger zum Handler
+ * \param output der empfangene Datenteil im gelesenen Register zusammen mit der CRC8-Checksum-Datei
+ * \param outputLen die Länge der empfangenen Daten inklusiv der Checksum
+ * 
+ * \return uint8_t 0: keinen Fehler, sonst: Fehler
+ */
+uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
 	uint8_t result = NO_ERROR;
 	if((dev==NULL)||(output==NULL)){
 		result = NULL_POINTER;
+	} else if (dev->initState==0)
+	{
+		result = HANDLER_NOT_INIT;
 	} else{
 		int8_t index = searchReg(reg);
 		if (index!=-1){
