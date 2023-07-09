@@ -110,9 +110,9 @@ uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev){
  */
 uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
 	uint8_t result = NO_ERROR;
-	if((dev==NULL)||(output==NULL)){
+	if((dev_p==NULL)||(output_p==NULL)){
 		result = NULL_POINTER;
-	} else if (dev->initState==0)
+	} else if (dev_p->initState==0)
 	{
 		result = HANDLER_NOT_INIT;
 	} else{
@@ -120,37 +120,39 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 		if (index!=-1){
 			//Bildung von Datenrahmen
 			uuaslReadProtocol_t protocol = readProtocolPrint(add,index);			
-			(*(dev->transmitFunc_p))((uint8_t*)&protocol, sizeof(protocol)/sizeof(uint8_t));
-			(*(dev->waitFunc_p))(100);//Warte 0,1ms
+			(*(dev_p->transmitFunc_p))((uint8_t*)&protocol, sizeof(protocol)/sizeof(uint8_t));
+			(*(dev_p->waitFunc_p))(100);//Warte 0,1ms
+			//Nach dem Request-Senden, empfangen erste 5 Bytes
 			uint8_t rxBuffer[MAX_SIZE_FRAME]={0};
-			uint16_t rxLength=1;
-			//Erst wird ein Byte empfangen lassen
-			(*(dev->receiveFunc_p))(rxBuffer, &rxLength);
+			uint16_t rxLength=5;
+			(*(dev_p->receiveFunc_p))(rxBuffer, &rxLength);
+			(*(dev_p->waitFunc_p))(300);//warte 0,3ms
+			//checken erste Bye
 			if(rxBuffer[0]==0xA2){
 				result = DATA_INVALID;
-			} else{ //Wenn erfolgreich, dann 5 erste Bytes empfangen lassen und checken
+			} else if(rxBuffer[0]==0xA5){ //Wenn erfolgreich, checken weitere 4 Bytes
 				rxLength=5;
-				(*(dev->receiveFunc_p))(rxBuffer, &rxLength);
-				(*(dev->waitFunc_p))(300);//warte 0,3ms
-				//Daten checken
 				//Byte 3 beim Daten lesen: Bei Hinprotokoll 0x4X, bei Rückprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
-				bool checkData = (rxBuffer[0]==0xA5) && (rxBuffer[1]==protocol.header.slaveRegAdd) && \
+				bool checkData = (rxBuffer[1]==protocol.header.slaveRegAdd) && \
 								((rxBuffer[2]^protocol.header.rwaBytes.value[0])==0x40) && \
 								(rxBuffer[3]==protocol.header.rwaBytes.value[1]);
 				if(!checkData){
 					result = PROCESS_FAIL;
 				} else{
-					//empfangen weiter n Byte und noch CRC- und Endbyte
+					//empfangen weitere n Bytes sowieCRC- und Endbyte
 					rxLength = rxBuffer[4]-7+2;//offset im Register = 7
-					(*(dev->receiveFunc_p))(rxBuffer, &rxLength);
-					(*(dev->waitFunc_p))(300);
+					(*(dev_p->receiveFunc_p))(rxBuffer, &rxLength);
+					(*(dev_p->waitFunc_p))(300);
 					if (rxBuffer[rxLength-1]==0xA6){
+						//kopieren aller Datenbytes und deren Checksum-Code
 						rxLength--;
-						memcpy(output,rxBuffer,rxLength);
+						memcpy(output_p,rxBuffer,rxLength);
 					} else {
 						result = PROCESS_FAIL;
 					}
 				}
+			} else{
+				result = PROCESS_FAIL;
 			}
 		} else{
 			result = DATA_INVALID;
