@@ -80,7 +80,7 @@ typedef struct{
 
 typedef bool (*callbackTx_t)(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length);
 typedef bool (*callbackRx_t)(uint8_t adress, uint8_t data[], uint8_t length);
-typedef uint8_t (*dataRx_t)(uint8_t* data, uint16_t length);
+typedef uint8_t (*dataRx_t)(uint8_t* data, uint16_t* length);
 typedef uint8_t (*dataTx_t)(uint8_t* data,uint16_t length);
 typedef void (*wait_t)(uint32_t us);
 
