@@ -87,12 +87,28 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev){
 			.header.rwaBytes.value_bf.rw = UUASL_R_REQ,
 			.header.length = 8,
 			.dataLen = regSet[index].len,
-			.tail.end = 0xA6,
+			.tail.end = 0xA6
 		};
 		protocol.tail.checksum = crc8(&(protocol.dataLen), sizeof(protocol.dataLen), CRC8_POLYNOM);
 		//Bildung von Datenrahmen
 		(*(dev->transmitFunc_p))((uint8_t*)&protocol, sizeof(protocol)/sizeof(uint8_t));
-		(*(dev->waitFunc_p))(10000);//Warte 10ms
+		(*(dev->waitFunc_p))(10000);//Warte 10ms TODO: Implementation der Warte als dynamische Warte statt statische Warte
+		uint8_t rxBuffer[MAX_SIZE_FRAME]={0};
+		uint16_t rxLength=1;
+		(*(dev->receiveFunc_p))(rxBuffer, &rxLength);
+		if(rxBuffer[0]==0xA2){
+			result = DATA_INVALID;
+		} else{
+			rxLength=5;
+			uint16_t temp = ;
+			(*(dev->receiveFunc_p))(rxBuffer, &rxLength);
+			bool checkData = (rxBuffer[0]==0xA5) && \
+							(rxBuffer[1]==protocol.header.slaveRegAdd) && \
+							1 && \
+							1;//TODO mache noch weiter
+		}
+		//TODO zu handeln ist 2 Fälle: Fehler bei der Daten-Kosumer Seite (User-Unit), falsche bei der Daten-Anbieter Seite (Slave Seite)
+		//TODO Lösung: bei der Kosummer Seite: Fehler zurückgeben und bei der Anbieter Seite: wieder senden oder Fehler zurückgeben
 	} else{
 		result = DATA_INVALID;
 	}
