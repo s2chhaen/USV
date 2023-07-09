@@ -11,18 +11,21 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 #include "errorList.h"
-#include "ATMegaXX09/USART/USART.h"
 #include "Math/checksum.h"
 
 #define UUASL_W_REQ 4
 #define UUASL_R_REQ 8
 #define GET_SLAVE_ADD_LOW_PART(a) a&0x00ff
 #define GET_SLAVE_ADD_HIGH_PART(a) a>>8
+#define SET_SLAVE_ADD_LOW_PART(add) (uint8_t)(add&0xff)
+#define SET_SLAVE_ADD_HIGH_PART(add,rw) (uint8_t)((add>>8)|(rw<<4))
 #define MAX_SIZE_FRAME 256
 #define NO_OF_RX_BUFFER 2
 #define MAX_BYTE_SEND 31
 #define CRC8_POLYNOM  0xD5
+#define MAX_RECEIVE_TRY 3
 
 typedef struct{
 	uint8_t start;
@@ -48,7 +51,7 @@ typedef struct
 	uuaslProtocolHeader_t header;
 	uint8_t dataLen;
 	uuaslProtocolTail_t tail;
-}uuaslReadProtocol;
+}uuaslReadProtocol_t;
 
 typedef enum {
 	//Sensorblock
@@ -78,58 +81,23 @@ typedef struct{
 	uint8_t len:4;
 }slaveReg_t;
 
-typedef bool (*callbackTx_t)(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length);
-typedef bool (*callbackRx_t)(uint8_t adress, uint8_t data[], uint8_t length);
+
 typedef uint8_t (*dataRx_t)(uint8_t* data, uint16_t* length);
-typedef uint8_t (*dataTx_t)(uint8_t* data,uint16_t length);
+typedef uint8_t (*dataTx_t)(uint8_t* data, uint16_t length);
 typedef void (*wait_t)(uint32_t us);
 
 typedef struct {
 	dataRx_t receiveFunc_p;
 	dataTx_t transmitFunc_p;
 	wait_t waitFunc_p;
-	struct rxUnit{
-		volatile uint8_t rxBuffer[NO_OF_RX_BUFFER][MAX_SIZE_FRAME];
-		volatile uint16_t rxBufferLen[NO_OF_RX_BUFFER];
-		volatile uint16_t strReadPtr;
-		const uint16_t rxLenMax;
-		const uint8_t fifoLenMax;
-		volatile uint8_t readFIFOPtr;
-		volatile uint8_t writeFIFOPtr;
-	}rxObj;
-	struct txUnit{
-		volatile uint8_t txBuffer[MAX_SIZE_FRAME];
-		volatile uint16_t toTxByte;
-		volatile uint16_t strReadPtr;
-		const uint16_t txLenMax;
-	}txObj;
-	struct status{
-		volatile uint8_t uart:2;
-		uint8_t initState:1;
-		uint8_t crcActive:1;
-		volatile uint8_t rxBufferState:2;//Leer, Belegt, Voll
-		uint8_t nextPhase:1;
-	}statusObj;
+	uint8_t initState:1;
+	uint8_t crc8Polynom;
 }usvMonitorHandler_t;
 
-typedef struct{
-	callbackTx_t tx_p;
-	callbackRx_t rx_p;
-	uint8_t usartNo;
-	uint32_t baudrate;
-	USART_CHSIZE_t bits;
-	USART_PMODE_t parity; 
-	USART_SBMODE_t stopbit;
-	bool sync; bool MPCM; 
-	uint8_t address;
-	PORTMUX_USARTx_t PortMux;
-}usvMonitorConfig_t;
-
 //memcpy verwendet, weil es schneller ist
-uint8_t initDev(usvMonitorHandler_t* dev, usvMonitorConfig_t* config);
+
+uint8_t initDev(dataRx_t inputRX_p,dataTx_t inputTx_p, wait_t inputWait_p);
 uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev);
-uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev);
-//static uint8_t dataTx(uint8_t* data, uint16_t length);
-//static uint8_t dataRx(uint8_t* data, uint16_t length);
+uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev, uint8_t* output, uint16_t outputLen);
 
 #endif /* USERUNIT_H_ */
