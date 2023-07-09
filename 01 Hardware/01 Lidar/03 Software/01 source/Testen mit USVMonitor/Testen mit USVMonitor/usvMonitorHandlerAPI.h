@@ -1,5 +1,5 @@
 /*
- * usvMonitor.h
+ * usvMonitorHandlerAPI.h
  *
  * Created: 7/7/2023 5:25:53 AM
  * Author: Thach
@@ -96,7 +96,7 @@ typedef struct {
 
 //memcpy verwendet, weil es schneller ist
 
-uint8_t initDev(dataRx_t inputRX_p,dataTx_t inputTx_p, wait_t inputWait_p);
+uint8_t initDev(dataRx_t inputRXFunc_p,dataTx_t inputTxFunc_p, wait_t inputWaitFunc_p);
 uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev);
 uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev, uint8_t* output, uint16_t outputLen);
 
