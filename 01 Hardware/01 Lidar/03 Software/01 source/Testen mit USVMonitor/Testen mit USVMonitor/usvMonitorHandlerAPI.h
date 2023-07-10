@@ -12,8 +12,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include "errorList.h"
-#include "Math/checksum.h"
 
 #define UUASL_W_REQ 4
 #define UUASL_R_REQ 8
@@ -22,8 +20,6 @@
 #define SET_SLAVE_ADD_LOW_PART(add) (uint8_t)(add&0xff)
 #define SET_SLAVE_ADD_HIGH_PART(add,rw) (uint8_t)((add>>8)|(rw<<4))
 #define MAX_SIZE_FRAME 256
-#define NO_OF_RX_BUFFER 2
-#define MAX_BYTE_SEND 31
 #define CRC8_POLYNOM  0xD5
 #define MAX_RECEIVE_TRY 3
 
@@ -94,10 +90,9 @@ typedef struct {
 	uint8_t crc8Polynom;
 }usvMonitorHandler_t;
 
-//memcpy verwendet, weil es schneller ist
 
 uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRXFunc_p, dataTx_t inputTxFunc_p, wait_t inputWaitFunc_p, uint8_t inputCrc8);
-uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev);
+uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p,uint16_t length);
 uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen);
 
 #endif /* USVMONITORHANDLER_H_ */
