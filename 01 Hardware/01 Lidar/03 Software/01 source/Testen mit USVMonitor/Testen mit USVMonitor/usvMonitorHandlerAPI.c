@@ -7,6 +7,17 @@
 
 #include "usvMonitorHandlerAPI.h"
 
+//statische Fehlerdefinition
+typedef enum {
+	NO_ERROR,
+	NULL_POINTER,
+	FIFO_EMPTY,
+	FIFO_FULL,
+	DATA_INVALID,
+	PROCESS_FAIL,
+	HANDLER_NOT_INIT
+}processResult_t;
+
 static const slaveReg_t regSet[]={
 	//Sensorblock
 	{SEN_GESB_ADD,1},
@@ -30,6 +41,24 @@ static const slaveReg_t regSet[]={
 	{ESB_CTRL_ADD,1}
 };
 
+static uint8_t crc8Checksum(uint8_t *data, uint16_t len, uint8_t polynom){
+	uint8_t crc = 0;
+	uint8_t mix;
+	uint8_t inbyte;
+	while (len--){
+		inbyte = *data++;
+		for (uint8_t i = 8; i; i--){
+			mix = ( crc ^ inbyte ) & 0x80;
+			crc <<= 1;
+			if (mix){
+				crc ^= polynom;
+			}
+			inbyte <<= 1;
+		}
+	}
+	return crc;
+}
+
 static inline int8_t searchReg(uint16_t reg){
 	int8_t result = -1;
 	for (uint8_t i = 0;i<sizeof(regSet)/sizeof(slaveReg_t);i++)
@@ -42,19 +71,41 @@ static inline int8_t searchReg(uint16_t reg){
 	return result;
 }
 
-//keine Fehler protocol ausgeben, man muss die Gueltigkeit checken
-static inline uuaslReadProtocol_t readProtocolPrint(uint8_t add,uint16_t index){
+//keine Fehler ausgeben, man muss die Gueltigkeit vom Index vor dem Aufrufchecken
+static inline uuaslReadProtocol_t readProtocolPrint(uint16_t add,uint16_t index){
 	uuaslReadProtocol_t result ={
 		.header.start =	0xA5,
 		.header.slaveRegAdd = regSet[index].add,
-		.header.rwaBytes.value_bf.slaveAddH = GET_SLAVE_ADD_HIGH_PART(add),
 		.header.rwaBytes.value_bf.slaveAddL = GET_SLAVE_ADD_LOW_PART(add),
+		.header.rwaBytes.value_bf.slaveAddH = GET_SLAVE_ADD_HIGH_PART(add),
 		.header.rwaBytes.value_bf.rw = UUASL_R_REQ,
 		.header.length = 8,
 		.dataLen = regSet[index].len,
 		.tail.end = 0xA6
 	};
-	result.tail.checksum = crc8(&(result.dataLen), sizeof(result.dataLen), CRC8_POLYNOM);
+	result.tail.checksum = crc8Checksum(&(result.dataLen), sizeof(result.dataLen), CRC8_POLYNOM);
+	return result;
+}
+
+//keine Fehler ausgeben, man muss die Gueltigkeit vom Index vor dem Aufrufchecken
+static inline uuaslProtocolHeader_t writeProtocolHeaderPrint(uint16_t add,uint16_t index){
+	uuaslProtocolHeader_t result = {
+		.start = 0xA5,
+		.slaveRegAdd = regSet[index].add,
+		.rwaBytes.value_bf.slaveAddL = GET_SLAVE_ADD_LOW_PART(add),
+		.rwaBytes.value_bf.slaveAddH = GET_SLAVE_ADD_HIGH_PART(add),
+		.rwaBytes.value_bf.rw = UUASL_W_REQ,
+		.length = regSet[index].len
+	};
+	return result;
+}
+
+//Das Checksum-CRC8-Ergebnis muss davor berechnet werden
+static inline uuaslProtocolTail_t writeProtocolTailPrint(uint8_t crc8){
+	uuaslProtocolTail_t result = {
+		.checksum = crc8,
+		.end = 0xA6
+	};	
 	return result;
 }
 
@@ -84,15 +135,48 @@ uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRxFunc_p, dataTx_t inp
 	
 }
 
-//Refaktirisierung in Bearbeitung
-uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev){
+/**
+ * \brief Zum Schreiben in einem Register im Slave-Gerät
+ * 
+ * \param add Adresse vom Slave
+ * \param reg die slavespezifische ID (Adresse von Register vom Slave)
+ * \param dev_p der Zeiger zum Handler
+ * \param input_p der Zeiger zur Eingabedaten 
+ * \param length die Länge der Eingabe
+ * 
+ * \return uint8_t 0: keinen Fehler, sonst: Fehler
+ */
+uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t length){
 	uint8_t result = NO_ERROR;
 	int8_t index = searchReg(reg);
-	if (index != -1)
-	{
-		//TODO checken read-only
+	if ((dev_p==NULL)|(input_p==NULL)){
+		result = NULL_POINTER;
 	} else{
-		result = DATA_INVALID;
+		if (index != -1){
+			if (regSet[index].len != length){
+				result = DATA_INVALID;
+			} else{
+				uint8_t txProtocol[MAX_SIZE_FRAME];//Gesamtarray
+				uint16_t positionPtr=0;
+				//Header im Gesamtarray kopieren
+				uuaslProtocolHeader_t head = writeProtocolHeaderPrint(add,index);
+				memcpy((&txProtocol[positionPtr]),(uint8_t*)&head,sizeof(head)/sizeof(uint8_t));
+				positionPtr+= sizeof(head)/sizeof(uint8_t);
+				//Inhalt im Gesamtarray kopieren
+				memcpy((&txProtocol[positionPtr]),input_p,length);
+				positionPtr+=length;
+				//Tail im Gesamtarray kopieren
+				uint8_t crc8 = crc8Checksum(input_p,length,dev_p->crc8Polynom);
+				uuaslProtocolTail_t tail = writeProtocolTailPrint(crc8);
+				memcpy((&txProtocol[positionPtr]),(uint8_t*)&tail,sizeof(tail)/sizeof(uint8_t));
+				positionPtr += sizeof(tail)/sizeof(uint8_t);
+				//Senden die Daten
+				result = (*(dev_p->transmitFunc_p))(txProtocol,positionPtr);
+				(*(dev_p->waitFunc_p))(500);//warten 0,5ms für Datensendung
+			}
+		} else{
+			result = DATA_INVALID;
+		}
 	}
 	return result;
 }
@@ -127,7 +211,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 			uint16_t rxLength=5;
 			(*(dev_p->receiveFunc_p))(rxBuffer, &rxLength);
 			(*(dev_p->waitFunc_p))(300);//warte 0,3ms
-			//checken erste Bye
+			//checken erste Byte
 			if(rxBuffer[0]==0xA2){
 				result = DATA_INVALID;
 			} else if(rxBuffer[0]==0xA5){ //Wenn erfolgreich, checken weitere 4 Bytes
