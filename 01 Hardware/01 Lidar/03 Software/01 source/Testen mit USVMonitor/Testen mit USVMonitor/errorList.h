@@ -11,6 +11,7 @@
 
 typedef enum {
 	NO_ERROR,
+	NULL_POINTER,
 	FIFO_EMPTY,
 	FIFO_FULL,
 	DATA_INVALID,
