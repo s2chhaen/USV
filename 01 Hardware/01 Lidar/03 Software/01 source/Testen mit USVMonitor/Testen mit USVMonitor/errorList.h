@@ -15,7 +15,8 @@ typedef enum {
 	FIFO_EMPTY,
 	FIFO_FULL,
 	DATA_INVALID,
-	PROCESS_FAIL
+	PROCESS_FAIL,
+	NO_INIT
 }processResult_t;
 
 #endif /* ERROR_LIST_H_ */
