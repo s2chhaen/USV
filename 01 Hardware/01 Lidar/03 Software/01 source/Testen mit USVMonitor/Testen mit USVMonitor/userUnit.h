@@ -11,13 +11,18 @@
 
 #include <stdint.h>
 #include <avr/io.h>
+#include <string.h>
 #include "errorList.h"
 #include "ATMegaXX09/USART/USART.h"
+#include "ATMegaXX09/FIFO/FIFO.h"
+#include "Math/MinMax.h"
 
-#define RX_BUFFER_LEN 100
-#define TX_BUFFER_LEN 100
-#define NO_OF_RX_BUFFER 2
-#define MAX_BYTE_SEND 31
+#define RX_BUFFER_LEN 50
+#define TX_BUFFER_LEN 50
+#define NO_OF_RX_BUFFER 1
+#define BYTE_RECEIVE_TIME_US 100
+#define NO_OF_TX_BUFFER 1
+#define MAX_USART_FIFO 31
 
 typedef struct{
 	uint8_t usartNo:2;
@@ -34,32 +39,28 @@ typedef struct{
 
 typedef struct{
 	struct rxUnit{
-		volatile uint8_t rxBuffer[NO_OF_RX_BUFFER][RX_BUFFER_LEN];
-		volatile uint16_t toRxByte[NO_OF_RX_BUFFER];
-		volatile uint16_t strReadPtr;
+		volatile uint8_t rxBuffer[RX_BUFFER_LEN];
+		volatile uint16_t toRxByte;
+		volatile uint16_t strPtr;
 		const uint16_t rxLenMax;
-		const uint8_t fifoLenMax;
-		volatile uint8_t readFIFOPtr;
-		volatile uint8_t writeFIFOPtr;
+		const uint16_t usartFIFOMax;
 	}rxObj;
 	struct txUnit{
 		volatile uint8_t txBuffer[TX_BUFFER_LEN];
-		volatile uint16_t toTxByte;
-		volatile uint16_t strReadPtr;
+		volatile int16_t toTxByte;
+		volatile uint16_t strPtr;
 		const uint16_t txLenMax;
-		
+		const uint16_t usartFIFOMax;
 	}txObj;
 	struct status{
 		volatile uint8_t usart:2;
 		uint8_t initState:1;
-		uint8_t crcActive:1;
-		volatile uint8_t rxBufferState:2;//Leer, Belegt, Voll
 	}statusObj;
 }userUnit_t;
 
 extern uint8_t initUserUnit(usartConfig_t config);
 extern uint8_t usartDataTx(uint8_t* data, uint16_t length);
-extern uint8_t usartDataRx(uint8_t* data, uint16_t* length);
+extern uint8_t usartDataRx(uint8_t* data, uint8_t length);
 
 
 
