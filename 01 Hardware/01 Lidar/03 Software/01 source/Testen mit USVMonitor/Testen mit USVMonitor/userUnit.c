@@ -125,10 +125,9 @@ uint8_t initUserUnit(usartConfig_t config){
 	uint8_t usartInit = USART_init(config.usartNo,config.baudrate, config.usartChSize, config.parity, \
 									config.stopbit, config.sync, config.mpcm,config.address, config.portMux);
 	uu.statusObj.usart = config.usartNo;
-	uu.statusObj.initState = usartInit?NO_ERROR:1;
+	uu.statusObj.initState = (!usartInit)?1:0;
 	USART_set_send_Array_callback_fnc(config.usartNo,&usartCallbackTx);
 	USART_set_receive_Array_callback_fnc(config.usartNo,&usartCallbackRx);
-	USART_set_Bytes_to_receive(config.usartNo, config.rxByte);
 	result = usartInit?NO_ERROR:PROCESS_FAIL;
 	return result;
 }
