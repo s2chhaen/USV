@@ -35,7 +35,6 @@ typedef struct{
 	uint8_t mpcm:1;
 	uint8_t address;
 	uint8_t portMux:2;
-	uint8_t rxByte:5;
 }usartConfig_t;
 
 typedef struct{
