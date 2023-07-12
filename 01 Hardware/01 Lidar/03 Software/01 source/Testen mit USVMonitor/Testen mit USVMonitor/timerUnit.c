@@ -107,8 +107,8 @@ void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	objTCA.adr->SINGLE.INTCTRL = configINTCTRL.value;//Overflow-Interrupt wird wieder aktiviert 
 }
 
-uint8_t waitUs(uint32_t us){
-	uint8_t result = NO_ERROR;
+void waitUs(uint32_t us){
+	//uint8_t result = NO_ERROR;
 	int8_t i = 0;
 	i = searchFreeGenerator();//suchen die freie Stopuhr
 	//Falls gefunden, macht weiter sonst gibt Fehler zurueck
@@ -119,9 +119,9 @@ uint8_t waitUs(uint32_t us){
 		objTCA.adr->SINGLE.INTCTRL |= (1<<0);//Overflow-Interrupt wird wieder aktiviert 
 		while (counter[i].value);
 	} else{
-		result = FIFO_FULL;
+		//result = FIFO_FULL;
 	}
-	return result;
+	//return result;
 }
 
 void waitCycle(uint32_t cycle){
