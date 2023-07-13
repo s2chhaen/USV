@@ -129,7 +129,7 @@ void waitCycle(uint32_t cycle){
 }
 
 ISR(TCA0_OVF_vect){
-	uint8_t loopMax = MAX(NO_OF_SUBTIMER,NO_OF_USART);
+	uint8_t loopMax = NO_OF_SUBTIMER;
 	for (int i = 0; i<loopMax;i++){
 		if (counter[i].lock){
 				counter[i].value--;
