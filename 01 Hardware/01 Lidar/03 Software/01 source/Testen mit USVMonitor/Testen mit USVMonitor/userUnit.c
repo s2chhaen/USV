@@ -21,39 +21,25 @@ userUnit_t uu={
 	//statusObj
 	.statusObj.usart = 0,
 	.statusObj.initState = 0,
+	.statusObj.send = 0,
+	.statusObj.receive = 0
 };
 
 static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, uint8_t max_length){
-	static uint8_t firstCall = 1;
-	if (firstCall){
-		if (uu.txObj.toTxByte<=uu.rxObj.usartFIFOMax){
-			uu.txObj.toTxByte = 0;
-		} else{
-			uu.txObj.toTxByte -= uu.rxObj.usartFIFOMax;
-			uu.txObj.strPtr += uu.rxObj.usartFIFOMax;
-		}
-		firstCall--;
-	}
-	
-	if (uu.txObj.toTxByte){
-		uint8_t *temp1 = (uint8_t*)&(uu.txObj.txBuffer[uu.txObj.strPtr]);
-		data = &temp1;
-		if (uu.txObj.toTxByte<max_length){
-			//Dieser Fall ist nur dafür, wenn man High and Low-Byte von TXDATA von USART verwendet, sonst uu.txObj.toTxByte>=max_length immer
-			*length = (uint8_t)uu.txObj.toTxByte;
-			uu.txObj.toTxByte = 0;
-		} else{
-			*length = (uint8_t)max_length;
-			uu.txObj.toTxByte-=max_length;
-			uu.txObj.strPtr +=max_length;
-		}
-	} else{ //wenn kein Byte mehr in txBuffer zur Füllung in USART-FIFO
+	if (uu.txObj.toTxByte == 0){
+		uu.statusObj.send = 0;
 		uu.txObj.strPtr = 0;//Reset des Zeigers vom Buffer
-	}
-	
-	//wenn usartFIFO total leer ist
-	if (max_length==uu.rxObj.usartFIFOMax){
-		firstCall = 1;
+	} else{
+		*data = (uint8_t*)(&(uu.txObj.txBuffer[uu.txObj.strPtr]));
+		if (uu.txObj.toTxByte<max_length){
+			*length = (uu.txObj.toTxByte);
+			uu.txObj.toTxByte = 0;
+			uu.txObj.strPtr = 0;
+		} else{
+			*length = max_length;
+			uu.txObj.toTxByte -= max_length;
+			uu.txObj.strPtr += max_length;
+		}
 	}
 	return true;
 }
@@ -85,12 +71,17 @@ uint8_t usartDataTx(uint8_t* data, uint16_t length){
 		result = NO_INIT;
 	} else{
 		while(uu.txObj.toTxByte!=0);
-		memcpy((uint8_t*)uu.txObj.txBuffer,data,length);
+		uu.statusObj.send = 1;
 		uu.txObj.toTxByte = length;
-		if (length<=uu.rxObj.usartFIFOMax){
-			USART_send_Array(uu.statusObj.usart, 0, (uint8_t*)(&(uu.txObj.txBuffer)), length);
+		memcpy((uint8_t*)uu.txObj.txBuffer,data,length);
+		if (length<=uu.txObj.usartFIFOMax){
+			uu.txObj.toTxByte = 0;
+			uu.txObj.strPtr += length;
+			USART_send_Array(uu.statusObj.usart, 0, (uint8_t*)(uu.txObj.txBuffer), length);
 		} else{
-			USART_send_Array(uu.statusObj.usart, 0, (uint8_t*)(&(uu.txObj.txBuffer)), uu.rxObj.usartFIFOMax);
+			uu.txObj.toTxByte -= uu.txObj.usartFIFOMax;
+			uu.txObj.strPtr += uu.txObj.usartFIFOMax;
+			USART_send_Array(uu.statusObj.usart, 0, (uint8_t*)(uu.txObj.txBuffer), uu.txObj.usartFIFOMax);
 		}
 	}
 	return result;
@@ -122,7 +113,7 @@ uint8_t usartDataRx(uint8_t* data, uint8_t length){
 
 uint8_t initUserUnit(usartConfig_t config){
 	uint8_t result = NO_ERROR;
-	uint8_t usartInit = USART_init(config.usartNo,config.baudrate, config.usartChSize, config.parity, \
+	volatile uint8_t usartInit = USART_init(config.usartNo,config.baudrate, config.usartChSize, config.parity, \
 									config.stopbit, config.sync, config.mpcm,config.address, config.portMux);
 	uu.statusObj.usart = config.usartNo;
 	uu.statusObj.initState = (!usartInit)?1:0;
