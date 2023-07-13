@@ -17,9 +17,10 @@
 #include "ATMegaXX09/FIFO/FIFO.h"
 #include "Math/MinMax.h"
 #include "timerUnit.h"
+#include <stdlib.h>
 
 #define RX_BUFFER_LEN 50
-#define TX_BUFFER_LEN 50
+#define TX_BUFFER_LEN 70
 #define NO_OF_RX_BUFFER 1
 #define BYTE_RECEIVE_TIME_US 100
 #define NO_OF_TX_BUFFER 1
@@ -37,17 +38,19 @@ typedef struct{
 	uint8_t portMux:2;
 }usartConfig_t;
 
+#define DEBUG_1 0
+
 typedef struct{
 	struct rxUnit{
 		volatile uint8_t rxBuffer[RX_BUFFER_LEN];
-		volatile uint16_t toRxByte;
+		volatile uint8_t toRxByte;
 		volatile uint16_t strPtr;
 		const uint16_t rxLenMax;
 		const uint16_t usartFIFOMax;
 	}rxObj;
 	struct txUnit{
 		volatile uint8_t txBuffer[TX_BUFFER_LEN];
-		volatile int16_t toTxByte;
+		volatile uint8_t toTxByte;
 		volatile uint16_t strPtr;
 		const uint16_t txLenMax;
 		const uint16_t usartFIFOMax;
@@ -55,6 +58,8 @@ typedef struct{
 	struct status{
 		volatile uint8_t usart:2;
 		uint8_t initState:1;
+		volatile uint8_t send:1;
+		volatile uint8_t receive:1;
 	}statusObj;
 }userUnit_t;
 
