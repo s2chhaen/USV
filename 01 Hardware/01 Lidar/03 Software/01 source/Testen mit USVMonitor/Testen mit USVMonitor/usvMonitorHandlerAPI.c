@@ -128,6 +128,7 @@ uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRxFunc_p, dataTx_t inp
 		dev_p->transmitFunc_p = inputTxFunc_p;
 		dev_p->waitFunc_p = inputWaitFunc_p;
 		dev_p->crc8Polynom = inputCrc8;
+		dev_p->initState = 1;
 	} else{
 		result = NULL_POINTER;
 	}
@@ -202,14 +203,15 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 	} else{
 		int8_t index = searchReg(reg);
 		if (index!=-1){
-			uint8_t rxBuffer[MAX_SIZE_FRAME]={0};
+			volatile uint8_t rxBuffer[MAX_SIZE_FRAME]={0};
 			uint16_t rxLength=5;
 			//Bildung von Datenrahmen
-			uuaslReadProtocol_t protocol = readProtocolPrint(add,index);			
-			(*(dev_p->transmitFunc_p))((uint8_t*)&protocol, sizeof(protocol)/sizeof(uint8_t));
+			volatile uuaslReadProtocol_t protocol = readProtocolPrint(add,index);
+			memcpy((uint8_t*)rxBuffer,(uint8_t*)&protocol,sizeof(protocol)/sizeof(uint8_t));			
+			(*(dev_p->transmitFunc_p))((uint8_t*)rxBuffer, sizeof(protocol)/sizeof(uint8_t));
 			(*(dev_p->waitFunc_p))(100);//Warte 0,1ms
 			//Nach dem Request-Senden, empfangen erste 5 Bytes
-			(*(dev_p->receiveFunc_p))(rxBuffer, rxLength);
+			(*(dev_p->receiveFunc_p))((uint8_t*)rxBuffer, rxLength);
 			(*(dev_p->waitFunc_p))(300);//warte 0,3ms
 			//checken erste Byte
 			if(rxBuffer[0]==0xA2){
@@ -225,12 +227,12 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 				} else{
 					//empfangen weitere n Bytes sowieCRC- und Endbyte
 					rxLength = rxBuffer[4]-7+2;//offset im Register = 7
-					(*(dev_p->receiveFunc_p))(rxBuffer, rxLength);
+					(*(dev_p->receiveFunc_p))((uint8_t*)rxBuffer, rxLength);
 					(*(dev_p->waitFunc_p))(300);
 					if (rxBuffer[rxLength-1]==0xA6){
 						//kopieren aller Datenbytes und deren Checksum-Code
 						rxLength--;
-						memcpy(output_p,rxBuffer,rxLength);
+						memcpy(output_p,(uint8_t*)rxBuffer,rxLength);
 					} else {
 						result = PROCESS_FAIL;
 					}
