@@ -125,7 +125,7 @@ void waitUs(uint32_t us){
 }
 
 void waitCycle(uint32_t cycle){
-	for (uint32_t i = 0; i<cycle;i++);
+	for (uint32_t i = 0; i<cycle*5;i++);
 }
 
 ISR(TCA0_OVF_vect){
