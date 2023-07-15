@@ -13,8 +13,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#define UUASL_W_REQ 4
-#define UUASL_R_REQ 8
+#define UUASL_W_REQ 8
+#define UUASL_R_REQ 4
 #define GET_SLAVE_ADD_LOW_PART(a) a&0x00ff
 #define GET_SLAVE_ADD_HIGH_PART(a) a>>8
 #define SET_SLAVE_ADD_LOW_PART(add) (uint8_t)(add&0xff)
@@ -89,6 +89,8 @@ typedef struct {
 	uint8_t initState:1;
 	uint8_t crc8Polynom;
 }usvMonitorHandler_t;
+
+//extern const slaveReg_t regSet[];
 
 
 uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRXFunc_p, dataTx_t inputTxFunc_p, wait_t inputWaitFunc_p, uint8_t inputCrc8);
