@@ -8,15 +8,47 @@
 #include <avr/io.h>
 #include "main.h"
 
+#define ERR1 0
+#define ERR2 1
+#define ON 1
+#define OFF 0
+#define INPUT_DISABLE 0x04
+
+static void ioInit(){
+	PORTD.DIR |= (1<<ERR1);
+	PORTD.PIN0CTRL |= (INPUT_DISABLE<<0);
+}
+
+static void setErr1State(uint8_t state){
+	switch(state){
+		case OFF:
+			PORTD.OUT &= ~(1<<ERR1);
+			break;
+		case ON:
+			PORTD.OUT |= (1<<ERR1);
+			break;
+		default:
+			PORTD.OUT &= ~(1<<ERR1);
+			break;	
+	};
+}
+
+
 int main(void)
 {
+	/************************************************************************/
+	/* Initialisierung aller notwendigen Module                                                                     */
+	/************************************************************************/
 	//Systemclock init
 	uint8_t prescalerClk=1;
 	init_Core_CLK(INTERN_CLK,prescalerClk);
 	//Stopuhr init
-	//uint8_t timerResolutionUs = 1;
-	//uint16_t timerPrescaler = 1024;
-	//timerInit(timerResolutionUs,timerPrescaler);
+	uint8_t timerResolutionUs = 1;
+	uint16_t timerPrescaler = 1024;
+	timerInit(timerResolutionUs,timerPrescaler);
+	//IO-Pin für Fehleranzeige Init
+	
+	ioInit();
 	//Benutzereinheit init
 	usartConfig_t config= {
 		.usartNo= iUSART1,
@@ -30,28 +62,78 @@ int main(void)
 		.portMux = PORTMUX_USARTx_DEFAULT_gc,
 	};
 	initUserUnit(config);
-	//User-Unit and Slave API
-	usvMonitorHandler_t handler;
-	initDev(&handler,usartDataRx,usartDataTx,waitUs,0xD5);
-	//volatile bool a = USART_init(iUSART1,250000,USART_CHSIZE_8BIT_gc,USART_PMODE_ODD_gc,USART_SBMODE_1BIT_gc,0,0,0,PORTMUX_USARTx_DEFAULT_gc);
-	//USART_set_send_Array_callback_fnc(iUSART1,&usartCallbackTx1);
-	//USART_set_receive_Array_callback_fnc(iUSART1,&usartCallbackRx1);
-	//USART_set_Bytes_to_receive(iUSART1,1);
-	sei();
-	/** Testbeginn **/
-#ifdef TEST01
-	//Anfrage des GESB
-	//uint8_t add = 0;
-	//uint8_t reg = SEN_GESB_ADD;
-	//uint8_t output[10];
-	//uint8_t rxLen = 1;
-	//getData(add,reg,&handler,output,rxLen);
+	setErr1State(OFF);
 	//waitUs(100);
-	//reg = SEN_LONGNITUDE_ADD;
-	//rxLen = 4;
-	//getData(add,reg,&handler,output,rxLen);
+	//User-Unit and Slave API Handler Init
+	usvMonitorHandler_t handler;
+	initDev(&handler,usartDataRx,usartDataTx,waitCycle,0xD5);
+	sei();//globales Interrupt aktiviert
+	
+	/************************************************************************/
+	/* Testbeginn                                                                     */
+	/************************************************************************/
+	
+//#define  LED_ERR1_TEST 1
+#ifdef LED_ERR1_TEST
+	setErr1State(ON);
+#endif	
+	
+#define TEST01 1
+
+#ifdef TEST01
+	uint8_t error1 = NO_ERROR;
+	//Lesen in Registern
+	const uint8_t add = 0;
+	uint16_t reg = SEN_GESB_ADD;
+	uint8_t output[25];
+	uint8_t rxLen = 1;
+	error1 = getData(add,reg,&handler,output,rxLen);
+	waitUs(5);
+	if (error1!=NO_ERROR){
+		setErr1State(ON);
+		for (int i = 0;i<60;i++){
+			waitUs(1000000);//Warte 1s
+		}
+		setErr1State(OFF);
+	} else{
+		setErr1State(OFF);
+		reg = SEN_LONGNITUDE_ADD;
+		rxLen = 4;
+		getData(add,reg,&handler,output,rxLen);
+		waitUs(5);
+		reg = SEN_LATITUDE_ADD;
+		rxLen = 4;
+		getData(add,reg,&handler,output,rxLen);
+		waitUs(5);
+		reg = SEN_SATFIX_ADD;
+		rxLen = 1;
+		getData(add,reg,&handler,output,rxLen);
+		waitUs(5);
+		reg = SEN_GPS_VEL_ADD;
+		rxLen = 2;
+		getData(add,reg,&handler,output,rxLen);
+		waitUs(5);
+		reg = SEN_COURSE_ANGLE_ADD;
+		rxLen = 2;
+		getData(add,reg,&handler,output,rxLen);
+		waitUs(5);
+		reg = SEN_TIMESTAMP_ADD;
+		rxLen = 3;
+		getData(add,reg,&handler,output,rxLen);
+		waitUs(5);
+		reg = REF_DRV_CTRL_REF_A_ADD;
+		rxLen = 8;
+		getData(add,reg,&handler,output,rxLen);
+		waitUs(5);
+	}
+	//Schreiben in Registern
+	uint8_t input[20]={0,1,2,3,4,5,6,7};
+	uint8_t txLen = 8;
+	reg = REF_DRV_CTRL_REF_A_ADD;
+	setData(add,reg,&handler,input,txLen);
 #endif
-#define TEST02 1
+
+//#define TEST02 1
 
 #ifdef TEST02
 #define LENGTH_TEST 62
@@ -62,12 +144,9 @@ int main(void)
 	uint8_t length = LENGTH_TEST;
 	(*(handler.transmitFunc_p))(test1,length);
 	//USART_send_Array(iUSART1,0,test1,length);
-	//a = 0;
 #endif
     /* Replace with your application code */
-    while (1) 
-    {
-		//a++;
+    while (1){
     }
 }
 
