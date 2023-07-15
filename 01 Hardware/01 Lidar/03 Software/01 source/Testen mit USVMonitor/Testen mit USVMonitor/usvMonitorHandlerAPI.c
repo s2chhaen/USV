@@ -79,6 +79,8 @@ static inline uuaslReadProtocol_t readProtocolPrint(uint16_t add,uint16_t index)
 		.header.rwaBytes.value_bf.slaveAddL = GET_SLAVE_ADD_LOW_PART(add),
 		.header.rwaBytes.value_bf.slaveAddH = GET_SLAVE_ADD_HIGH_PART(add),
 		.header.rwaBytes.value_bf.rw = UUASL_R_REQ,
+		//.header.rwaBytes.value[0] = (UUASL_R_REQ<<4)|((add&0xf00)>>8),
+		//.header.rwaBytes.value[1] = (add&0x0ff),
 		.header.length = 8,
 		.dataLen = regSet[index].len,
 		.tail.end = 0xA6
@@ -173,6 +175,12 @@ uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 				positionPtr += sizeof(tail)/sizeof(uint8_t);
 				//Senden die Daten
 				result = (*(dev_p->transmitFunc_p))(txProtocol,positionPtr);
+				(*(dev_p->waitFunc_p))(700);//warten 0,5ms für Datensendung
+				positionPtr = 1;
+				(*(dev_p->receiveFunc_p))((uint8_t*)txProtocol, positionPtr);
+				if (txProtocol[0]!=0xA1){
+					result = PROCESS_FAIL;
+				}
 				(*(dev_p->waitFunc_p))(500);//warten 0,5ms für Datensendung
 			}
 		} else{
@@ -207,17 +215,18 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 			uint16_t rxLength=5;
 			//Bildung von Datenrahmen
 			volatile uuaslReadProtocol_t protocol = readProtocolPrint(add,index);
+			uint8_t len = protocol.dataLen;
 			memcpy((uint8_t*)rxBuffer,(uint8_t*)&protocol,sizeof(protocol)/sizeof(uint8_t));			
 			(*(dev_p->transmitFunc_p))((uint8_t*)rxBuffer, sizeof(protocol)/sizeof(uint8_t));
-			(*(dev_p->waitFunc_p))(100);//Warte 0,1ms
+			(*(dev_p->waitFunc_p))(800);//Warte 0,8ms
+#ifndef _DEBUG_SEG_1
 			//Nach dem Request-Senden, empfangen erste 5 Bytes
 			(*(dev_p->receiveFunc_p))((uint8_t*)rxBuffer, rxLength);
-			(*(dev_p->waitFunc_p))(300);//warte 0,3ms
+			(*(dev_p->waitFunc_p))((len+7)*95);//warte gleich die Länge des Gesamtprotokolls multipliziert mit der Zeichenperiode
 			//checken erste Byte
 			if(rxBuffer[0]==0xA2){
 				result = DATA_INVALID;
 			} else if(rxBuffer[0]==0xA5){ //Wenn erfolgreich, checken weitere 4 Bytes
-				rxLength=5;
 				//Byte 3 beim Daten lesen: Bei Hinprotokoll 0x4X, bei Rückprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
 				bool checkData = (rxBuffer[1]==protocol.header.slaveRegAdd) && \
 								((rxBuffer[2]^protocol.header.rwaBytes.value[0])==0x40) && \
@@ -243,6 +252,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 		} else{
 			result = DATA_INVALID;
 		}
+#endif
 	}
 	return result;
 }
