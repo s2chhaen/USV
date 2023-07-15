@@ -21,8 +21,8 @@
 
 typedef struct sFIFO_td
 {
-	uint8_t p_read :_FIFO_pot;
-	uint8_t p_write :_FIFO_pot;
+	volatile uint8_t p_read :_FIFO_pot;
+	volatile uint8_t p_write :_FIFO_pot;
 	uint8_t p_bit_read :4;
 	const uint8_t FIFO_max;
 	union uFIFO_t
