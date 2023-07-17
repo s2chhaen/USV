@@ -66,6 +66,7 @@ int main(void)
 	//waitUs(100);
 	//User-Unit and Slave API Handler Init
 	usvMonitorHandler_t handler;
+	//waitCycle
 	initDev(&handler,usartDataRx,usartDataTx,waitCycle,0xD5);
 	sei();//globales Interrupt aktiviert
 	
@@ -84,9 +85,11 @@ int main(void)
 	uint8_t error1 = NO_ERROR;
 	//Lesen in Registern
 	const uint8_t add = 0;
-	uint16_t reg = SEN_GESB_ADD;
+	uint16_t reg = 0;
+	uint8_t rxLen = 0;
 	uint8_t output[25];
-	uint8_t rxLen = 1;
+	reg = REF_DRV_CTRL_REF_A_ADD;
+	rxLen = 8;
 	error1 = getData(add,reg,&handler,output,rxLen);
 	waitUs(5);
 	if (error1!=NO_ERROR){
@@ -121,8 +124,8 @@ int main(void)
 		rxLen = 3;
 		getData(add,reg,&handler,output,rxLen);
 		waitUs(5);
-		reg = REF_DRV_CTRL_REF_A_ADD;
-		rxLen = 8;
+		reg = SEN_GESB_ADD;
+		rxLen= 1;
 		getData(add,reg,&handler,output,rxLen);
 		waitUs(5);
 	}
