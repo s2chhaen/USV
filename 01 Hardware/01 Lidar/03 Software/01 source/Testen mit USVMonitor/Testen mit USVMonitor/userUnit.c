@@ -46,8 +46,7 @@ static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, u
 
 static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	uu.rxObj.toRxByte -= length;
-	uint8_t* temp= (uint8_t*)&(uu.rxObj.rxBuffer[uu.rxObj.strPtr]);
-	memcpy(temp,data,length);
+	memcpy((uint8_t*)&(uu.rxObj.rxBuffer[uu.rxObj.strPtr]),data,length);
 	uu.rxObj.strPtr += length;
 	return true;
 }
@@ -83,6 +82,7 @@ uint8_t usartDataTx(uint8_t* data, uint16_t length){
 			uu.txObj.strPtr += uu.txObj.usartFIFOMax;
 			USART_send_Array(uu.statusObj.usart, 0, (uint8_t*)(uu.txObj.txBuffer), uu.txObj.usartFIFOMax);
 		}
+		//while(uu.txObj.toTxByte);
 	}
 	return result;
 }
@@ -95,17 +95,11 @@ uint8_t usartDataRx(uint8_t* data, uint8_t length){
 		result = DATA_INVALID;
 	} else{
 		uint8_t usartNo = uu.statusObj.usart;
-		//uint8_t add = 0;
 		uu.rxObj.toRxByte = length;
 		USART_set_Bytes_to_receive(usartNo,length);
-		waitUs(BYTE_RECEIVE_TIME_US*length);
-		//uint8_t temp = length;
-		//USART_receive_Array(usartNo,&add,data,length,&length);
-		if (uu.rxObj.toRxByte != 0){
-			result = PROCESS_FAIL;
-		} else{
-			memcpy((uint8_t*)data,(uint8_t*)uu.rxObj.rxBuffer,length);
-		}
+		//waitCycle(length*BYTE_RECEIVE_TIME_US);
+		while (uu.rxObj.toRxByte);
+		memcpy((uint8_t*)data,(uint8_t*)uu.rxObj.rxBuffer,length);
 		uu.rxObj.strPtr = 0;
 	}
 	return result;
