@@ -228,7 +228,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 			memcpy((uint8_t*)tempBuffer,(uint8_t*)&protocol,sizeof(protocol)/sizeof(uint8_t));			
 			(*(dev_p->transmitFunc_p))((uint8_t*)tempBuffer, sizeof(protocol)/sizeof(uint8_t));
 			(*(dev_p->waitFunc_p))(800);//Warte 0,8ms
-#ifndef DEBUG_2
+//#ifndef DEBUG_2
 			//Nach dem Request-Senden, empfangen erste Byte
 			(*(dev_p->receiveFunc_p))((uint8_t*)tempBuffer, rxLength);
 			(*(dev_p->waitFunc_p))(500);
@@ -237,10 +237,9 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 				result = DATA_INVALID;
 			} else if(tempBuffer[0]==0xA5){ //Wenn erfolgreich, checken weitere 4 Bytes
 				//Byte 4 beim Daten lesen: Bei Hinprotokoll 0x4X, bei Rückprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
-				bool checkData = (tempBuffer[1]==protocol.header.slaveRegAdd) && \
-								((tempBuffer[3]^protocol.header.rwaBytes.value[1])==0x40) && \
-								(tempBuffer[2]==protocol.header.rwaBytes.value[0]);
-				if(!checkData){
+				bool checkByte2 = (tempBuffer[1]==protocol.header.slaveRegAdd);
+				bool checkByte34 = ((tempBuffer[3]^protocol.header.rwaBytes.value[1])==0x40) && (tempBuffer[2]==protocol.header.rwaBytes.value[0]);
+				if(!(checkByte2&&checkByte34)){
 					result = PROCESS_FAIL;
 				} else{
 					//empfangen weitere n Datenbytes sowie 1 CRC8- und 1 Endbyte
@@ -259,7 +258,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 			} else{
 				result = PROCESS_FAIL;
 			}
-#endif
+//#endif
 		} else{
 			result = DATA_INVALID;
 		}
