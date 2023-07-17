@@ -87,6 +87,7 @@ typedef struct {
 	dataTx_t transmitFunc_p;
 	wait_t waitFunc_p;
 	uint8_t initState:1;
+	uint8_t dynamicWait:1;
 	uint8_t crc8Polynom;
 }usvMonitorHandler_t;
 
