@@ -18,6 +18,11 @@ typedef enum {
 	HANDLER_NOT_INIT
 }processResult_t;
 
+volatile bool checkByteReg = false;
+volatile bool checkByteAddAndRw = false;
+volatile uuaslReadProtocol_t protocol;
+volatile uint8_t tempBuffer[MAX_SIZE_FRAME]={0};
+
 static const slaveReg_t regSet[]={
 	//Sensorblock
 	{SEN_GESB_ADD,1},
@@ -135,6 +140,7 @@ uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRxFunc_p, dataTx_t inp
 		dev_p->waitFunc_p = inputWaitFunc_p;
 		dev_p->crc8Polynom = inputCrc8;
 		dev_p->initState = 1;
+		dev_p->dynamicWait = (inputWaitFunc_p==NULL)?1:0;
 	} else{
 		result = NULL_POINTER;
 	}
@@ -215,7 +221,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 	} else{
 		int8_t index = searchReg(reg);
 		if (index!=-1){
-			volatile uint8_t tempBuffer[MAX_SIZE_FRAME]={0};
+			
 			uint16_t rxLength=1;
 			//Bildung von Datenrahmen
 			/**
@@ -223,29 +229,32 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 			 * Aufgrund vom little-endian System werden die Daten im Protokoll (Egal Hin- oder 
 			 * Rückprotokoll) vertauscht
 			 */
-			volatile uuaslReadProtocol_t protocol = readProtocolPrint(add,index);
-			uint8_t len = protocol.dataLen;
+			protocol = readProtocolPrint(add,index);
 			memcpy((uint8_t*)tempBuffer,(uint8_t*)&protocol,sizeof(protocol)/sizeof(uint8_t));			
 			(*(dev_p->transmitFunc_p))((uint8_t*)tempBuffer, sizeof(protocol)/sizeof(uint8_t));
-			(*(dev_p->waitFunc_p))(800);//Warte 0,8ms
+			if (!dev_p->dynamicWait){
+				(*(dev_p->waitFunc_p))(800);//Warte 0,8ms
+			}
+			memset((uint8_t*)tempBuffer,0,8);
 //#ifndef DEBUG_2
 			//Nach dem Request-Senden, empfangen erste Byte
 			(*(dev_p->receiveFunc_p))((uint8_t*)tempBuffer, rxLength);
-			(*(dev_p->waitFunc_p))(500);
 			//checken erste Byte
 			if(tempBuffer[0]==0xA2){
 				result = DATA_INVALID;
-			} else if(tempBuffer[0]==0xA5){ //Wenn erfolgreich, checken weitere 4 Bytes
+			} else if(tempBuffer[0] == 0xA5){ //Wenn erfolgreich, checken weitere 4 Bytes
 				//Byte 4 beim Daten lesen: Bei Hinprotokoll 0x4X, bei Rückprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
-				bool checkByte2 = (tempBuffer[1]==protocol.header.slaveRegAdd);
-				bool checkByte34 = ((tempBuffer[3]^protocol.header.rwaBytes.value[1])==0x40) && (tempBuffer[2]==protocol.header.rwaBytes.value[0]);
-				if(!(checkByte2&&checkByte34)){
+				rxLength=4;
+				(*(dev_p->receiveFunc_p))((uint8_t*)tempBuffer, rxLength);
+				checkByteReg = (tempBuffer[0]==protocol.header.slaveRegAdd);
+				checkByteAddAndRw = ((tempBuffer[2]^protocol.header.rwaBytes.value[1])==0x40) && (tempBuffer[1]==protocol.header.rwaBytes.value[0]);
+				bool checkAll = checkByteReg&&checkByteAddAndRw;
+				if(!(checkAll)){
 					result = PROCESS_FAIL;
 				} else{
 					//empfangen weitere n Datenbytes sowie 1 CRC8- und 1 Endbyte
-					rxLength =tempBuffer[4]-5;//Die Länge vom Header = 5
+					rxLength =tempBuffer[3]-5;//Die Länge vom Header = 5
 					(*(dev_p->receiveFunc_p))((uint8_t*)tempBuffer, rxLength);
-					(*(dev_p->waitFunc_p))(rxLength*100);
 					bool checkDataBlock = checkRxData((uint8_t*)tempBuffer,rxLength-2,tempBuffer[rxLength-2],dev_p->crc8Polynom);
 					bool checkEnd = tempBuffer[rxLength-1]==0xA6;
 					if (checkEnd&&checkDataBlock){
