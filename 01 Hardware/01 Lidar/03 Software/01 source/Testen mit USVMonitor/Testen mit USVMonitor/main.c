@@ -88,10 +88,10 @@ int main(void)
 	uint16_t reg = 0;
 	uint8_t rxLen = 0;
 	uint8_t output[25];
-	//reg = SEN_COURSE_ANGLE_ADD;
-	//rxLen = 2;
-	reg = SEN_GESB_ADD;
-	rxLen = 1;
+	reg = SEN_COURSE_ANGLE_ADD;
+	rxLen = 2;
+	//reg = SEN_GESB_ADD;
+	//rxLen = 1;
 	error1 = getData(add,reg,&handler,output,rxLen);
 	//waitUs(5);
 	//error1 = TIME_OUT;
