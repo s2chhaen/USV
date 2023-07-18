@@ -105,6 +105,21 @@ uint8_t usartDataRx(uint8_t* data, uint8_t length){
 	return result;
 }
 
+//vorläufig die Wartezeit als die Schleifeanzahl, noch in Assembly gucken
+static uint8_t waitWithBreak(uint64_t waitTimeUs){
+	uint8_t result = NO_ERROR;
+	for (uint64_t i = 0; i<waitTimeUs;i++){
+		if (uu.rxObj.toRxByte!=0){
+			break;
+		}
+	}
+	if(uu.rxObj.toRxByte){
+		result = TIME_OUT;
+	}
+	return result;
+}
+
+
 uint8_t initUserUnit(usartConfig_t config){
 	uint8_t result = NO_ERROR;
 	volatile uint8_t usartInit = USART_init(config.usartNo,config.baudrate, config.usartChSize, config.parity, \
