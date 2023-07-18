@@ -80,8 +80,8 @@ static inline int8_t searchReg(uint16_t reg){
 /**
  * \brief zum Erzeugen des Lesenprotokolls
  * \warning keine Fehlermeldung ausgeben, man muss die Gültigkeit vom Index vor dem Aufruf checken
- * \param add die spezifische Adresse von Slave
- * \param index Index in Array vom zu lesenden Register
+ * \param add die spezifische Id von Slave (slave Adresse)
+ * \param index Index in der Liste vom zu lesenden Register
  * 
  * \return uuaslReadProtocol_t das vollstängie Lesenprotokoll
  */
@@ -100,13 +100,21 @@ static inline uuaslReadProtocol_t readProtocolPrint(uint16_t add,uint16_t index)
 	return result;
 }
 
-//keine Fehler ausgeben, man muss die Gueltigkeit vom Index vor dem Aufrufchecken
+
+/**
+ * \brief zum Erzeugen des Schreibenprotokoll-Header
+ * \warning keine Fehler ausgeben, man muss die Gültigkeit vom Index vor dem Aufruf checken
+ * \param add die spezifische Id von Slave (slave Adresse)
+ * \param index Index in der Liste vom zu lesenden Register
+ * 
+ * \return uuaslProtocolHeader_t das vollstängie Header des Schreibenprotokoll
+ */
 static inline uuaslProtocolHeader_t writeProtocolHeaderPrint(uint16_t add,uint16_t index){
 	uuaslProtocolHeader_t result = {
 		.start = 0xA5,
-		.slaveRegAdd = regSet[index].add,
-		.rwaBytes.value_bf.slaveAddL = GET_SLAVE_ADD_LOW_PART(add),
-		.rwaBytes.value_bf.slaveAddH = GET_SLAVE_ADD_HIGH_PART(add),
+		.slaveAdd = add,
+		.rwaBytes.value_bf.slaveAddL = GET_SLAVE_ADD_LOW_PART(regSet[index].add),
+		.rwaBytes.value_bf.slaveAddH = GET_SLAVE_ADD_HIGH_PART(regSet[index].add),
 		.rwaBytes.value_bf.rw = UUASL_W_REQ,
 		.length = regSet[index].len
 	};
