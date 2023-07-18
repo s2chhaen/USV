@@ -7,6 +7,7 @@
 
 #include "usvMonitorHandlerAPI.h"
 
+//Fehlererkennt, DEBUGGING ERFORDERLICH
 //statische Fehlerdefinition
 typedef enum {
 	NO_ERROR,

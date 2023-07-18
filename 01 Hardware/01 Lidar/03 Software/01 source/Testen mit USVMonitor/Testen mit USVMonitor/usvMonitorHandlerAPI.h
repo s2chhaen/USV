@@ -23,6 +23,7 @@
 #define CRC8_POLYNOM  0xD5
 #define MAX_RECEIVE_TRY 3
 
+//Fehlererkennt, DEBUGGING ERFORDERLICH
 typedef struct{
 	uint8_t start;
 	uint8_t slaveRegAdd;
