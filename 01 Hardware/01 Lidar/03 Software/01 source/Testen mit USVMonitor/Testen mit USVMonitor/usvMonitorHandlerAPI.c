@@ -77,16 +77,21 @@ static inline int8_t searchReg(uint16_t reg){
 	return result;
 }
 
-//keine Fehler ausgeben, man muss die Gueltigkeit vom Index vor dem Aufrufchecken
+/**
+ * \brief zum Erzeugen des Lesenprotokolls
+ * \warning keine Fehlermeldung ausgeben, man muss die Gültigkeit vom Index vor dem Aufruf checken
+ * \param add die spezifische Adresse von Slave
+ * \param index Index in Array vom zu lesenden Register
+ * 
+ * \return uuaslReadProtocol_t das vollstängie Lesenprotokoll
+ */
 static inline uuaslReadProtocol_t readProtocolPrint(uint16_t add,uint16_t index){
 	uuaslReadProtocol_t result ={
 		.header.start =	0xA5,
-		.header.slaveRegAdd = regSet[index].add,
-		.header.rwaBytes.value_bf.slaveAddL = GET_SLAVE_ADD_LOW_PART(add),
-		.header.rwaBytes.value_bf.slaveAddH = GET_SLAVE_ADD_HIGH_PART(add),
+		.header.slaveAdd = add,
+		.header.rwaBytes.value_bf.slaveRegAddL = GET_SLAVE_ADD_LOW_PART(regSet[index].add),
+		.header.rwaBytes.value_bf.slaveRegAddH = GET_SLAVE_ADD_HIGH_PART(regSet[index].add),
 		.header.rwaBytes.value_bf.rw = UUASL_R_REQ,
-		//.header.rwaBytes.value[0] = (UUASL_R_REQ<<4)|((add&0xf00)>>8),
-		//.header.rwaBytes.value[1] = (add&0x0ff),
 		.header.length = 8,
 		.dataLen = regSet[index].len,
 		.tail.end = 0xA6
