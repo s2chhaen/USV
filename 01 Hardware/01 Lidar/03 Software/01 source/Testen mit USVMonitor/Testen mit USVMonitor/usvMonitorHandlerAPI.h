@@ -26,12 +26,12 @@
 //Fehlererkennt, DEBUGGING ERFORDERLICH
 typedef struct{
 	uint8_t start;
-	uint8_t slaveRegAdd;
+	uint8_t slaveAdd;
 	union rwa{
 		uint8_t value[2];
 		struct{
-			uint8_t slaveAddL:8;//low
-			uint8_t slaveAddH:4;
+			uint8_t slaveRegAddL:8;//low
+			uint8_t slaveRegAddH:4;
 			uint8_t rw:4;//high
 		}value_bf;
 	}rwaBytes;
