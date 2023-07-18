@@ -113,8 +113,8 @@ static inline uuaslProtocolHeader_t writeProtocolHeaderPrint(uint16_t add,uint16
 	uuaslProtocolHeader_t result = {
 		.start = 0xA5,
 		.slaveAdd = add,
-		.rwaBytes.value_bf.slaveAddL = GET_SLAVE_ADD_LOW_PART(regSet[index].add),
-		.rwaBytes.value_bf.slaveAddH = GET_SLAVE_ADD_HIGH_PART(regSet[index].add),
+		.rwaBytes.value_bf.slaveRegAddL = GET_SLAVE_ADD_LOW_PART(regSet[index].add),
+		.rwaBytes.value_bf.slaveRegAddH = GET_SLAVE_ADD_HIGH_PART(regSet[index].add),
 		.rwaBytes.value_bf.rw = UUASL_W_REQ,
 		.length = regSet[index].len
 	};
@@ -260,7 +260,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 				//Byte 4 beim Daten lesen: Bei Hinprotokoll 0x4X, bei Rückprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
 				rxLength=4;
 				(*(dev_p->receiveFunc_p))((uint8_t*)tempBuffer, rxLength);
-				checkByteReg = (tempBuffer[0]==protocol.header.slaveRegAdd);
+				checkByteReg = (tempBuffer[0]==protocol.header.slaveAdd);
 				checkByteAddAndRw = ((tempBuffer[2]^protocol.header.rwaBytes.value[1])==0x40) && (tempBuffer[1]==protocol.header.rwaBytes.value[0]);
 				bool checkAll = checkByteReg&&checkByteAddAndRw;
 				if(!(checkAll)){
