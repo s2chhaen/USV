@@ -80,7 +80,7 @@ int main(void)
 #endif	
 	
 #define TEST01 1
-
+	//uint8_t dataSet
 #ifdef TEST01
 	uint8_t error1 = NO_ERROR;
 	//Lesen in Registern
@@ -88,10 +88,13 @@ int main(void)
 	uint16_t reg = 0;
 	uint8_t rxLen = 0;
 	uint8_t output[25];
-	reg = REF_DRV_CTRL_REF_A_ADD;
-	rxLen = 8;
+	//reg = SEN_COURSE_ANGLE_ADD;
+	//rxLen = 2;
+	reg = SEN_GESB_ADD;
+	rxLen = 1;
 	error1 = getData(add,reg,&handler,output,rxLen);
-	waitUs(5);
+	//waitUs(5);
+	//error1 = TIME_OUT;
 	if (error1!=NO_ERROR){
 		setErr1State(ON);
 		for (int i = 0;i<60;i++){
