@@ -130,7 +130,6 @@ static inline uuaslReadProtocol_t readProtocolPrint(uint16_t add,uint16_t index)
 	return result;
 }
 
-
 /**
  * \brief zum Erzeugen des Schreibenprotokoll-Header
  * \warning keine Fehler ausgeben, man muss die Gültigkeit vom Index vor dem Aufruf checken
@@ -139,13 +138,13 @@ static inline uuaslReadProtocol_t readProtocolPrint(uint16_t add,uint16_t index)
  * 
  * \return uuaslProtocolHeader_t das vollstängie Header des Schreibenprotokoll
  */
-static inline uuaslProtocolHeader_t writeProtocolHeaderPrint(uint16_t add,uint16_t index){
+static inline uuaslProtocolHeader_t protocolHeaderPrint(uint16_t add,uint16_t index,uint8_t rwReq){
 	uuaslProtocolHeader_t result = {
 		.start = 0xA5,
 		.slaveAdd = add,
 		.rwaBytes.value_bf.slaveRegAddL = GET_SLAVE_ADD_LOW_PART(regSet[index].add),
 		.rwaBytes.value_bf.slaveRegAddH = GET_SLAVE_ADD_HIGH_PART(regSet[index].add),
-		.rwaBytes.value_bf.rw = UUASL_W_REQ,
+		.rwaBytes.value_bf.rw = rwReq,
 		.length = regSet[index].len
 	};
 	return result;
@@ -328,55 +327,10 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 		result = HANDLER_NOT_INIT;
 	} else{
 		int8_t begin = searchReg(reg);
-		int8_t end = searchEnd(index, outputLen);
+		int8_t end = searchEnd(begin, outputLen);
 		if ((begin!=-1)&&(end!=-1)){
 			outputLen = getTotalLen(begin,end);
-			uint16_t rxLength=1;
-			//Bildung von Datenrahmen
-			/**
-			 * Bei Byte 3,4 (Adresse-Bytes) wird ein 2-Byte-langes Register dafür festgelegt. 
-			 * Aufgrund vom little-endian System werden die Daten im Protokoll (Egal Hin- oder 
-			 * Rückprotokoll) vertauscht
-			 */
-			protocol = readProtocolPrint(add,begin);
-			memcpy((uint8_t*)tempBuffer,(uint8_t*)&protocol,sizeof(protocol)/sizeof(uint8_t));			
-			(*(dev_p->transmitFunc_p))((uint8_t*)tempBuffer, sizeof(protocol)/sizeof(uint8_t));
-			if (!dev_p->dynamicWait){
-				(*(dev_p->waitFunc_p))(800);//Warte 0,8ms
-			}
-			memset((uint8_t*)tempBuffer,0,8);
-//#ifndef DEBUG_2
-			//Nach dem Request-Senden, empfangen erste Byte
-			(*(dev_p->receiveFunc_p))((uint8_t*)tempBuffer, rxLength);
-			//checken erste Byte
-			if(tempBuffer[0]==0xA2){
-				result = DATA_INVALID;
-			} else if(tempBuffer[0] == 0xA5){ //Wenn erfolgreich, checken weitere 4 Bytes
-				//Byte 4 beim Daten lesen: Bei Hinprotokoll 0x4X, bei Rückprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
-				rxLength=4;
-				(*(dev_p->receiveFunc_p))((uint8_t*)tempBuffer, rxLength);
-				checkByteReg = (tempBuffer[0]==protocol.header.slaveAdd);
-				checkByteAddAndRw = ((tempBuffer[2]^protocol.header.rwaBytes.value[1])==0x40) && (tempBuffer[1]==protocol.header.rwaBytes.value[0]);
-				bool checkAll = checkByteReg&&checkByteAddAndRw;
-				if(!(checkAll)){
-					result = PROCESS_FAIL;
-				} else{
-					//empfangen weitere n Datenbytes sowie 1 CRC8- und 1 Endbyte
-					rxLength =tempBuffer[3]-5;//Die Länge vom Header = 5
-					(*(dev_p->receiveFunc_p))((uint8_t*)tempBuffer, rxLength);
-					bool checkDataBlock = checkRxData((uint8_t*)tempBuffer,rxLength-2,tempBuffer[rxLength-2],dev_p->crc8Polynom);
-					bool checkEnd = tempBuffer[rxLength-1]==0xA6;
-					if (checkEnd&&checkDataBlock){
-						//kopieren aller Datenbytes in Ausgabe
-						memcpy(output_p,(uint8_t*)tempBuffer,rxLength-2);
-					} else {
-						result = PROCESS_FAIL;
-					}
-				}
-			} else{
-				result = PROCESS_FAIL;
-			}
-//#endif
+			uuaslProtocolHeader_t header = 
 		} else{
 			result = DATA_INVALID;
 		}
