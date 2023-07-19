@@ -70,7 +70,9 @@ typedef enum {
 	//lokaler Error Block
 	ESB_GPS_ADD = 0x200,
 	ESB_COMPASS_ADD = 0x201,
-	ESB_CTRL_ADD = 0x202
+	ESB_CTRL_ADD = 0x202,
+	//Lidar
+	LIDAR_SEN_ADD = 0x203
 }slaveRegAdd_t;
 
 typedef struct{
