@@ -45,6 +45,8 @@ static const slaveReg_t regSet[]={
 	{ESB_GPS_ADD,1},
 	{ESB_COMPASS_ADD,1},
 	{ESB_CTRL_ADD,1}
+	//Lidar
+	{LIDAR_SEN_ADD,361}
 };
 
 static uint8_t crc8Checksum(uint8_t *data, uint16_t len, uint8_t polynom){
@@ -77,20 +79,30 @@ static inline int8_t searchReg(uint16_t reg){
 	return result;
 }
 
-static inline int8_t searchEnd(int8_t begin, uint16_t lengthOfRegs){
+static inline int8_t searchEnd(int8_t begin, uint16_t len){
 	int8_t result = -1;
 	uint8_t endOfList = sizeof(regSet)/sizeof(slaveReg_t);
-	int32_t remainLen = lengthOfRegs;
+	int32_t remainLen = len;
 	if(begin!=-1){
 		uint8_t i = 0;
 		for (i = begin; i<endOfList;i++){
-			lengthOfRegs -= regSet[i].len;
-			if (lengthOfRegs<0){
+			remainLen -= regSet[i].len;
+			if (remainLen<0){
 				i--;
 				break;
 			}
 		}
 		result = i;
+	}
+	return result;
+}
+
+static inline uint16_t getTotalLen(int8_t begin, int8_t end){
+	uint16_t result = 0;
+	if ((begin>-1)&&(end>begin)){
+		for (int i = begin;i<end+1;i++){
+			result+=regSet[i];
+		}
 	}
 	return result;
 }
@@ -315,10 +327,10 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 	{
 		result = HANDLER_NOT_INIT;
 	} else{
-		int8_t index = searchReg(reg);
+		int8_t begin = searchReg(reg);
 		int8_t end = searchEnd(index, outputLen);
-		if (index!=-1){
-			
+		if ((begin!=-1)&&(end!=-1)){
+			outputLen = getTotalLen(begin,end);
 			uint16_t rxLength=1;
 			//Bildung von Datenrahmen
 			/**
@@ -326,7 +338,7 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			 * Aufgrund vom little-endian System werden die Daten im Protokoll (Egal Hin- oder 
 			 * Rückprotokoll) vertauscht
 			 */
-			protocol = readProtocolPrint(add,index);
+			protocol = readProtocolPrint(add,begin);
 			memcpy((uint8_t*)tempBuffer,(uint8_t*)&protocol,sizeof(protocol)/sizeof(uint8_t));			
 			(*(dev_p->transmitFunc_p))((uint8_t*)tempBuffer, sizeof(protocol)/sizeof(uint8_t));
 			if (!dev_p->dynamicWait){
