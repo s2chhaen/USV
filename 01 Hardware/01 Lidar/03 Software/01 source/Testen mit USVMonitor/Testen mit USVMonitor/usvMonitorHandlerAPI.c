@@ -131,12 +131,13 @@ static inline uuaslReadProtocol_t readProtocolPrint(uint16_t add,uint16_t index)
 }
 
 /**
- * \brief zum Erzeugen des Schreibenprotokoll-Header
+ * \brief zum Erzeugen des Protokoll-Header
  * \warning keine Fehler ausgeben, man muss die Gültigkeit vom Index vor dem Aufruf checken
  * \param add die spezifische Id von Slave (slave Adresse)
  * \param index Index in der Liste vom zu lesenden Register
+ * \param rwReq 8 für Schreiben- und 4 für Lesenanforderungen
  * 
- * \return uuaslProtocolHeader_t das vollstängie Header des Schreibenprotokoll
+ * \return uuaslProtocolHeader_t das vollstängie Header des Protokolls
  */
 static inline uuaslProtocolHeader_t protocolHeaderPrint(uint16_t add,uint16_t index,uint8_t rwReq){
 	uuaslProtocolHeader_t result = {
