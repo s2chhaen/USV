@@ -23,6 +23,7 @@ volatile bool checkByteReg = false;
 volatile bool checkByteAddAndRw = false;
 volatile uuaslReadProtocol_t protocol;
 volatile uint8_t tempBuffer[MAX_SIZE_FRAME]={0};
+volatile uint8_t buffer[MAX_SIZE_FRAME]={0};//Gesamtarray
 
 static const slaveReg_t regSet[]={
 	//Sensorblock
@@ -44,7 +45,7 @@ static const slaveReg_t regSet[]={
 	//lokaler Error Block
 	{ESB_GPS_ADD,1},
 	{ESB_COMPASS_ADD,1},
-	{ESB_CTRL_ADD,1}
+	{ESB_CTRL_ADD,1},
 	//Lidar
 	{LIDAR_SEN_ADD,361}
 };
@@ -101,7 +102,7 @@ static inline uint16_t getTotalLen(int8_t begin, int8_t end){
 	uint16_t result = 0;
 	if ((begin>-1)&&(end>begin)){
 		for (int i = begin;i<end+1;i++){
-			result+=regSet[i];
+			result+=regSet[i].len;
 		}
 	}
 	return result;
@@ -213,29 +214,29 @@ uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 			if (regSet[index].len != length){
 				result = DATA_INVALID;
 			} else{
-				uint8_t txProtocol[MAX_SIZE_FRAME];//Gesamtarray
+				
 				uint16_t positionPtr=0;
 				//Header im Gesamtarray kopieren
-				uuaslProtocolHeader_t head = writeProtocolHeaderPrint(add,index);
-				memcpy((&txProtocol[positionPtr]),(uint8_t*)&head,sizeof(head)/sizeof(uint8_t));
+				uuaslProtocolHeader_t head = protocolHeaderPrint(add,index,UUASL_W_REQ);
+				head.length+=7;
+				memcpy((uint8_t*)(&buffer[positionPtr]),(uint8_t*)&head,sizeof(head)/sizeof(uint8_t));
 				positionPtr+= sizeof(head)/sizeof(uint8_t);
 				//Inhalt im Gesamtarray kopieren
-				memcpy((&txProtocol[positionPtr]),input_p,length);
+				memcpy((uint8_t*)(&buffer[positionPtr]),input_p,length);
 				positionPtr+=length;
 				//Tail im Gesamtarray kopieren
 				uint8_t crc8 = crc8Checksum(input_p,length,dev_p->crc8Polynom);
 				uuaslProtocolTail_t tail = writeProtocolTailPrint(crc8);
-				memcpy((&txProtocol[positionPtr]),(uint8_t*)&tail,sizeof(tail)/sizeof(uint8_t));
+				memcpy((uint8_t*)(&buffer[positionPtr]),(uint8_t*)&tail,sizeof(tail)/sizeof(uint8_t));
 				positionPtr += sizeof(tail)/sizeof(uint8_t);
 				//Senden die Daten
-				result = (*(dev_p->transmitFunc_p))(txProtocol,positionPtr);
-				(*(dev_p->waitFunc_p))(700);//warten 0,5ms für Datensendung
+				result = (*(dev_p->transmitFunc_p))((uint8_t*)buffer,positionPtr);
 				positionPtr = 1;
-				(*(dev_p->receiveFunc_p))((uint8_t*)txProtocol, positionPtr);
-				if (txProtocol[0]!=0xA1){
+				(*(dev_p->waitFunc_p))(700);//warten 0,5ms für Datensendung
+				(*(dev_p->receiveFunc_p))((uint8_t*)buffer, positionPtr);
+				if (buffer[0]!=0xA1){
 					result = PROCESS_FAIL;
 				}
-				(*(dev_p->waitFunc_p))(500);//warten 0,5ms für Datensendung
 			}
 		} else{
 			result = DATA_INVALID;
@@ -319,6 +320,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 	return result;
 }
 
+//Noch in Bearbeitung
 uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
 	uint8_t result = NO_ERROR;
 	if((dev_p==NULL)||(output_p==NULL)){
@@ -331,7 +333,9 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 		int8_t end = searchEnd(begin, outputLen);
 		if ((begin!=-1)&&(end!=-1)){
 			outputLen = getTotalLen(begin,end);
-			uuaslProtocolHeader_t header = 
+			uuaslProtocolHeader_t header = protocolHeaderPrint(add,begin,UUASL_R_REQ);
+			uint8_t dataSegLen = 
+			header.length = 7;
 		} else{
 			result = DATA_INVALID;
 		}
