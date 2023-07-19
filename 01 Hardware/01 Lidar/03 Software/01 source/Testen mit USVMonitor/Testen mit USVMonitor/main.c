@@ -33,7 +33,8 @@ static void setErr1State(uint8_t state){
 	};
 }
 
-
+volatile uint8_t answer[9]={0};
+	
 int main(void)
 {
 	/************************************************************************/
@@ -88,11 +89,11 @@ int main(void)
 	uint16_t reg = 0;
 	uint8_t rxLen = 0;
 	uint8_t output[25]={0};
-	//reg = SEN_COURSE_ANGLE_ADD;
-	//rxLen = 2;
-	reg = SEN_GESB_ADD;
-	rxLen = 1;
-	error1 = getData(add,reg,&handler,output,rxLen);
+	reg = SEN_COURSE_ANGLE_ADD;
+	rxLen = 2;
+	//reg = SEN_GESB_ADD;
+	//rxLen = 1;
+	//error1 = getData(add,reg,&handler,output,rxLen);
 	//waitUs(5);
 	//error1 = TIME_OUT;
 	if (error1!=NO_ERROR){
@@ -133,10 +134,15 @@ int main(void)
 		//waitUs(5);
 	}
 	//Schreiben in Registern
-	uint8_t input[20]={0,1,2,3,4,5,6,7};
-	uint8_t txLen = 8;
-	reg = REF_DRV_CTRL_REF_A_ADD;
-	//setData(add,reg,&handler,input,txLen);
+	uint8_t input[20]={1,2};
+	uint8_t txLen = 2;
+	reg = REF_DRV_CTRL_VEL_ADD;
+	error1 = setData(add,reg,&handler,input,txLen);
+	if (error1!=NO_ERROR){
+		setErr1State(ON);
+		waitUs(1000000);
+		setErr1State(OFF);
+	}
 #endif
 
 //#define TEST02 1
@@ -148,12 +154,19 @@ int main(void)
 		//test1[i] = i;
 	//}
 	uint8_t dataSet[]={0xA5,0x01,0x0C,0x40,0x08,0x02,0x7F,0xA6};
+	//uint8_t dataSet[]={0xA5,0x00,0x0C,0x40,0x08,0x02, 0x7F,0xA6};
 	uint8_t length = sizeof(dataSet)/sizeof(uint8_t);
+	
 	(*(handler.transmitFunc_p))(dataSet,length);
+	waitUs(800);
+	length = 9;
+	(*(handler.receiveFunc_p))((uint8_t*)answer,length);
 	//USART_send_Array(iUSART1,0,test1,length);
+	uint8_t test111 = 0;
 #endif
     /* Replace with your application code */
     while (1){
+		//test111++;
     }
 }
 
