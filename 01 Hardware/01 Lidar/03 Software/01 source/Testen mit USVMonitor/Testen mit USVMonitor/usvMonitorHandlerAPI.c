@@ -45,9 +45,9 @@ static const slaveReg_t regSet[]={
 	//lokaler Error Block
 	{ESB_GPS_ADD,1},
 	{ESB_COMPASS_ADD,1},
-	{ESB_CTRL_ADD,1},
+	{ESB_CTRL_ADD,1}//,
 	//Lidar
-	{LIDAR_SEN_ADD,361}
+	//{LIDAR_SEN_ADD,361}
 };
 
 static uint8_t crc8Checksum(uint8_t *data, uint16_t len, uint8_t polynom){
@@ -332,10 +332,27 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 		int8_t begin = searchReg(reg);
 		int8_t end = searchEnd(begin, outputLen);
 		if ((begin!=-1)&&(end!=-1)){
+			volatile uint8_t bufferMulti[MAX_SIZE_FRAME]={0};
+			uint16_t bufferMultiPtr = 0;
 			outputLen = getTotalLen(begin,end);
 			uuaslProtocolHeader_t header = protocolHeaderPrint(add,begin,UUASL_R_REQ);
-			uint8_t dataSegLen = 
-			header.length = 7;
+			header.length = 9;//magic number: Bytes vom gesamten Protokoll: 2 für Datenlängenanfrage, 7 für übrigen
+			memcpy((uint8_t*)(&bufferMulti[bufferMultiPtr]),(uint8_t*)&header,sizeof(header)/sizeof(uint8_t));
+			bufferMultiPtr += sizeof(header)/sizeof(uint8_t);
+			uint8_t dataSegLen[]={0};
+			dataSegLen[0] = outputLen>>8;
+			dataSegLen[1] = outputLen&0x00ff;
+			memcpy((uint8_t*)&(bufferMulti[bufferMultiPtr]),(uint8_t*)dataSegLen,sizeof(dataSegLen)/sizeof(uint8_t));
+			bufferMultiPtr += sizeof(dataSegLen)/sizeof(uint8_t);
+			uint8_t checksumCode = crc8Checksum(dataSegLen,sizeof(dataSegLen),dev_p->crc8Polynom);
+			uint8_t endByte = 0xA6;
+			bufferMulti[bufferMultiPtr++]=checksumCode;
+			bufferMulti[bufferMultiPtr++]=endByte;
+			(*(dev_p->transmitFunc_p))((uint8_t*)bufferMulti,bufferMultiPtr);
+			if (!dev_p->dynamicWait){
+				(*(dev_p->waitFunc_p))(bufferMultiPtr*100);//Warte 0,8ms
+			}
+			bufferMultiPtr=1;
 		} else{
 			result = DATA_INVALID;
 		}
