@@ -83,7 +83,7 @@ int main(void)
 #define TEST01 1
 	
 #ifdef TEST01
-	uint8_t error1 = NO_ERROR;
+	volatile uint8_t error1 = NO_ERROR;
 	//Lesen in Registern
 	const uint8_t add = 1;
 	uint16_t reg = 0;
@@ -140,7 +140,10 @@ int main(void)
 	error1 = setData(add,reg,&handler,input,txLen);
 	if (error1!=NO_ERROR){
 		setErr1State(ON);
-		waitUs(1000000);
+		for (int i = 0;i<10;i++){
+			waitUs(1000000);
+		}
+		
 		setErr1State(OFF);
 	}
 #endif
