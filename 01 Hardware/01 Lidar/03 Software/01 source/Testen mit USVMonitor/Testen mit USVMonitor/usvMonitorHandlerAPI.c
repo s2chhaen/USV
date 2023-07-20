@@ -359,6 +359,31 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			}
 			bufferMultiPtr=1;
 			(*(dev_p->receiveFunc_p))((uint8_t*)bufferMulti, bufferMultiPtr);
+			if (bufferMulti[bufferMultiPtr-1]==0xA2){
+				result = DATA_INVALID;
+			} else if (bufferMulti[bufferMultiPtr-1]==0xA5){
+				bufferMultiPtr=4;
+				(*(dev_p->receiveFunc_p))((uint8_t*)bufferMulti, bufferMultiPtr);
+				//Checken Protokollrelevante Informationen
+				bool checkRxDataInfo = (bufferMulti[0]==add) && \
+								   (bufferMulti[1]==header.rwaBytes.value[0]) && \
+								   ((bufferMulti[2]^header.rwaBytes.value[1])==0x40);
+				if (checkRxDataInfo){
+					bufferMultiPtr=bufferMulti[3]-7+2;
+					(*(dev_p->receiveFunc_p))((uint8_t*)bufferMulti, bufferMultiPtr);
+					bool checkDataBlock = checkRxData((uint8_t*)bufferMulti,bufferMultiPtr-2,bufferMulti[bufferMultiPtr-2],dev_p->crc8Polynom);;
+					bool checkEndByte = bufferMulti[bufferMultiPtr-1]==0xA6;
+					if (checkDataBlock&&checkEndByte){
+						memcpy(output_p,(uint8_t*)bufferMulti,bufferMultiPtr-2);
+					} else {
+						result = PROCESS_FAIL;
+					}
+				} else{
+					result = PROCESS_FAIL;
+				}
+			} else{
+				result = PROCESS_FAIL;
+			}
 		} else{
 			result = DATA_INVALID;
 		}
