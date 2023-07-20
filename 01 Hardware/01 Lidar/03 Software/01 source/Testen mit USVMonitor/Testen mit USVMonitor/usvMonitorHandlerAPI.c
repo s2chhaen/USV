@@ -24,6 +24,9 @@ volatile bool checkByteAddAndRw = false;
 volatile uuaslReadProtocol_t protocol;
 volatile uint8_t tempBuffer[MAX_SIZE_FRAME]={0};
 volatile uint8_t buffer[MAX_SIZE_FRAME]={0};//Gesamtarray
+volatile uint8_t bufferMulti[MAX_SIZE_FRAME]={0};
+volatile int8_t temp01 = 0;
+volatile int8_t temp02 = 0;
 
 static const slaveReg_t regSet[]={
 	//Sensorblock
@@ -83,13 +86,15 @@ static inline int8_t searchReg(uint16_t reg){
 static inline int8_t searchEnd(int8_t begin, uint16_t len){
 	int8_t result = -1;
 	uint8_t endOfList = sizeof(regSet)/sizeof(slaveReg_t);
-	int32_t remainLen = len;
+	int32_t remainLen = (int32_t)len;
 	if(begin!=-1){
 		uint8_t i = 0;
 		for (i = begin; i<endOfList;i++){
 			remainLen -= regSet[i].len;
-			if (remainLen<0){
+			if (remainLen<0){//Wenn die erforderte Länge zwischen 2 Registers liegt, dann nimmt das untere als Ergebnis
 				i--;
+				break;
+			} else if (!remainLen){
 				break;
 			}
 		}
@@ -331,20 +336,20 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 	} else{
 		int8_t begin = searchReg(reg);
 		int8_t end = searchEnd(begin, outputLen);
+		temp01 = begin;
+		temp02 = end;
 		if ((begin!=-1)&&(end!=-1)){
-			volatile uint8_t bufferMulti[MAX_SIZE_FRAME]={0};
 			uint16_t bufferMultiPtr = 0;
 			outputLen = getTotalLen(begin,end);
 			uuaslProtocolHeader_t header = protocolHeaderPrint(add,begin,UUASL_R_REQ);
-			header.length = 9;//magic number: Bytes vom gesamten Protokoll: 2 für Datenlängenanfrage, 7 für übrigen
+			header.length = 8;//magic number: Bytes vom gesamten Protokoll: 1 für Datenlängenanfrage, 7 für übrigen
 			memcpy((uint8_t*)(&bufferMulti[bufferMultiPtr]),(uint8_t*)&header,sizeof(header)/sizeof(uint8_t));
 			bufferMultiPtr += sizeof(header)/sizeof(uint8_t);
-			uint8_t dataSegLen[]={0};
-			dataSegLen[0] = outputLen>>8;
-			dataSegLen[1] = outputLen&0x00ff;
-			memcpy((uint8_t*)&(bufferMulti[bufferMultiPtr]),(uint8_t*)dataSegLen,sizeof(dataSegLen)/sizeof(uint8_t));
+			uint8_t dataSegLen = 0;
+			dataSegLen = outputLen;
+			memcpy((uint8_t*)&(bufferMulti[bufferMultiPtr]),(uint8_t*)&dataSegLen,sizeof(dataSegLen)/sizeof(uint8_t));
 			bufferMultiPtr += sizeof(dataSegLen)/sizeof(uint8_t);
-			uint8_t checksumCode = crc8Checksum(dataSegLen,sizeof(dataSegLen),dev_p->crc8Polynom);
+			uint8_t checksumCode = crc8Checksum(&dataSegLen,1,dev_p->crc8Polynom);
 			uint8_t endByte = 0xA6;
 			bufferMulti[bufferMultiPtr++]=checksumCode;
 			bufferMulti[bufferMultiPtr++]=endByte;
@@ -353,10 +358,13 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 				(*(dev_p->waitFunc_p))(bufferMultiPtr*100);//Warte 0,8ms
 			}
 			bufferMultiPtr=1;
+			(*(dev_p->receiveFunc_p))((uint8_t*)bufferMulti, bufferMultiPtr);
 		} else{
 			result = DATA_INVALID;
 		}
 	}
+	temp01 = 0;
+	temp02 = 0;
 	return result;
 }
 
