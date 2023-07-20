@@ -25,6 +25,7 @@ volatile uuaslReadProtocol_t protocol;
 volatile uint8_t tempBuffer[MAX_SIZE_FRAME]={0};
 volatile uint8_t buffer[MAX_SIZE_FRAME]={0};//Gesamtarray
 volatile uint8_t bufferMulti[MAX_SIZE_FRAME]={0};
+volatile uint8_t bufferMultiTx[MAX_SIZE_FRAME]={0};
 volatile int8_t temp01 = 0;
 volatile int8_t temp02 = 0;
 
@@ -393,8 +394,43 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 	return result;
 }
 
+//Noch in Bearbeitung
 uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t inputLen){
 	uint8_t result = NO_ERROR;
+	if((dev_p==NULL)||(input_p==NULL)){
+		result = NULL_POINTER;
+	} else{
+		int8_t begin = searchReg(reg);
+		int8_t end = searchEnd(begin, inputLen);
+		inputLen = getTotalLen(begin,end);
+		if ((begin != -1)&&(end>=begin)){
+			
+			uint16_t positionPtr=0;
+			//Header im Gesamtarray kopieren
+			uuaslProtocolHeader_t head = protocolHeaderPrint(add,begin,UUASL_W_REQ);
+			head.length = inputLen+7;
+			memcpy((uint8_t*)(&bufferMultiTx[positionPtr]),(uint8_t*)&head,sizeof(head)/sizeof(uint8_t));
+			positionPtr+= sizeof(head)/sizeof(uint8_t);
+			//Inhalt im Gesamtarray kopieren
+			memcpy((uint8_t*)(&bufferMultiTx[positionPtr]),input_p,positionPtr);
+			positionPtr+=inputLen;
+			//Tail im Gesamtarray kopieren
+			uint8_t crc8 = crc8Checksum(input_p,inputLen,dev_p->crc8Polynom);
+			uuaslProtocolTail_t tail = writeProtocolTailPrint(crc8);
+			memcpy((uint8_t*)(&bufferMultiTx[positionPtr]),(uint8_t*)&tail,sizeof(tail)/sizeof(uint8_t));
+			positionPtr += sizeof(tail)/sizeof(uint8_t);
+			//Senden die Daten
+			result = (*(dev_p->transmitFunc_p))((uint8_t*)buffer,positionPtr);
+			positionPtr = 1;
+			(*(dev_p->waitFunc_p))(700);//warten 0,5ms für Datensendung
+			(*(dev_p->receiveFunc_p))((uint8_t*)bufferMultiTx, positionPtr);
+			if (buffer[0]!=0xA1){
+				result = PROCESS_FAIL;
+			}
+		} else{
+			result = DATA_INVALID;
+		}
+	}
 	return result;
 }
 
