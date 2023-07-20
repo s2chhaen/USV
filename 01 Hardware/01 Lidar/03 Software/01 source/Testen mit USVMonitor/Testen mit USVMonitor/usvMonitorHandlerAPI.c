@@ -393,3 +393,9 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 	return result;
 }
 
+uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t inputLen){
+	uint8_t result = NO_ERROR;
+	return result;
+}
+
+
