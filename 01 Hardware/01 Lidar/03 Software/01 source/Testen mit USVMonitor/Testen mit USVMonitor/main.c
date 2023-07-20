@@ -34,6 +34,7 @@ static void setErr1State(uint8_t state){
 }
 
 volatile uint8_t answer[9]={0};
+volatile uint8_t output[500]={0};
 	
 int main(void)
 {
@@ -88,9 +89,9 @@ int main(void)
 	const uint8_t add = 1;
 	uint16_t reg = 0;
 	uint8_t rxLen = 0;
-	uint8_t output[25]={0};
-	reg = SEN_COURSE_ANGLE_ADD;
-	rxLen = 2;
+	
+	//reg = SEN_COURSE_ANGLE_ADD;
+	//rxLen = 2;
 	//reg = SEN_GESB_ADD;
 	//rxLen = 1;
 	//error1 = getData(add,reg,&handler,output,rxLen);
@@ -98,8 +99,9 @@ int main(void)
 	//error1 = TIME_OUT;
 	if (error1!=NO_ERROR){
 		setErr1State(ON);
+		//Warte 1min
 		for (int i = 0;i<60;i++){
-			waitUs(1000000);//Warte 1s
+			waitUs(1000000);
 		}
 		setErr1State(OFF);
 	} else{
@@ -134,18 +136,29 @@ int main(void)
 		//waitUs(5);
 	}
 	//Schreiben in Registern
-	uint8_t input[20]={1,2};
-	uint8_t txLen = 2;
-	reg = REF_DRV_CTRL_VEL_ADD;
-	error1 = setData(add,reg,&handler,input,txLen);
+	//uint8_t input[20]={1,2};
+	//uint8_t txLen = 2;
+	//reg = REF_DRV_CTRL_VEL_ADD;
+	//error1 = setData(add,reg,&handler,input,txLen);
+	//if (error1!=NO_ERROR){
+		//setErr1State(ON);
+		//for (int i = 0;i<10;i++){
+			//waitUs(1000000);
+		//}
+		
+		//setErr1State(OFF);
+	//}
+	//reg = SEN_GESB_ADD;
+	//rxLen = 17;
+	reg = REF_DRV_CTRL_REF_A_ADD;
+	rxLen = 21;
+	error1 = getMultiregister(add,reg,&handler,(uint8_t*)output, rxLen);
 	if (error1!=NO_ERROR){
 		setErr1State(ON);
-		for (int i = 0;i<10;i++){
-			waitUs(1000000);
-		}
-		
+	} else {
 		setErr1State(OFF);
 	}
+	
 #endif
 
 //#define TEST02 1
