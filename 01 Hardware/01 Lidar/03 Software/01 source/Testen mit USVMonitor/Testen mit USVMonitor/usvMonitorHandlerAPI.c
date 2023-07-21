@@ -52,7 +52,7 @@ static const slaveReg_t regSet[]={
 	{ESB_COMPASS_ADD,1},
 	{ESB_CTRL_ADD,1}//,
 	//Lidar
-	//{LIDAR_SEN_ADD,361}
+	//{LIDAR_SEN_ADD,362}
 };
 
 static uint8_t crc8Checksum(uint8_t *data, uint16_t len, uint8_t polynom){
@@ -123,7 +123,7 @@ static inline uint16_t getTotalLen(int8_t begin, int8_t end){
  * 
  * \return uuaslReadProtocol_t das vollstängie Lesenprotokoll
  */
-static inline uuaslReadProtocol_t readProtocolPrint(uint16_t add,uint16_t index){
+static inline uuaslReadProtocol_t readProtocolPrint(uint16_t add,uint16_t index, uint8_t crc8){
 	uuaslReadProtocol_t result ={
 		.header.start =	0xA5,
 		.header.slaveAdd = add,
@@ -134,7 +134,7 @@ static inline uuaslReadProtocol_t readProtocolPrint(uint16_t add,uint16_t index)
 		.dataLen = regSet[index].len,
 		.tail.end = 0xA6
 	};
-	result.tail.checksum = crc8Checksum(&(result.dataLen), sizeof(result.dataLen), CRC8_POLYNOM);
+	result.tail.checksum = crc8Checksum(&(result.dataLen), sizeof(result.dataLen), crc8);
 	return result;
 }
 
@@ -281,7 +281,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 			 * Aufgrund vom little-endian System werden die Daten im Protokoll (Egal Hin- oder 
 			 * Rückprotokoll) vertauscht
 			 */
-			protocol = readProtocolPrint(add,index);
+			protocol = readProtocolPrint(add,index,dev_p->crc8Polynom);
 			memcpy((uint8_t*)tempBuffer,(uint8_t*)&protocol,sizeof(protocol)/sizeof(uint8_t));			
 			(*(dev_p->transmitFunc_p))((uint8_t*)tempBuffer, sizeof(protocol)/sizeof(uint8_t));
 			if (!dev_p->dynamicWait){
