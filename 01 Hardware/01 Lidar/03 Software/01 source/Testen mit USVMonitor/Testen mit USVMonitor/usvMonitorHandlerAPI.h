@@ -77,7 +77,7 @@ typedef enum {
 
 typedef struct{
 	slaveRegAdd_t add:12;
-	uint8_t len:4;
+	uint16_t len:9;
 }slaveReg_t;
 
 
