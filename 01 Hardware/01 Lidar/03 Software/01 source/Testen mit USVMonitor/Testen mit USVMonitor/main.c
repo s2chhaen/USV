@@ -83,7 +83,7 @@ int main(void)
 	uint16_t reg = 0;
 	uint8_t rxLen = 0;
 	
-#define TEST01 1
+//#define TEST01 1
 
 #ifdef TEST01
 	//Lesen in Registern
@@ -98,7 +98,7 @@ int main(void)
 	}
 #endif
 
-#define TEST02 1
+//#define TEST02 1
 
 #ifdef TEST02
 	//Schreiben in einem Register
@@ -113,7 +113,7 @@ int main(void)
 	}
 #endif
 
-//#define TEST03 1
+#define TEST03 1
 
 #ifdef TEST03
 	//Multiregister schreiben und lesen
