@@ -39,6 +39,11 @@ static const slaveReg_t regSet[]={
 	{SEN_GPS_VEL_ADD,2},
 	{SEN_COURSE_ANGLE_ADD,2},
 	{SEN_TIMESTAMP_ADD,3},
+	//Radar
+	{RADAR_1_ADD,1},
+	{RADAR_1_ADD,2},
+	//Lidar
+	{LIDAR_VALUE_ADD,180},
 	//Führungsgrößen der Antriebsregelung
 	{REF_DRV_CTRL_REF_A_ADD,8},
 	{REF_DRV_CTRL_REF_B_ADD,8},
@@ -50,9 +55,7 @@ static const slaveReg_t regSet[]={
 	//lokaler Error Block
 	{ESB_GPS_ADD,1},
 	{ESB_COMPASS_ADD,1},
-	{ESB_CTRL_ADD,1}//,
-	//Lidar
-	//{LIDAR_SEN_ADD,362}
+	{ESB_CTRL_ADD,1}
 };
 
 static uint8_t crc8Checksum(uint8_t *data, uint16_t len, uint8_t polynom){
