@@ -162,6 +162,9 @@
     <Compile Include="ATMegaXX09\FIFO\FIFO.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="ATMegaXX09\FIFO\FIFOa.S">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="ATMegaXX09\Port\Port.c">
       <SubType>compile</SubType>
     </Compile>
