@@ -14,6 +14,9 @@
 #define OFF 0
 #define INPUT_DISABLE 0x04
 
+//verhindern Reset bei falschen Interrupt
+EMPTY_INTERRUPT(BADISR_vect)
+
 static void ioInit(){
 	PORTD.DIR |= (1<<ERR1);
 	PORTD.PIN0CTRL |= (INPUT_DISABLE<<0);
