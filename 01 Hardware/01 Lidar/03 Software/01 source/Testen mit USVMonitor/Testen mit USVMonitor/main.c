@@ -116,7 +116,7 @@ int main(void)
 	}
 #endif
 
-#define TEST03 1
+//#define TEST03 1
 
 #ifdef TEST03
 	//Multiregister schreiben und lesen
@@ -136,6 +136,23 @@ int main(void)
 		setErr1State(OFF);
 	}
 #endif
+
+#define TEST04 1
+#ifdef TEST04
+#define MAX_ARRAY_LENGTH 70
+
+	uint8_t array[MAX_ARRAY_LENGTH]={0};
+	for (int i = 0; i<MAX_ARRAY_LENGTH;i++){
+		array[i]=i;
+	}
+	error1 = (*(handler.transmitFunc_p))(array,MAX_ARRAY_LENGTH);
+	if (error1!=NO_ERROR){
+		setErr1State(ON);
+	} else {
+		setErr1State(OFF);
+	}
+
+#endif // TEST04
     /* Replace with your application code */
     while (1){
     }
