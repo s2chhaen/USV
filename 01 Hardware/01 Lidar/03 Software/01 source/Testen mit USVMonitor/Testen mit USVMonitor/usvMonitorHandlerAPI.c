@@ -7,7 +7,6 @@
 
 #include "usvMonitorHandlerAPI.h"
 
-//Fehlererkennt, DEBUGGING ERFORDERLICH
 //statische Fehlerdefinition
 typedef enum {
 	NO_ERROR,
@@ -281,7 +280,6 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 				(*(dev_p->waitFunc_p))(800);//Warte 0,8ms
 			}
 			memset((uint8_t*)tempBuffer,0,8);
-//#ifndef DEBUG_2
 			//Nach dem Request-Senden, empfangen erste Byte
 			(*(dev_p->receiveFunc_p))((uint8_t*)tempBuffer, rxLength);
 			//checken erste Byte
@@ -312,7 +310,6 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 			} else{
 				result = PROCESS_FAIL;
 			}
-//#endif
 		} else{
 			result = DATA_INVALID;
 		}
@@ -320,7 +317,6 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 	return result;
 }
 
-//Noch in Bearbeitung
 uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
 	uint8_t result = NO_ERROR;
 	if((dev_p==NULL)||(output_p==NULL)){
@@ -385,7 +381,6 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 	return result;
 }
 
-//Noch in Bearbeitung
 uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t inputLen){
 	uint8_t result = NO_ERROR;
 	if((dev_p==NULL)||(input_p==NULL)){

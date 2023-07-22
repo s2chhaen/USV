@@ -101,7 +101,6 @@ uint8_t usartDataTx(uint8_t* data, uint16_t length){
 			USART_send_Array(uu.statusObj.usart, 0, (uint8_t*)(uu.txObj.txBuffer), uu.txObj.usartFIFOMax);
 		}
 		result = waitWithBreak(BYTE_RECEIVE_TIME_US*length*100,(uint8_t*)&(uu.txObj.toTxByte),0);
-		//while(uu.txObj.toTxByte);
 	}
 	return result;
 }
@@ -116,8 +115,6 @@ uint8_t usartDataRx(uint8_t* data, uint16_t length){
 		uint8_t usartNo = uu.statusObj.usart;
 		uu.rxObj.toRxByte = length;
 		USART_set_Bytes_to_receive(usartNo,length);
-		//waitCycle(length*BYTE_RECEIVE_TIME_US);
-		//while (uu.rxObj.toRxByte);
 		uint8_t checkTimeout = waitWithBreak(BYTE_RECEIVE_TIME_US*length*5000,(uint8_t*)&(uu.rxObj.toRxByte),0);//magic number:Anzahl der Zyklen pro sekunden
 		if (!checkTimeout){
 			memcpy((uint8_t*)data,(uint8_t*)uu.rxObj.rxBuffer,length);

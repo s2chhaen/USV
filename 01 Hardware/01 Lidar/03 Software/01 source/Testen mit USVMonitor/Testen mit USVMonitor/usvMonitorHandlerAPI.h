@@ -21,7 +21,6 @@
 #define SET_SLAVE_ADD_HIGH_PART(add,rw) (uint8_t)((add>>8)|(rw<<4))
 #define MAX_SIZE_FRAME 400
 
-//Fehlererkennt, DEBUGGING ERFORDERLICH
 typedef struct{
 	uint8_t start;
 	uint8_t slaveAdd;
@@ -73,9 +72,7 @@ typedef enum {
 	//lokaler Error Block
 	ESB_GPS_ADD = 0x200,
 	ESB_COMPASS_ADD = 0x201,
-	ESB_CTRL_ADD = 0x202//,
-	//Lidar?
-	//LIDAR_SEN_ADD = 0x203
+	ESB_CTRL_ADD = 0x202
 }slaveRegAdd_t;
 
 typedef struct{
@@ -96,9 +93,6 @@ typedef struct {
 	uint8_t dynamicWait:1;
 	uint8_t crc8Polynom;
 }usvMonitorHandler_t;
-
-//extern const slaveReg_t regSet[];
-
 
 extern uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRXFunc_p, dataTx_t inputTxFunc_p, wait_t inputWaitFunc_p, uint8_t inputCrc8);
 extern uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p,uint16_t length);
