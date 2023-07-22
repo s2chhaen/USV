@@ -52,10 +52,10 @@ static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 }
 
 //Warte-Funktion mit Anwendung von Schleife
-static uint8_t waitWithBreak(uint64_t cycles){
+static uint8_t waitWithBreak(uint64_t cycles, uint8_t* obj, uint8_t desiredValue){
 	uint8_t result = NO_ERROR;
 	for (uint64_t i = 0; i<cycles;i++){
-		if (uu.rxObj.toRxByte==0){
+		if ((*obj)==desiredValue){
 			break;
 		}
 	}
@@ -113,7 +113,7 @@ uint8_t usartDataRx(uint8_t* data, uint16_t length){
 		USART_set_Bytes_to_receive(usartNo,length);
 		//waitCycle(length*BYTE_RECEIVE_TIME_US);
 		//while (uu.rxObj.toRxByte);
-		uint8_t  checkTimeout = waitWithBreak(BYTE_RECEIVE_TIME_US*length*5000);//magic number:Anzahl der Zyklen pro sekunden
+		uint8_t checkTimeout = waitWithBreak(BYTE_RECEIVE_TIME_US*length*5000,(uint8_t*)&(uu.rxObj.toRxByte),0);//magic number:Anzahl der Zyklen pro sekunden
 		if (!checkTimeout){
 			memcpy((uint8_t*)data,(uint8_t*)uu.rxObj.rxBuffer,length);
 		} else{
