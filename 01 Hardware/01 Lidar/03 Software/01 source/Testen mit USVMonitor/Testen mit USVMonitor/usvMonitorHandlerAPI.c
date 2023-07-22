@@ -19,16 +19,8 @@ typedef enum {
 	HANDLER_NOT_INIT
 }processResult_t;
 
-volatile bool checkByteReg = false;
-volatile bool checkByteAddAndRw = false;
-volatile uuaslReadProtocol_t protocol;
-volatile uint8_t tempBuffer[MAX_SIZE_FRAME]={0};
-volatile uint8_t buffer[MAX_SIZE_FRAME]={0};//Gesamtarray
-volatile uint8_t bufferMulti[MAX_SIZE_FRAME]={0};
-volatile uint8_t bufferMultiTx[MAX_SIZE_FRAME]={0};
 volatile int8_t temp01 = 0;
 volatile int8_t temp02 = 0;
-volatile uint16_t positionPtrTX=0;
 
 static const slaveReg_t regSet[]={
 	//Sensorblock
@@ -224,7 +216,7 @@ uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 			if (regSet[index].len != length){
 				result = DATA_INVALID;
 			} else{
-				
+				uint8_t buffer[MAX_SIZE_FRAME]={0};//Gesamtarray
 				uint16_t positionPtr=0;
 				//Header im Gesamtarray kopieren
 				uuaslProtocolHeader_t head = protocolHeaderPrint(add,index,UUASL_W_REQ);
@@ -276,7 +268,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 	} else{
 		int8_t index = searchReg(reg);
 		if (index!=-1){
-			
+			uint8_t tempBuffer[MAX_SIZE_FRAME]={0};
 			uint16_t rxLength=1;
 			//Bildung von Datenrahmen
 			/**
@@ -284,6 +276,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 			 * Aufgrund vom little-endian System werden die Daten im Protokoll (Egal Hin- oder 
 			 * Rückprotokoll) vertauscht
 			 */
+			uuaslReadProtocol_t protocol;
 			protocol = readProtocolPrint(add,index,dev_p->crc8Polynom);
 			memcpy((uint8_t*)tempBuffer,(uint8_t*)&protocol,sizeof(protocol)/sizeof(uint8_t));			
 			(*(dev_p->transmitFunc_p))((uint8_t*)tempBuffer, sizeof(protocol)/sizeof(uint8_t));
@@ -301,8 +294,8 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 				//Byte 4 beim Daten lesen: Bei Hinprotokoll 0x4X, bei Rückprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
 				rxLength=4;
 				(*(dev_p->receiveFunc_p))((uint8_t*)tempBuffer, rxLength);
-				checkByteReg = (tempBuffer[0]==protocol.header.slaveAdd);
-				checkByteAddAndRw = ((tempBuffer[2]^protocol.header.rwaBytes.value[1])==0x40) && (tempBuffer[1]==protocol.header.rwaBytes.value[0]);
+				bool checkByteReg = (tempBuffer[0]==protocol.header.slaveAdd);
+				bool checkByteAddAndRw = ((tempBuffer[2]^protocol.header.rwaBytes.value[1])==0x40) && (tempBuffer[1]==protocol.header.rwaBytes.value[0]);
 				bool checkAll = checkByteReg&&checkByteAddAndRw;
 				if(!(checkAll)){
 					result = PROCESS_FAIL;
@@ -344,6 +337,7 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 		temp01 = begin;
 		temp02 = end;
 		if ((begin!=-1)&&(end!=-1)){
+			uint8_t bufferMulti[MAX_SIZE_FRAME]={0};
 			uint16_t bufferMultiPtr = 0;
 			outputLen = getTotalLen(begin,end);
 			uuaslProtocolHeader_t header = protocolHeaderPrint(add,begin,UUASL_R_REQ);
@@ -408,8 +402,8 @@ uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 		int8_t end = searchEnd(begin, inputLen);
 		inputLen = getTotalLen(begin,end);
 		if ((begin != -1)&&(end>=begin)){
-			
-			
+			uint8_t bufferMultiTx[MAX_SIZE_FRAME]={0};
+			uint16_t positionPtrTX=0;
 			//Header im Gesamtarray kopieren
 			uuaslProtocolHeader_t head = protocolHeaderPrint(add,begin,UUASL_W_REQ);
 			head.length = inputLen+7;
