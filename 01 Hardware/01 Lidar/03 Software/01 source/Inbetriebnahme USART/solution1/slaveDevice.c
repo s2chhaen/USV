@@ -2,7 +2,7 @@
  * slave_device.c
  *
  * Created: 21.06.2023 13:01:53
- * Author: hathach
+ * Author: Thach
  * Version: 0.1
  */ 
 

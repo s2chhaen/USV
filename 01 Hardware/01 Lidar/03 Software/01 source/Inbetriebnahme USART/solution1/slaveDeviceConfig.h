@@ -2,7 +2,7 @@
  * slaveDeviceConfig.h
  *
  * Created: 7/3/2023 10:04:33 PM
- *  Author: Dan
+ *  Author: Thach
  */ 
 
 

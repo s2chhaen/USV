@@ -2,7 +2,7 @@
  * mutex.c
  *
  * Created: 23.06.2023 08:03:55
- *  Author: Dan
+ *  Author: Thach
  */ 
 
 #include "lock.h"
