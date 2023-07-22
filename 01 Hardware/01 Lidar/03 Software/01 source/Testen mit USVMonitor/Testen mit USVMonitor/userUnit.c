@@ -101,7 +101,7 @@ uint8_t usartDataTx(uint8_t* data, uint16_t length){
 	return result;
 }
 
-uint8_t usartDataRx(uint8_t* data, uint8_t length){
+uint8_t usartDataRx(uint8_t* data, uint16_t length){
 	uint8_t result = NO_ERROR;
 	if (data==NULL){
 		result = NULL_POINTER;
