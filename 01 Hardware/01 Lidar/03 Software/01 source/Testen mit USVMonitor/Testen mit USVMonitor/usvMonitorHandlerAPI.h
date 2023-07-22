@@ -20,8 +20,6 @@
 #define SET_SLAVE_ADD_LOW_PART(add) (uint8_t)(add&0xff)
 #define SET_SLAVE_ADD_HIGH_PART(add,rw) (uint8_t)((add>>8)|(rw<<4))
 #define MAX_SIZE_FRAME 400
-#define CRC8_POLYNOM  0xD5
-#define MAX_RECEIVE_TRY 3
 
 //Fehlererkennt, DEBUGGING ERFORDERLICH
 typedef struct{
