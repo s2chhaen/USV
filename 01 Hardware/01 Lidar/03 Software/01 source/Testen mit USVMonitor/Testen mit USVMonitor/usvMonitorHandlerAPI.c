@@ -331,8 +331,6 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 	} else{
 		int8_t begin = searchReg(reg);
 		int8_t end = searchEnd(begin, outputLen);
-		temp01 = begin;
-		temp02 = end;
 		if ((begin!=-1)&&(end!=-1)){
 			uint8_t bufferMulti[MAX_SIZE_FRAME]={0};
 			uint16_t bufferMultiPtr = 0;
