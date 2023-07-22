@@ -86,7 +86,7 @@ typedef struct{
 }slaveReg_t;
 
 
-typedef uint8_t (*dataRx_t)(uint8_t* data, uint8_t length);
+typedef uint8_t (*dataRx_t)(uint8_t* data, uint16_t length);
 typedef uint8_t (*dataTx_t)(uint8_t* data, uint16_t length);
 typedef void (*wait_t)(uint32_t us);
 
