@@ -19,12 +19,12 @@
 #include "timerUnit.h"
 #include <stdlib.h>
 
-#define RX_BUFFER_LEN 50
-#define TX_BUFFER_LEN 70
+#define RX_BUFFER_LEN 360
+#define TX_BUFFER_LEN 360
 #define NO_OF_RX_BUFFER 1
-#define BYTE_RECEIVE_TIME_US 100
 #define NO_OF_TX_BUFFER 1
-#define MAX_USART_FIFO 31
+#define BYTE_RECEIVE_TIME_US 100
+
 
 typedef struct{
 	uint8_t usartNo:2;
