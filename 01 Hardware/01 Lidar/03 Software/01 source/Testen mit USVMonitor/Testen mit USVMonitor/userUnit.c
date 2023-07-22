@@ -26,11 +26,12 @@ userUnit_t uu={
 };
 
 static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, uint8_t max_length){
-	if (uu.txObj.toTxByte == 0){
+	if (uu.txObj.toTxByte == 0){//Wenn keine Daten mehr zu senden
 		uu.statusObj.send = 0;
 		uu.txObj.strPtr = 0;//Reset des Zeigers vom Buffer
-	} else{
+	} else{ //sonst weiter ausfüllen die Daten in USART-FIFO
 		*data = (uint8_t*)(&(uu.txObj.txBuffer[uu.txObj.strPtr]));
+		//max. Bytes gleich die leere Stelle in FIFO
 		if (uu.txObj.toTxByte<max_length){
 			*length = (uu.txObj.toTxByte);
 			uu.txObj.toTxByte = 0;
@@ -45,6 +46,7 @@ static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, u
 }
 
 static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
+	//Empfangen der Daten in USART-FIFO und Kopieren in das Zwischenbuffer
 	uu.rxObj.toRxByte -= length;
 	memcpy((uint8_t*)&(uu.rxObj.rxBuffer[uu.rxObj.strPtr]),data,length);
 	uu.rxObj.strPtr += length;
@@ -54,12 +56,14 @@ static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 //Warte-Funktion mit Anwendung von Schleife
 static uint8_t waitWithBreak(uint64_t cycles, uint8_t* obj, uint8_t desiredValue){
 	uint8_t result = NO_ERROR;
+	//Betrachtet den Wert von obj in einer bestimmten Zeit
 	for (uint64_t i = 0; i<cycles;i++){
 		if ((*obj)==desiredValue){
 			break;
 		}
 	}
-	if(uu.rxObj.toRxByte){
+	//Wird es nach der Zeit den Wert nicht erreicht, dann Fehler zurückgegeben
+	if((*obj)==desiredValue){
 		result = TIME_OUT;
 	}
 	return result;
@@ -96,6 +100,7 @@ uint8_t usartDataTx(uint8_t* data, uint16_t length){
 			uu.txObj.strPtr += uu.txObj.usartFIFOMax;
 			USART_send_Array(uu.statusObj.usart, 0, (uint8_t*)(uu.txObj.txBuffer), uu.txObj.usartFIFOMax);
 		}
+		result = waitWithBreak(BYTE_RECEIVE_TIME_US*length*100,(uint8_t*)&(uu.txObj.toTxByte),0);
 		//while(uu.txObj.toTxByte);
 	}
 	return result;
