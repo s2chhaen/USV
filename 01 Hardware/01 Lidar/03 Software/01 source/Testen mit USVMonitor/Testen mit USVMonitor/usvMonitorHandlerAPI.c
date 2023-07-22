@@ -19,9 +19,6 @@ typedef enum {
 	HANDLER_NOT_INIT
 }processResult_t;
 
-volatile int8_t temp01 = 0;
-volatile int8_t temp02 = 0;
-
 static const slaveReg_t regSet[]={
 	//Sensorblock
 	{SEN_GESB_ADD,1},
@@ -387,8 +384,6 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			result = DATA_INVALID;
 		}
 	}
-	temp01 = 0;
-	temp02 = 0;
 	return result;
 }
 
