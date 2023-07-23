@@ -97,27 +97,22 @@ processResult_t dataRx(uint8_t* data, uint16_t* length){
 }
 
 #ifdef VERSION_1
-//zu sendende Byte wird konstant in FIFO jedes Interrupt hinzugefügt 
+//zu sendende Byte wird konstant in FIFO jedes Interrupt hinzugefügt. Die weitere Sendung wird hier durchgefuehrt
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
-	if (obj.txTime!=0)
-	{
+	if (obj.txObj.toTxByte!=0){
 		uint16_t temp1 = 0;
 		uint16_t temp2 = 0;
-		if (obj.toTxByte<MAX_BYTE_SEND)
+		if (obj.txObj.toTxByte<MAX_BYTE_SEND){
+			temp1 = obj.txObj.toTxByte;
+			temp2 = obj.txObj.strReadPtr;
+			obj.txObj.toTxByte = 0;
+			obj.txObj.strReadPtr = 0;
+			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp2])), temp1);//Nach dieser Funktion, keine Code mehr schreiben
 		{
-			temp1 = obj.toTxByte;
-			temp2 = obj.txPtrPosition;
-			obj.toTxByte = 0;
-			obj.txPtrPosition = 0;
-			obj.txTime=0;
-			USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[temp2])), temp1);//Nach dieser Funktion, keine Code mehr schreiben, sonst Stack-overflow-Fehler
-		} else
-		{
-			temp2 = obj.txPtrPosition;
-			obj.toTxByte-=MAX_BYTE_SEND;
-			obj.txPtrPosition+=MAX_BYTE_SEND;
-			obj.txTime--;
-			USART_send_Array(obj.uart, 0, (uint8_t*)(&(obj.txBuffer[temp2])), MAX_BYTE_SEND);
+			temp2 = obj.txObj.strReadPtr;
+			obj.txObj.toTxByte-=MAX_BYTE_SEND;
+			obj.txObj.strReadPtr+=MAX_BYTE_SEND;
+			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp2])), MAX_BYTE_SEND);
 		}
 	}
 	
