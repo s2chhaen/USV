@@ -15,22 +15,10 @@
 #include <stdbool.h>
 #include <avr/interrupt.h>
 #include <string.h>
-#include "lock.h"
-#include "error_list.h"
+#include "errorList.h"
 #include "ATMegaXX09/USART/USART.h"
 #include "timerUnit.h"
-#include "slaveDeviceAPI.h"
-
-
-//#define VERSION_1
-
-//Refaktorisierung in Bearbeitung
-
-
-typedef enum {
-	ON,
-	OFF
-}state_t;
+#include "slaveDeviceConfigAndDef.h"
 
 extern processResult_t initDev(uint16_t rxLength, uint16_t txLength,uint8_t USARTnumber, uint32_t baudrate, \
 					USART_CHSIZE_t bits, USART_PMODE_t parity,USART_SBMODE_t stopbit, \
