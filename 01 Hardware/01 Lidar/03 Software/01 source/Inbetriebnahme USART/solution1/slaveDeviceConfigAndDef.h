@@ -17,6 +17,7 @@
 #define USART_TIME_PRO_BYTE_US 96
 
 #define ACTIVE_USART_WATCHER 1
+#define END_SYM 0x0A
 
 typedef struct{
 	struct rxUnit{
