@@ -19,6 +19,7 @@
 #include "slaveDeviceConfigAndDef.h"
 
 #define NO_OF_SUBTIMER 2
+//Für dieses Modul ist nur eine USART-Einheit notwendig
 #define NO_OF_USART 1
 
 typedef struct  
@@ -100,7 +101,7 @@ enum prescaler{
 };
 
 extern void timerInit(uint8_t resolutionUs, uint16_t prescaler);
-extern void setUsartWatcherTimeout(uint8_t usartNr, uint32_t us);
+extern void setUsartWatcherTimeout(uint32_t us);
 extern uint32_t getUsartWatcherTimeout(uint8_t usartNr);
 extern uint8_t waitUs(uint32_t us);
 extern void waitCycle(uint32_t cycle);
