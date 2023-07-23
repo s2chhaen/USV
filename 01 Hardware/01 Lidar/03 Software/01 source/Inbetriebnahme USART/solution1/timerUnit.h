@@ -1,8 +1,9 @@
 /*
- * timerUnit.h
+ * timerUnit.h: zu überwachen der USART-Einheit (Slave-Gerät)
  *
  * Created: 6/29/2023 1:41:01 PM
  * Author: Thach
+ * Version: 1.0
  */ 
 
 
@@ -18,7 +19,7 @@
 #include "slaveDeviceConfigAndDef.h"
 
 #define NO_OF_SUBTIMER 2
-#define NO_OF_USART 4
+#define NO_OF_USART 1
 
 typedef struct  
 {
