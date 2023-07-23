@@ -14,26 +14,17 @@
 #include "./ATMegaXX09/ATMegaXX09Clock.h"
 #include "ATMegaXX09/USART/USART.h"
 #include "Math/MinMax.h"
-#include "error_list.h"
-#include "slaveDeviceAPI.h"
+#include "errorList.h"
+#include "slaveDeviceConfigAndDef.h"
 
 #define NO_OF_SUBTIMER 2
 #define NO_OF_USART 4
 
-//erste Moeglichkeit
 typedef struct  
 {
 	uint32_t value:31;
 	uint8_t lock:1;
 }tickGenerator;
-
-//zweite Moeglichkeit
-typedef struct{
-	uint8_t day:5;
-	uint8_t hour:5;
-	uint8_t min:6;
-	uint32_t us;
-}clockTimer_t;
 
 typedef struct{
 	TCA_t *adr;
