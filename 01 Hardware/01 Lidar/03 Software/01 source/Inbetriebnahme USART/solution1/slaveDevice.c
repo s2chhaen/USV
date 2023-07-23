@@ -210,7 +210,7 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 		obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]+=length;
 		if (data[length-1]==END_SYM){
 			obj.statusObj.nextPhase = 1;
-			obj.rxObj.writeFIFOPtr++;
+			obj.rxObj.writeFIFOPtr = (obj.rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
 			if (obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr){
 				obj.statusObj.rxBufferState=FULL;
 			}
@@ -221,7 +221,7 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 		}//TODO benutzt memcopy hier
 		obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr] = RX_BUFFER_LEN;
 		obj.statusObj.nextPhase = 1;
-		obj.rxObj.writeFIFOPtr++;
+		obj.rxObj.writeFIFOPtr = (obj.rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
 		if (obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr){
 			obj.statusObj.rxBufferState=FULL;
 		}
@@ -251,9 +251,9 @@ processResult_t initDev(uint16_t rxLength, uint16_t txLength,uint8_t USARTnumber
 	USART_set_receive_Array_callback_fnc(USARTnumber,&callbackRx);
 	obj.statusObj.initState = (!slaveUartInit)?1:0;
 #ifdef ACTIVE_USART_WATCHER
-	setUsartWatcherTimeout(obj.statusObj.uart,(USART_TIME_PRO_BYTE_US*3));
-#endif
+	setUsartWatcherTimeout(USART_TIME_PRO_BYTE_US*3);
 	setWatchedObj(&obj);
+#endif
 	result = (!slaveUartInit)?NO_ERROR:PROCESS_FAIL;
 	return result;
 }
