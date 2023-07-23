@@ -20,8 +20,8 @@
 #include "timerUnit.h"
 #include "slaveDeviceConfigAndDef.h"
 
-extern processResult_t initDev(uint16_t rxLength, uint16_t txLength,uint8_t USARTnumber, uint32_t baudrate, \
-					USART_CHSIZE_t bits, USART_PMODE_t parity,USART_SBMODE_t stopbit, \
+extern processResult_t initDev(uint8_t USARTnumber, uint32_t baudrate, USART_CHSIZE_t bits, \
+					USART_PMODE_t parity,USART_SBMODE_t stopbit, \
 					bool sync, bool MPCM, uint8_t address, PORTMUX_USARTx_t PortMux);
 
 extern processResult_t dataTx(uint8_t* data, uint16_t length);

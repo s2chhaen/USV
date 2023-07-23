@@ -3,12 +3,10 @@
  *
  * Created: 21.06.2023 13:01:53
  * Author: Thach
- * Version: 0.1
+ * Version: 1.00
  */ 
 
 #include "slaveDevice.h"
-
-//Refaktorisierung in Bearbeitung
 
 //preinit von slaveDevice
 slaveDevice_t obj ={
@@ -32,7 +30,7 @@ slaveDevice_t obj ={
 	.statusObj.nextPhase = 0
 };
 
-#define  VERSION_1 1
+#define  VERSION_3 1
 
 #ifdef VERSION_1
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length) /*__attribute__((deprecated("funtcion is in debug time")))*/;
@@ -231,7 +229,7 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 }
 
 //Refaktorisierung fertig, dynamische Eigenschaft wird vorlaeufig deaktiviert
-processResult_t initDev(uint16_t rxLength, uint16_t txLength,uint8_t USARTnumber, uint32_t baudrate,USART_CHSIZE_t bits, USART_PMODE_t parity,USART_SBMODE_t stopbit,bool sync, bool MPCM, uint8_t address, PORTMUX_USARTx_t PortMux){
+processResult_t initDev(uint8_t USARTnumber, uint32_t baudrate,USART_CHSIZE_t bits, USART_PMODE_t parity,USART_SBMODE_t stopbit,bool sync, bool MPCM, uint8_t address, PORTMUX_USARTx_t PortMux){
 	uint8_t result = NO_ERROR;
 	//initialisieren der zwei rx- und tx-Buffer
 	memset((int**)obj.rxObj.rxBuffer,0,sizeof(obj.rxObj.rxBuffer));
