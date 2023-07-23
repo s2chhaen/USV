@@ -130,8 +130,7 @@ void setUsartWatcherTimeout(uint32_t us){
 }
 
 uint32_t getUsartWatcherTimeout(uint8_t usartNr){
-	usartNr=usartNr%4;
-	return usartWatcher[usartNr];
+	return usartWatcher;
 }
 
 uint8_t waitUs(uint32_t us){
