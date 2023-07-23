@@ -43,9 +43,7 @@ static inline void unlockGenerator(uint8_t i){
 void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	objTCA.adr->SINGLE.INTCTRL &= ~(1<<0);//Vorlaeufig deaktiviert wird Overflow-Interrupt
 	resetAllGenerator();
-	for (uint8_t i = 0;i<4;i++){
-		usartWatcher[i] = 0;
-	}
+	usartWatcher = 0;
 	if (prescaler==0)
 	{
 		prescaler = 1;
