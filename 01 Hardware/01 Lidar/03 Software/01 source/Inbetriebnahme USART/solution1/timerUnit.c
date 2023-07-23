@@ -12,9 +12,9 @@ volatile timer_t objTCA ={
 	.resolutionUs=1
 };
 
-slaveDevice_t* obj_p;
+slaveDevice_t* obj_p;//Zeiger zur der zu beobachtenden USART-Einheit,für dieses Modul ist nur eine USART-Einheit notwendig
 volatile tickGenerator counter[NO_OF_SUBTIMER];
-volatile uint32_t usartWatcher = 0;//USART-Einheitswächter
+volatile uint32_t usartWatcher = 0;//USART-Einheitswächter,für dieses Modul ist nur eine USART-Einheit notwendig
 
 static void resetAllGenerator(){
 	for (uint8_t i = 0; i<NO_OF_SUBTIMER;i++)
@@ -22,7 +22,6 @@ static void resetAllGenerator(){
 		counter[i].value = 0;
 		counter[i].lock = 0;
 	}
-	//TODO reset Interrupt Flag, set value in counter register equal 0
 }
 
 static int8_t searchFreeGenerator(){
@@ -43,7 +42,7 @@ static inline void unlockGenerator(uint8_t i){
 void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	objTCA.adr->SINGLE.INTCTRL &= ~(1<<0);//Vorlaeufig deaktiviert wird Overflow-Interrupt
 	resetAllGenerator();
-	usartWatcher = 0;
+	usartWatcher = 0;//Für dieses Modul ist nur eine USART-Einheit notwendig
 	if (prescaler==0)
 	{
 		prescaler = 1;
@@ -122,11 +121,12 @@ uint8_t setWatchedObj(slaveDevice_t *input_p){
 	return result;
 }
 
-void setUsartWatcherTimeout(uint8_t usartNr, uint32_t us){
-	usartNr=usartNr%4;
-	objTCA.adr->SINGLE.INTCTRL &= ~(1<<0);//Vorlaeufig deaktiviert wird Overflow-Interrupt
-	usartWatcher[usartNr] = us/objTCA.resolutionUs + (us%objTCA.resolutionUs)?1:0;
-	objTCA.adr->SINGLE.INTCTRL |= (1<<0);//Overflow-Interrupt wird wieder aktiviert 
+void setUsartWatcherTimeout(uint32_t us){
+	if (obj_p!=NULL){
+		objTCA.adr->SINGLE.INTCTRL &= ~(1<<0);//Vorlaeufig deaktiviert wird Overflow-Interrupt
+		usartWatcher = us/objTCA.resolutionUs + (us%objTCA.resolutionUs)?1:0;
+		objTCA.adr->SINGLE.INTCTRL |= (1<<0);//Overflow-Interrupt wird wieder aktiviert
+	}
 }
 
 uint32_t getUsartWatcherTimeout(uint8_t usartNr){
