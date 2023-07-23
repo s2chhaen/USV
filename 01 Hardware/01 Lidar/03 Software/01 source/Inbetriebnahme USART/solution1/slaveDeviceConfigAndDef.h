@@ -18,10 +18,6 @@
 
 #define ACTIVE_USART_WATCHER 1
 
-enum fifoState{
-	EMPTY=0,
-	FILLED,
-	FULL
-};
+
 
 #endif /* SLAVEDEVICECONFIG_H_ */
