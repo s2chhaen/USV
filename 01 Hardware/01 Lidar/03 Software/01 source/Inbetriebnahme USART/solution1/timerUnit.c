@@ -129,7 +129,7 @@ void setUsartWatcherTimeout(uint32_t us){
 	}
 }
 
-uint32_t getUsartWatcherTimeout(uint8_t usartNr){
+uint32_t getUsartWatcherTimeout(){
 	return usartWatcher;
 }
 
@@ -166,8 +166,8 @@ ISR(TCA0_OVF_vect){
 			}
 		}
 		if (i<(NO_OF_USART-1)){
-			if (usartWatcher[i]){
-				usartWatcher[i]--;
+			if (usartWatcher){
+				usartWatcher--;
 			} else{
 				//Lese-Flag checken
 				if ((obj_p->rxObj.toRxByte[obj_p->rxObj.writeFIFOPtr] != 0)){
