@@ -31,8 +31,6 @@ slaveDevice_t obj ={
 	.statusObj.rxBufferState = EMPTY,
 	.statusObj.nextPhase = 0
 };
-//make a lastRxTime here
-static uint8_t temp3 = 0;
 
 #define  VERSION_1 1
 
@@ -124,19 +122,15 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
 	uint8_t lengthForSend = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
 	uint8_t sizeOfArray = 1;
-	uint8_t** temp = (uint8_t**)malloc(sizeOfArray*sizeof(uint8_t*));
-	temp[0] = (uint8_t*)&(obj.txBuffer[obj.txPtrPosition]);
-	data = temp;
-	if (obj.toTxByte<lengthForSend){
-		*length = (uint8_t)(obj.toTxByte);
-		obj.toTxByte = 0;
-		obj.txPtrPosition = 0;
-		obj.txTime=0;
+	*data = (uint8_t*)&(obj.txObj.txBuffer[obj.txObj.strReadPtr]);
+	if (obj.txObj.toTxByte<lengthForSend){
+		*length = (uint8_t)(obj.txObj.toTxByte);
+		obj.txObj.toTxByte = 0;
+		obj.txObj.strReadPtr = 0;
 	} else{
 		*length = (uint8_t)lengthForSend;
-		obj.toTxByte-=lengthForSend;
-		obj.txPtrPosition+=MAX_BYTE_SEND;
-		obj.txTime--;
+		obj.txObj.toTxByte-=lengthForSend;
+		obj.txObj.strReadPtr+=MAX_BYTE_SEND;
 	}
 	return true;
 }
@@ -145,7 +139,7 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 #ifdef VERSION_3
 //zu sendende Byte wird angepasst mit den freien Stellen in FIFO. Die Sendung wird hier durchgefuehrt
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
-	temp3 = max_length;
+	uint8_t temp3 = max_length;
 	uint8_t sendByte = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
 	if (obj.txObj.toTxByte!=0)
 	{
