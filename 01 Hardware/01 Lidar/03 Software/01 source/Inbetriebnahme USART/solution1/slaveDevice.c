@@ -61,10 +61,6 @@ processResult_t dataTx(uint8_t* data,uint16_t length){
 			obj.txObj.txBuffer[i]=data[i];
 		}
 		obj.txObj.toTxByte = length;
-#ifdef VERSION_1
-		obj.txTime = (length/MAX_BYTE_SEND) + ((length%MAX_BYTE_SEND)?1:0);
-		obj.txTime--;
-#endif
 		if(obj.txObj.toTxByte<MAX_BYTE_SEND){
 			obj.txObj.toTxByte = 0;
 			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[0])), length);
