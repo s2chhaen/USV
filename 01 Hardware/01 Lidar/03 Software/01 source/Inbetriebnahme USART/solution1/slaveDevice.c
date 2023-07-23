@@ -34,7 +34,7 @@ slaveDevice_t obj ={
 //make a lastRxTime here
 static uint8_t temp3 = 0;
 
-#define  VERSION_3 1
+#define  VERSION_1 1
 
 #ifdef VERSION_1
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length) /*__attribute__((deprecated("funtcion is in debug time")))*/;
@@ -108,14 +108,13 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 			obj.txObj.toTxByte = 0;
 			obj.txObj.strReadPtr = 0;
 			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp2])), temp1);//Nach dieser Funktion, keine Code mehr schreiben
-		{
+		} else{
 			temp2 = obj.txObj.strReadPtr;
 			obj.txObj.toTxByte-=MAX_BYTE_SEND;
 			obj.txObj.strReadPtr+=MAX_BYTE_SEND;
 			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp2])), MAX_BYTE_SEND);
 		}
 	}
-	
 	return true;
 }
 #endif
