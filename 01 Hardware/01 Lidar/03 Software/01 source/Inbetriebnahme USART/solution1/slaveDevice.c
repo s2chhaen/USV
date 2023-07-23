@@ -118,7 +118,7 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 #endif
 
 #ifdef VERSION_2
-//wie oben aber lässt es die Sendung für TX_Callback function in Interrupt
+//wie oben aber lässt es die Sendung für TX_Callback function in ISR von HAL-Bibliothek
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
 	uint8_t lengthForSend = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
 	uint8_t sizeOfArray = 1;
@@ -166,7 +166,7 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 
 static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 #ifdef ACTIVE_USART_WATCHER
-	uint32_t remainTime = getUsartWatcherTimeout(obj.statusObj.uart);
+	uint32_t remainTime = getUsartWatcherTimeout();
 	if (remainTime)
 	{
 		//Weiter bis zum Ende der Schreibphase
@@ -174,14 +174,14 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 		  die uebrigen werden weggeworfen*/
 		if ((obj.rxObj.strReadPtr+length)<RX_BUFFER_LEN)
 		{
-			for (uint8_t i = 0;i<length;i++){//TODO benutzt memset hier
+			for (uint8_t i = 0;i<length;i++){//TODO benutzt memcopy hier
 				obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];
 			}
 			obj.rxObj.strReadPtr+=length;
 			obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]=obj.rxObj.strReadPtr;
 		} else{
 			uint8_t temp = RX_BUFFER_LEN-obj.rxObj.strReadPtr;
-			for (uint8_t i = 0;i<temp;i++){//TODO benutzt memset hier
+			for (uint8_t i = 0;i<temp;i++){//TODO benutzt memcopy hier
 				obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];
 			}
 			obj.rxObj.strReadPtr=0;
@@ -193,15 +193,39 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 		obj.rxObj.strReadPtr = 0;
 		//wenn FIFO nicht voll, dann schreibt, sonst nicht
 		if (obj.statusObj.rxBufferState!=FULL){
-			for (uint8_t i = 0; i<length; i++){
+			for (uint8_t i = 0; i<length; i++){//TODO benutzt memcopy hier
 				obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];
 			}
 			obj.rxObj.strReadPtr = (obj.rxObj.strReadPtr+length);
 			obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]=obj.rxObj.strReadPtr;
 		}
 	}
-	setUsartWatcherTimeout(obj.statusObj.uart,(USART_TIME_PRO_BYTE_US*3));
+	setUsartWatcherTimeout(USART_TIME_PRO_BYTE_US*3);
 #else
+	//Wenn keine Stringerkennungsmechanismus aktiv ist, dann bekommt die Charakter bis zum END-Text-Symbol erkennt oder Buffer voll
+	if (length+obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]<RX_BUFFER_LEN+1){
+		for (uint8_t i = 0; i<length; i++){//TODO benutzt memcopy hier
+			obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];
+		}
+		obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]+=length;
+		if (data[length-1]==END_SYM){
+			obj.statusObj.nextPhase = 1;
+			obj.rxObj.writeFIFOPtr++;
+			if (obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr){
+				obj.statusObj.rxBufferState=FULL;
+			}
+		}
+	} else {
+		for (uint8_t i = 0; i<RX_BUFFER_LEN-obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]; i++){
+			obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];
+		}//TODO benutzt memcopy hier
+		obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr] = RX_BUFFER_LEN;
+		obj.statusObj.nextPhase = 1;
+		obj.rxObj.writeFIFOPtr++;
+		if (obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr){
+			obj.statusObj.rxBufferState=FULL;
+		}
+	}
 #endif
 	return false;
 }
