@@ -165,15 +165,17 @@ ISR(TCA0_OVF_vect){
 				unlockGenerator(i);
 			}
 		}
-		if (i<(NO_OF_USART-1)){
-			if (usartWatcher){
-				usartWatcher--;
-			} else{
-				//Lese-Flag checken
-				if ((obj_p->rxObj.toRxByte[obj_p->rxObj.writeFIFOPtr] != 0)){
-					//noch nicht gelesen, dann schreibt in naechste leere Zelle, wenn keine leere mehre, dann Voll-Flag gesetzt
-					obj_p->rxObj.writeFIFOPtr = (obj_p->rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
-					obj_p->statusObj.rxBufferState = (obj_p->rxObj.writeFIFOPtr == obj_p->rxObj.readFIFOPtr)?FULL:FILLED;
+		if (obj_p!=NULL){
+			if (i<(NO_OF_USART-1)){
+				if (usartWatcher){
+					usartWatcher--;
+				} else{
+					//Lese-Flag checken
+					if ((obj_p->rxObj.toRxByte[obj_p->rxObj.writeFIFOPtr] != 0)){
+						//noch nicht gelesen, dann schreibt in naechste leere Zelle, wenn keine leere mehre, dann Voll-Flag gesetzt
+						obj_p->rxObj.writeFIFOPtr = (obj_p->rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
+						obj_p->statusObj.rxBufferState = (obj_p->rxObj.writeFIFOPtr == obj_p->rxObj.readFIFOPtr)?FULL:FILLED;
+					}
 				}
 			}
 		}
