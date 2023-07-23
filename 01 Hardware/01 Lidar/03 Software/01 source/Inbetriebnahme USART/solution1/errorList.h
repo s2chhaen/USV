@@ -1,5 +1,5 @@
 /*
- * error_list.h
+ * errorList.h
  *
  * Created: 21.06.2023 13:12:06
  * Author: Thach
