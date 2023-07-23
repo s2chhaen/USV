@@ -14,7 +14,7 @@ volatile timer_t objTCA ={
 
 slaveDevice_t* obj_p;
 volatile tickGenerator counter[NO_OF_SUBTIMER];
-volatile uint32_t usartWatcher[NO_OF_USART] = {0};
+volatile uint32_t usartWatcher = 0;//USART-Einheitswächter
 
 static void resetAllGenerator(){
 	for (uint8_t i = 0; i<NO_OF_SUBTIMER;i++)
