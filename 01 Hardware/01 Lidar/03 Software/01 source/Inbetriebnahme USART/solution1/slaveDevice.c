@@ -83,9 +83,7 @@ processResult_t dataRx(uint8_t* data, uint16_t* length){
 		while (obj.statusObj.rxBufferState==EMPTY);
 #endif
 		*length = obj.rxObj.toRxByte[obj.rxObj.readFIFOPtr];
-		for (uint16_t i = 0;i<(*length);i++){
-			data[i] = obj.rxObj.rxBuffer[obj.rxObj.readFIFOPtr][i];
-		}
+		memcpy(data,(uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.readFIFOPtr]),(*length));
 		obj.rxObj.toRxByte[obj.rxObj.readFIFOPtr]=0;//Nach dem Lesen wird diese Byte als gelesen markiert
 		obj.rxObj.readFIFOPtr = (obj.rxObj.readFIFOPtr+1)%NO_OF_RX_BUFFER;
 		obj.statusObj.rxBufferState = (obj.rxObj.readFIFOPtr == obj.rxObj.writeFIFOPtr)?EMPTY:FILLED;
