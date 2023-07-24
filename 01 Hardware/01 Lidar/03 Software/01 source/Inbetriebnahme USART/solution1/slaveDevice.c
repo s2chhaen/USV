@@ -53,7 +53,7 @@ processResult_t dataTx(uint8_t* data,uint16_t length){
 	} else{
 		while(obj.txObj.toTxByte);//warte bis zum Buffer leer ist
 		memcpy((uint8_t*)obj.txObj.txBuffer,data,length);
-		if(obj.txObj.toTxByte<MAX_BYTE_SEND){
+		if(length<MAX_BYTE_SEND){
 			obj.txObj.toTxByte = 0;
 			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[0])), length);
 		} else{
@@ -133,29 +133,29 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 }
 #endif
 
-volatile uint16_t temp1;
-volatile uint16_t temp2;
+
 
 #ifdef VERSION_3
 //zu sendende Byte wird angepasst mit den freien Stellen in FIFO. Die Sendung wird hier durchgefuehrt
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
 	uint8_t temp3 = max_length;
 	uint8_t sendByte = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
+	volatile uint16_t temp1=0;
+	volatile uint16_t temp2=0;
 	if (obj.txObj.toTxByte!=0)
 	{
 		temp1=obj.txObj.strReadPtr;
 		temp2=obj.txObj.toTxByte;
 		if (obj.txObj.toTxByte<sendByte)
-		{	
-			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp1])), temp2);
+		{
 			obj.txObj.toTxByte = 0;
-			obj.txObj.strReadPtr = 0;
+			obj.txObj.strReadPtr = 0;	
+			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp1])), temp2);
 		} else
 		{
-			
-			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp1])), sendByte);
 			obj.txObj.toTxByte-=sendByte;
 			obj.txObj.strReadPtr+=sendByte;
+			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp1])), sendByte);
 		}
 	}
 	return true;
@@ -172,16 +172,12 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 		  die uebrigen werden weggeworfen*/
 		if ((obj.rxObj.strReadPtr+length)<RX_BUFFER_LEN)
 		{
-			for (uint8_t i = 0;i<length;i++){//TODO benutzt memcopy hier
-				obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];
-			}
+			memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,length);//TODO check
 			obj.rxObj.strReadPtr+=length;
 			obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]=obj.rxObj.strReadPtr;
 		} else{
 			uint8_t temp = RX_BUFFER_LEN-obj.rxObj.strReadPtr;
-			for (uint8_t i = 0;i<temp;i++){//TODO benutzt memcopy hier
-				obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];
-			}
+			memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,temp);//TODO check
 			obj.rxObj.strReadPtr=0;
 			obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]=RX_BUFFER_LEN;
 		}
@@ -191,9 +187,7 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 		obj.rxObj.strReadPtr = 0;
 		//wenn FIFO nicht voll, dann schreibt, sonst nicht
 		if (obj.statusObj.rxBufferState!=FULL){
-			for (uint8_t i = 0; i<length; i++){//TODO benutzt memcopy hier
-				obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];
-			}
+			memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,length);
 			obj.rxObj.strReadPtr = (obj.rxObj.strReadPtr+length);
 			obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]=obj.rxObj.strReadPtr;
 		}
@@ -201,11 +195,8 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	setUsartWatcherTimeout(USART_TIME_PRO_BYTE_US*3);
 #else
 	//Wenn keine Stringerkennungsmechanismus aktiv ist, dann bekommt die Charakter bis zum END-Text-Symbol erkennt oder Buffer voll
-	
 	if (length+obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]<RX_BUFFER_LEN+1){
-		for (uint8_t i = 0; i<length; i++){//TODO benutzt memcopy hier
-			obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];			
-		}
+		memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,length);
 		obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]+=length;
 		obj.rxObj.strReadPtr+=length;
 		if (data[length-1]==END_SYM){
@@ -219,17 +210,13 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 			}
 		}
 	} else {
-		for (uint8_t i = 0; i<RX_BUFFER_LEN-obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]; i++){
-			obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];
-		}//TODO benutzt memcopy hier
+		uint8_t temp = RX_BUFFER_LEN-obj.rxObj.strReadPtr;
+		memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,temp);
+		obj.rxObj.strReadPtr = 0;
 		obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr] = RX_BUFFER_LEN;
 		obj.statusObj.nextPhase = 1;
 		obj.rxObj.writeFIFOPtr = (obj.rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
-		if (obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr){
-			obj.statusObj.rxBufferState=FULL;
-		} else{
-			obj.statusObj.rxBufferState=FILLED;
-		}
+		obj.statusObj.rxBufferState = (obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr)?FULL:FILLED;
 	}
 #endif
 	return false;
