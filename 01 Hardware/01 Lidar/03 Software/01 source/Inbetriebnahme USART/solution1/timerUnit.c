@@ -172,10 +172,10 @@ ISR(TCA0_OVF_vect){
 					usartWatcher--;
 				} else{
 					//Lese-Flag checken
-					if ((obj_p->rxObj.toRxByte[obj_p->rxObj.writeFIFOPtr] != 0)){
+					if ((obj_p->rxObj.rxByte[obj_p->rxObj.writeFIFOPtr] != 0)){
 						//noch nicht gelesen, dann schreibt in naechste leere Zelle, wenn keine leere mehre, dann Voll-Flag gesetzt
 						obj_p->rxObj.writeFIFOPtr = (obj_p->rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
-						obj_p->statusObj.rxBufferState = (obj_p->rxObj.writeFIFOPtr == obj_p->rxObj.readFIFOPtr)?FULL:FILLED;
+						obj_p->statusObj.rxFIFOState = (obj_p->rxObj.writeFIFOPtr == obj_p->rxObj.readFIFOPtr)?FULL:FILLED;
 					}
 				}
 			}

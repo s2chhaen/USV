@@ -11,7 +11,7 @@
 //preinit von slaveDevice
 slaveDevice_t obj ={
 	// rxObj
-	.rxObj.toRxByte = {0},
+	.rxObj.rxByte = {0},
 	.rxObj.rxBuffer = {{0}},
 	.rxObj.strReadPtr = 0,
 	.rxObj.rxLenMax=RX_BUFFER_LEN,
@@ -26,7 +26,7 @@ slaveDevice_t obj ={
 	.statusObj.uart = 0,
 	.statusObj.initState= 0,
 	.statusObj.crcActive= 0,
-	.statusObj.rxBufferState = EMPTY,
+	.statusObj.rxFIFOState = EMPTY,
 	.statusObj.nextPhase = 0
 };
 
@@ -74,19 +74,19 @@ processResult_t dataRx(uint8_t* data, uint16_t* length){
 		result = NULL_POINTER;
 	} else if((*length) > obj.rxObj.rxLenMax){//checken die Laenge
 		result = LENGTH_EXCESS;
-	} else if (obj.statusObj.rxBufferState == EMPTY){//checken leer
+	} else if (obj.statusObj.rxFIFOState == EMPTY){//checken leer
 		result = FIFO_EMPTY;
 	}else{
 #ifdef ACTIVE_USART_WATCHER
 		while (getUsartWatcherTimeout(obj.statusObj.uart)!=0);//Warte bis rxBuffer total geschrieben wird
 #else
-		while (obj.statusObj.rxBufferState==EMPTY);
+		while (obj.statusObj.rxFIFOState==EMPTY);
 #endif
-		*length = obj.rxObj.toRxByte[obj.rxObj.readFIFOPtr];
+		*length = obj.rxObj.rxByte[obj.rxObj.readFIFOPtr];
 		memcpy(data,(uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.readFIFOPtr]),(*length));
-		obj.rxObj.toRxByte[obj.rxObj.readFIFOPtr]=0;//Nach dem Lesen wird diese Byte als gelesen markiert
+		obj.rxObj.rxByte[obj.rxObj.readFIFOPtr]=0;//Nach dem Lesen wird diese Byte als gelesen markiert
 		obj.rxObj.readFIFOPtr = (obj.rxObj.readFIFOPtr+1)%NO_OF_RX_BUFFER;
-		obj.statusObj.rxBufferState = (obj.rxObj.readFIFOPtr == obj.rxObj.writeFIFOPtr)?EMPTY:FILLED;
+		obj.statusObj.rxFIFOState = (obj.rxObj.readFIFOPtr == obj.rxObj.writeFIFOPtr)?EMPTY:FILLED;
 	}
 	return result;
 }
@@ -174,22 +174,22 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 		{
 			memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,length);//TODO check
 			obj.rxObj.strReadPtr+=length;
-			obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]=obj.rxObj.strReadPtr;
+			obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr]=obj.rxObj.strReadPtr;
 		} else{
 			uint8_t temp = RX_BUFFER_LEN-obj.rxObj.strReadPtr;
 			memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,temp);//TODO check
 			obj.rxObj.strReadPtr=0;
-			obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]=RX_BUFFER_LEN;
+			obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr]=RX_BUFFER_LEN;
 		}
 		obj.statusObj.nextPhase = 1;
 	} else{
 		//Anfang der Schreibphase
 		obj.rxObj.strReadPtr = 0;
 		//wenn FIFO nicht voll, dann schreibt, sonst nicht
-		if (obj.statusObj.rxBufferState!=FULL){
+		if (obj.statusObj.rxFIFOState!=FULL){
 			memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,length);
 			obj.rxObj.strReadPtr = (obj.rxObj.strReadPtr+length);
-			obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]=obj.rxObj.strReadPtr;
+			obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr]=obj.rxObj.strReadPtr;
 		}
 	}
 	setUsartWatcherTimeout(USART_TIME_PRO_BYTE_US*3);
@@ -228,7 +228,7 @@ processResult_t initDev(uint8_t USARTnumber, uint32_t baudrate,USART_CHSIZE_t bi
 	//initialisieren der zwei rx- und tx-Buffer
 	memset((int**)obj.rxObj.rxBuffer,0,sizeof(obj.rxObj.rxBuffer));
 	memset((int*)obj.txObj.txBuffer,0,sizeof(obj.txObj.txBuffer));
-	memset((int*)obj.rxObj.toRxByte,0,sizeof(obj.rxObj.toRxByte));
+	memset((int*)obj.rxObj.rxByte,0,sizeof(obj.rxObj.rxByte));
 	//obj.dataTx_p = dataTx;
 	//obj.dataRx_p = dataRx;
 	obj.statusObj.uart = USARTnumber;

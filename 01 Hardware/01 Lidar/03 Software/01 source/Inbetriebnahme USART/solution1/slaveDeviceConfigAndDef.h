@@ -25,7 +25,7 @@
 typedef struct{
 	struct rxUnit{
 		volatile uint8_t rxBuffer[NO_OF_RX_BUFFER][RX_BUFFER_LEN];
-		volatile uint16_t toRxByte[NO_OF_RX_BUFFER];
+		volatile uint16_t rxByte[NO_OF_RX_BUFFER];
 		volatile uint16_t strReadPtr;
 		const uint16_t rxLenMax;
 		const uint8_t fifoLenMax;
@@ -43,7 +43,7 @@ typedef struct{
 		volatile uint8_t uart:2;
 		uint8_t initState:1;
 		uint8_t crcActive:1;
-		volatile uint8_t rxBufferState:2;//Leer, Belegt, Voll
+		volatile uint8_t rxFIFOState:2;//Leer, Belegt, Voll
 		uint8_t nextPhase:1;
 	}statusObj;
 }slaveDevice_t;
