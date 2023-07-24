@@ -3,6 +3,7 @@
  *
  * Created: 6/29/2023 11:57:34 PM
  * Author: Thach
+ * Version: 1.0
  */ 
 
 #include "timerUnit.h"
@@ -166,7 +167,7 @@ ISR(TCA0_OVF_vect){
 			}
 		}
 		if (obj_p!=NULL){
-			if (i<(NO_OF_USART-1)){
+			if (i<NO_OF_USART){
 				if (usartWatcher){
 					usartWatcher--;
 				} else{
