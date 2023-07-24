@@ -80,7 +80,11 @@ processResult_t dataRx(uint8_t* data, uint16_t* length){
 	} else if (obj.statusObj.rxBufferState == EMPTY){//checken leer
 		result = FIFO_EMPTY;
 	}else{
+#ifdef ACTIVE_USART_WATCHER
 		while (getUsartWatcherTimeout(obj.statusObj.uart)!=0);//Warte bis rxBuffer total geschrieben wird
+#else
+		while (obj.statusObj.rxBufferState==EMPTY);
+#endif
 		*length = obj.rxObj.toRxByte[obj.rxObj.readFIFOPtr];
 		for (uint16_t i = 0;i<(*length);i++){
 			data[i] = obj.rxObj.rxBuffer[obj.rxObj.readFIFOPtr][i];
@@ -201,16 +205,21 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	setUsartWatcherTimeout(USART_TIME_PRO_BYTE_US*3);
 #else
 	//Wenn keine Stringerkennungsmechanismus aktiv ist, dann bekommt die Charakter bis zum END-Text-Symbol erkennt oder Buffer voll
+	
 	if (length+obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]<RX_BUFFER_LEN+1){
 		for (uint8_t i = 0; i<length; i++){//TODO benutzt memcopy hier
-			obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];
+			obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][i+obj.rxObj.strReadPtr] = data[i];			
 		}
 		obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]+=length;
+		obj.rxObj.strReadPtr+=length;
 		if (data[length-1]==END_SYM){
 			obj.statusObj.nextPhase = 1;
 			obj.rxObj.writeFIFOPtr = (obj.rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
+			obj.rxObj.strReadPtr=0;
 			if (obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr){
 				obj.statusObj.rxBufferState=FULL;
+			} else{
+				obj.statusObj.rxBufferState=FILLED;
 			}
 		}
 	} else {
@@ -222,6 +231,8 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 		obj.rxObj.writeFIFOPtr = (obj.rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
 		if (obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr){
 			obj.statusObj.rxBufferState=FULL;
+		} else{
+			obj.statusObj.rxBufferState=FILLED;
 		}
 	}
 #endif
@@ -243,7 +254,7 @@ processResult_t initDev(uint8_t USARTnumber, uint32_t baudrate,USART_CHSIZE_t bi
 #ifdef ACTIVE_USART_WATCHER
 	USART_set_Bytes_to_receive(USARTnumber,1);
 #else
-	USART_set_Bytes_to_receive(USARTnumber,MAX_BYTE_SEND); 
+	USART_set_Bytes_to_receive(USARTnumber,1); 
 #endif
 	
 	USART_set_receive_Array_callback_fnc(USARTnumber,&callbackRx);
