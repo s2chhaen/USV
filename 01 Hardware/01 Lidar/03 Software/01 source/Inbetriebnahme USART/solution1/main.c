@@ -8,6 +8,17 @@
 
 #include "main.h"
 
+/************************************************************************/
+/* Definition der Macros für Testversuche                                                                     */
+/************************************************************************/
+//Echo-Test
+#define ACTIVE_ECHO_TEST 1
+//Test der Sendefunktion von slaveDevice.c
+#define ACTIVE_USER_DEFINED_SEND_FUNCTION_TEST 1
+//Test der Sendefunktion von HAL-Bibliothek
+#define ACTIVE_HAL_USART_TEST 1
+
+
 /**
  * \brief Initalisierung für das ganze Programm
  * \return uint8_t 0:Fehlerfrei, sonst Fehler
@@ -17,7 +28,7 @@ static uint8_t init(){
 	uint8_t prescaler = 1;
 	uint8_t timerResUs = 1;
 	uint16_t timerPre = 1024;
-	uint32_t baudrateSlave = 76800;
+	uint32_t baudrateSlave = 250000;
 	//CPU-Init
 	init_Core_CLK(INTERN_CLK,prescaler);
 	//USART-Beobachter- und Stopuhr-Einheit-Init
@@ -57,47 +68,27 @@ static void echoTest(){
 
 int main(void) {
 	init();
-#ifdef ACTIVE_HAL_USART_TEST_SEG_1
-#define MAX_VALUE_TEST 31
-	uint8_t test[MAX_VALUE_TEST]={0};
-	for (int i = 0; i < MAX_VALUE_TEST; i++){
-		test[i] = i;
+#ifdef ACTIVE_HAL_USART_TEST
+#define MAX_VALUE_TEST_1 31
+	uint8_t test1[MAX_VALUE_TEST_1]={0};
+	for (int i = 0; i < MAX_VALUE_TEST_1; i++){
+		test1[i] = i;
 	}
-	uint8_t txDataLength= sizeof(test)/sizeof(uint8_t);
-	USART_send_Array(iUSART1, 0x0, test, txDataLength);
-#endif
-#ifdef ACTIVE_HAL_USART_TEST_SEG_2
-#define MAX_LENGTH_BUFFER 50
-	USART_set_Bytes_to_receive(iUSART1,31);
-	volatile uint8_t rxBuffer[MAX_LENGTH_BUFFER]={0};
-	volatile uint8_t* temp[1];
-	temp[0] = &rxBuffer;
-	volatile uint8_t rxLength;
-	volatile uint8_t rxPtr=0;
-	uint8_t adr = 0;
+	uint8_t txDataLength1= sizeof(test1)/sizeof(uint8_t);
+	USART_send_Array(iUSART1, 0x0, test1, txDataLength1);
 #endif
 		
-#ifdef ACTIVE_SLV_DEVICE_SEND_TEST_SEG
-	#define MAX_VALUE_TEST 31
-	uint8_t test[MAX_VALUE_TEST]={0};
-	for (int i = 0; i < MAX_VALUE_TEST; i++){
-		test[i] = i;
+#ifdef ACTIVE_USER_DEFINED_SEND_FUNCTION_TEST
+	#define MAX_VALUE_TEST_2 70
+	uint8_t test2[MAX_VALUE_TEST_2]={0};
+	for (int i = 0; i < MAX_VALUE_TEST_2; i++){
+		test2[i] = i;
 	}
-	uint8_t txDataLength= sizeof(test)/sizeof(uint8_t);
-	dataTx(test,txDataLength);
+	uint8_t txDataLength2= sizeof(test2)/sizeof(uint8_t);
+	dataTx(test2,txDataLength2);
 #endif
-	volatile uint8_t ix = 0;
-#ifdef ACTIVE_HAL_USART_TEST_SEG_2
-	volatile bool checkRx = false;
-#endif
+
     while (1){
-		ix++;
-#ifdef ACTIVE_HAL_USART_TEST_SEG_2
-		checkRx = USART_receive_Array(iUSART1,&adr,(uint8_t**)temp,MAX_LENGTH_BUFFER,(uint8_t*)&rxLength);
-		if(rxLength!=0){
-			USART_send_Array(iUSART1, 0x0, rxBuffer,rxLength);
-		}
-#endif
 #ifdef ACTIVE_ECHO_TEST
 		echoTest();
 #endif
