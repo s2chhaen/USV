@@ -52,15 +52,12 @@ processResult_t dataTx(uint8_t* data,uint16_t length){
 		result = NULL_POINTER;
 	} else{
 		while(obj.txObj.toTxByte);//warte bis zum Buffer leer ist
-		for (uint16_t i = 0;i<length;i++)
-		{
-			obj.txObj.txBuffer[i]=data[i];
-		}
-		obj.txObj.toTxByte = length;
+		memcpy((uint8_t*)obj.txObj.txBuffer,data,length);
 		if(obj.txObj.toTxByte<MAX_BYTE_SEND){
 			obj.txObj.toTxByte = 0;
 			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[0])), length);
 		} else{
+			obj.txObj.toTxByte = length;
 			obj.txObj.toTxByte-=MAX_BYTE_SEND;
 			obj.txObj.strReadPtr+=MAX_BYTE_SEND;
 			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[0])), MAX_BYTE_SEND);	
@@ -138,6 +135,9 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 }
 #endif
 
+volatile uint16_t temp1;
+volatile uint16_t temp2;
+
 #ifdef VERSION_3
 //zu sendende Byte wird angepasst mit den freien Stellen in FIFO. Die Sendung wird hier durchgefuehrt
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
@@ -145,21 +145,19 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 	uint8_t sendByte = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
 	if (obj.txObj.toTxByte!=0)
 	{
-		uint16_t temp1 = 0;
-		uint16_t temp2 = 0;
+		temp1=obj.txObj.strReadPtr;
+		temp2=obj.txObj.toTxByte;
 		if (obj.txObj.toTxByte<sendByte)
-		{
-			temp1 = obj.txObj.toTxByte;
-			temp2 = obj.txObj.strReadPtr;
+		{	
+			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp1])), temp2);
 			obj.txObj.toTxByte = 0;
 			obj.txObj.strReadPtr = 0;
-			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp2])), temp1);
 		} else
 		{
-			temp2 = obj.txObj.strReadPtr;
+			
+			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp1])), sendByte);
 			obj.txObj.toTxByte-=sendByte;
 			obj.txObj.strReadPtr+=sendByte;
-			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp2])), sendByte);
 		}
 	}
 	return true;
