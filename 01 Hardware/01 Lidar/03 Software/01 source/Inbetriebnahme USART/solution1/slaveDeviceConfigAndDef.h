@@ -16,9 +16,12 @@
 #define NO_OF_RX_BUFFER 2
 #define USART_TIME_PRO_BYTE_US 96
 
+//TODO lässt hier bis zum Ende der Dokumentationsphase, dieses Modus ist sehr schwer und nicht
+//geeignet für hohe Baudrate
 #define ACTIVE_USART_WATCHER 1
 #define END_SYM 0x0A
 
+//Version 1 von slaveDevice_t
 typedef struct{
 	struct rxUnit{
 		volatile uint8_t rxBuffer[NO_OF_RX_BUFFER][RX_BUFFER_LEN];
