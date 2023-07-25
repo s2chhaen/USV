@@ -92,20 +92,18 @@ processResult_t dataRx(uint8_t* data, uint16_t* length){
 #ifdef VERSION_1
 //zu sendende Byte wird konstant in FIFO jedes Interrupt hinzugefügt. Die weitere Sendung wird hier durchgefuehrt
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
-	if (obj.txObj.toTxByte!=0){
-		uint16_t temp1 = 0;
-		uint16_t temp2 = 0;
-		if (obj.txObj.toTxByte<MAX_BYTE_SEND){
-			temp1 = obj.txObj.toTxByte;
-			temp2 = obj.txObj.strReadPtr;
+	uint16_t toTxByteTemp = obj.txObj.toTxByte;
+	if (toTxByteTemp!=0){
+		uint16_t strReadPtrTemp = obj.txObj.strReadPtr;
+		uint8_t usartNrTemp = obj.statusObj.uart;
+		if (toTxByteTemp < MAX_BYTE_SEND){
 			obj.txObj.toTxByte = 0;
 			obj.txObj.strReadPtr = 0;
-			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp2])), temp1);//Nach dieser Funktion, keine Code mehr schreiben
+			USART_send_Array(usartNrTemp, 0, (uint8_t*)(&(obj.txObj.txBuffer[strReadPtrTemp])), toTxByteTemp);//Nach dieser Funktion, keine Code mehr schreiben
 		} else{
-			temp2 = obj.txObj.strReadPtr;
 			obj.txObj.toTxByte-=MAX_BYTE_SEND;
 			obj.txObj.strReadPtr+=MAX_BYTE_SEND;
-			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp2])), MAX_BYTE_SEND);
+			USART_send_Array(usartNrTemp, 0, (uint8_t*)(&(obj.txObj.txBuffer[strReadPtrTemp])), MAX_BYTE_SEND);
 		}
 	}
 	return true;
@@ -116,7 +114,6 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 //wie oben aber lässt es die Sendung für TX_Callback function in ISR von HAL-Bibliothek
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
 	uint8_t lengthForSend = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
-	uint8_t sizeOfArray = 1;
 	*data = (uint8_t*)&(obj.txObj.txBuffer[obj.txObj.strReadPtr]);
 	if (obj.txObj.toTxByte<lengthForSend){
 		*length = (uint8_t)(obj.txObj.toTxByte);
@@ -136,24 +133,22 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 #ifdef VERSION_3
 //zu sendende Byte wird angepasst mit den freien Stellen in FIFO. Die Sendung wird hier durchgefuehrt
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
-	uint8_t temp3 = max_length;
 	uint8_t sendByte = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
-	volatile uint16_t temp1=0;
-	volatile uint16_t temp2=0;
-	if (obj.txObj.toTxByte!=0)
+	uint16_t toTxByteTemp=obj.txObj.toTxByte;
+	if (toTxByteTemp!=0)
 	{
-		temp1=obj.txObj.strReadPtr;
-		temp2=obj.txObj.toTxByte;
-		if (obj.txObj.toTxByte<sendByte)
+		uint16_t strReadPtrTemp=obj.txObj.strReadPtr;
+		uint8_t usartNrTemp = obj.statusObj.uart;
+		if (toTxByteTemp<sendByte)
 		{
 			obj.txObj.toTxByte = 0;
 			obj.txObj.strReadPtr = 0;	
-			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp1])), temp2);
+			USART_send_Array(usartNrTemp, 0, (uint8_t*)(&(obj.txObj.txBuffer[strReadPtrTemp])), toTxByteTemp);
 		} else
 		{
 			obj.txObj.toTxByte-=sendByte;
 			obj.txObj.strReadPtr+=sendByte;
-			USART_send_Array(obj.statusObj.uart, 0, (uint8_t*)(&(obj.txObj.txBuffer[temp1])), sendByte);
+			USART_send_Array(usartNrTemp, 0, (uint8_t*)(&(obj.txObj.txBuffer[strReadPtrTemp])), sendByte);
 		}
 	}
 	return true;
