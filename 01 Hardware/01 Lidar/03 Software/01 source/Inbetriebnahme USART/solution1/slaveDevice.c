@@ -193,28 +193,26 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	setUsartWatcherTimeout(USART_TIME_PRO_BYTE_US*3);
 #else
 	//Wenn keine Stringerkennungsmechanismus aktiv ist, dann bekommt die Charakter bis zum END-Text-Symbol erkennt oder Buffer voll
-	if (length+obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]<RX_BUFFER_LEN+1){
+	if (length+obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr]<RX_BUFFER_LEN+1){
 		memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,length);
-		obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr]+=length;
+		obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr]+=length;
 		obj.rxObj.strReadPtr+=length;
 		if (data[length-1]==END_SYM){
-			obj.statusObj.nextPhase = 1;
 			obj.rxObj.writeFIFOPtr = (obj.rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
 			obj.rxObj.strReadPtr=0;
 			if (obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr){
-				obj.statusObj.rxBufferState=FULL;
+				obj.statusObj.rxFIFOState=FULL;
 			} else{
-				obj.statusObj.rxBufferState=FILLED;
+				obj.statusObj.rxFIFOState=FILLED;
 			}
 		}
 	} else {
 		uint8_t temp = RX_BUFFER_LEN-obj.rxObj.strReadPtr;
 		memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,temp);
 		obj.rxObj.strReadPtr = 0;
-		obj.rxObj.toRxByte[obj.rxObj.writeFIFOPtr] = RX_BUFFER_LEN;
-		obj.statusObj.nextPhase = 1;
+		obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr] = RX_BUFFER_LEN;
 		obj.rxObj.writeFIFOPtr = (obj.rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
-		obj.statusObj.rxBufferState = (obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr)?FULL:FILLED;
+		obj.statusObj.rxFIFOState = (obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr)?FULL:FILLED;
 	}
 #endif
 	return false;
