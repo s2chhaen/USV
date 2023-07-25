@@ -77,13 +77,12 @@ processResult_t dataRx(uint8_t* data, uint16_t* length){
 		result = FIFO_EMPTY;
 	}else{
 #ifdef ACTIVE_USART_WATCHER
-		while (getUsartWatcherTimeout(obj.statusObj.uart)!=0);//Warte bis rxBuffer total geschrieben wird
-#else
-		while (obj.statusObj.rxFIFOState==EMPTY);
+		while (getUsartWatcherTimeout()!=0);//Warte bis rxBuffer total geschrieben wird
 #endif
-		*length = obj.rxObj.rxByte[obj.rxObj.readFIFOPtr];
-		memcpy(data,(uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.readFIFOPtr]),(*length));
-		obj.rxObj.rxByte[obj.rxObj.readFIFOPtr]=0;//Nach dem Lesen wird diese Byte als gelesen markiert
+		uint8_t readFIFOPtrTemp = obj.rxObj.readFIFOPtr;
+		*length = obj.rxObj.rxByte[readFIFOPtrTemp];
+		memcpy(data,(uint8_t*)&(obj.rxObj.rxBuffer[readFIFOPtrTemp]),(*length));
+		obj.rxObj.rxByte[readFIFOPtrTemp]=0;//Nach dem Lesen wird diese Byte als gelesen markiert
 		obj.rxObj.readFIFOPtr = (obj.rxObj.readFIFOPtr+1)%NO_OF_RX_BUFFER;
 		obj.statusObj.rxFIFOState = (obj.rxObj.readFIFOPtr == obj.rxObj.writeFIFOPtr)?EMPTY:FILLED;
 	}
