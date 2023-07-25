@@ -3,7 +3,7 @@
  *
  * Created: 6/29/2023 11:57:34 PM
  * Author: Thach
- * Version: 1.0
+ * Version: 1.1
  */ 
 
 #include "timerUnit.h"
@@ -13,9 +13,12 @@ volatile timer_t objTCA ={
 	.resolutionUs=1
 };
 
+#ifdef ACTIVE_USART_WATCHER
 slaveDevice_t* obj_p;//Zeiger zur der zu beobachtenden USART-Einheit,für dieses Modul ist nur eine USART-Einheit notwendig
-volatile tickGenerator counter[NO_OF_SUBTIMER];
 volatile uint32_t usartWatcher = 0;//USART-Einheitswächter,für dieses Modul ist nur eine USART-Einheit notwendig
+#endif
+volatile tickGenerator counter[NO_OF_SUBTIMER];
+
 
 static void resetAllGenerator(){
 	for (uint8_t i = 0; i<NO_OF_SUBTIMER;i++)
@@ -43,7 +46,9 @@ static inline void unlockGenerator(uint8_t i){
 void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	objTCA.adr->SINGLE.INTCTRL &= ~(1<<0);//Vorlaeufig deaktiviert wird Overflow-Interrupt
 	resetAllGenerator();
+#ifdef ACTIVE_USART_WATCHER
 	usartWatcher = 0;//Für dieses Modul ist nur eine USART-Einheit notwendig
+#endif
 	if (prescaler==0)
 	{
 		prescaler = 1;
@@ -111,6 +116,8 @@ void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	objTCA.adr->SINGLE.INTCTRL = configINTCTRL.value;//Overflow-Interrupt wird wieder aktiviert 
 }
 
+#ifdef ACTIVE_USART_WATCHER
+
 uint8_t setWatchedObj(slaveDevice_t *input_p){
 	uint8_t result = NO_ERROR;
 	if (input_p!=NULL)
@@ -121,6 +128,7 @@ uint8_t setWatchedObj(slaveDevice_t *input_p){
 	}
 	return result;
 }
+
 
 void setUsartWatcherTimeout(uint32_t us){
 	if (obj_p!=NULL){
@@ -133,6 +141,8 @@ void setUsartWatcherTimeout(uint32_t us){
 uint32_t getUsartWatcherTimeout(){
 	return usartWatcher;
 }
+
+#endif
 
 uint8_t waitUs(uint32_t us){
 	uint8_t result = NO_ERROR;
@@ -156,9 +166,13 @@ void waitCycle(uint32_t cycle){
 }
 
 ISR(TCA0_OVF_vect){
+#ifdef ACTIVE_USART_WATCHER
 	uint8_t loopMax = MAX(NO_OF_SUBTIMER,NO_OF_USART);
+#else
+	uint8_t loopMax = NO_OF_SUBTIMER;
+#endif
 	for (int i = 0; i<loopMax;i++){
-		if (i<(NO_OF_SUBTIMER-1)){
+		if (i<NO_OF_SUBTIMER){
 			if (counter[i].lock){
 				counter[i].value--;
 			}
@@ -166,6 +180,7 @@ ISR(TCA0_OVF_vect){
 				unlockGenerator(i);
 			}
 		}
+#ifdef ACTIVE_USART_WATCHER
 		if (obj_p!=NULL){
 			if (i<NO_OF_USART){
 				if (usartWatcher){
@@ -180,6 +195,7 @@ ISR(TCA0_OVF_vect){
 				}
 			}
 		}
+#endif
 	}
 	objTCA.adr->SINGLE.INTFLAGS |=  TCA_SINGLE_OVF_bm;//Loeschen von Interrupt-Flag
 }

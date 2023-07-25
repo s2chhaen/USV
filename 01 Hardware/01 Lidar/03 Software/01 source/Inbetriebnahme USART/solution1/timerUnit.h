@@ -3,7 +3,7 @@
  *
  * Created: 6/29/2023 1:41:01 PM
  * Author: Thach
- * Version: 1.0
+ * Version: 1.1
  */ 
 
 
@@ -19,8 +19,10 @@
 #include "slaveDeviceConfigAndDef.h"
 
 #define NO_OF_SUBTIMER 2
+#ifdef ACTIVE_USART_WATCHER
 //Für dieses Modul ist nur eine USART-Einheit notwendig
 #define NO_OF_USART 1
+#endif
 
 typedef struct  
 {
@@ -101,10 +103,15 @@ enum prescaler{
 };
 
 extern void timerInit(uint8_t resolutionUs, uint16_t prescaler);
+
+#ifdef ACTIVE_USART_WATCHER
 extern void setUsartWatcherTimeout(uint32_t us);
 extern uint32_t getUsartWatcherTimeout();
+extern uint8_t setWatchedObj(slaveDevice_t* input_p);
+#endif
+
 extern uint8_t waitUs(uint32_t us);
 extern void waitCycle(uint32_t cycle);
-extern uint8_t setWatchedObj(slaveDevice_t* input_p);
+
 
 #endif /* TIMERUNIT_H_ */
