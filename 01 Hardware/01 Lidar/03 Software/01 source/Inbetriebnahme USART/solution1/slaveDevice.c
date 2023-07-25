@@ -160,14 +160,17 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	uint32_t remainTime = getUsartWatcherTimeout();
 	if (remainTime)
 	{
+		uint16_t writeFIFOPtrTemp = obj.rxObj.writeFIFOPtr;
+		uint16_t strReadPtrTemp = obj.rxObj.strReadPtr;
 		//Weiter bis zum Ende der Schreibphase
 		/*wenn die zu empfangenden Daten laenge als die Laenge von rxBuffer,kopieren bis zum Buffer voll, 
 		  die uebrigen werden weggeworfen*/
-		if ((obj.rxObj.strReadPtr+length)<RX_BUFFER_LEN)
+		if ((strReadPtrTemp+length)<RX_BUFFER_LEN)
 		{
-			memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,length);//TODO check
+			memcpy((uint8_t*)&(obj.rxObj.rxBuffer[writeFIFOPtrTemp][strReadPtrTemp]),data,length);//TODO check
 			obj.rxObj.strReadPtr+=length;
-			obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr]=obj.rxObj.strReadPtr;
+			strReadPtrTemp = obj.rxObj.strReadPtr;//Aktualisiert des Werts von obj.rxObj.strReadPtr zu Zwischenvariable
+			obj.rxObj.rxByte[writeFIFOPtrTemp]=strReadPtrTemp;
 		} else{
 			uint8_t temp = RX_BUFFER_LEN-obj.rxObj.strReadPtr;
 			memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,temp);//TODO check
