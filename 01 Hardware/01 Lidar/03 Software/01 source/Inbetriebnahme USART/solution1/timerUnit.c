@@ -1,13 +1,15 @@
 /*
- * timerUnit.c
+ * timerUnit.c: Quellcode für das timerUnit-Modul
  *
  * Created: 6/29/2023 11:57:34 PM
  * Author: Thach
  * Version: 1.1
+ * Revision: 1.1
  */ 
 
 #include "timerUnit.h"
 
+//Zuweisung der Zähler/Timer Typ A von Mikrocontroller zur Verwaltungsobjekt des Moduls
 volatile timer_t objTCA ={
 	.adr=&(TCA0),
 	.resolutionUs=1
@@ -17,9 +19,16 @@ volatile timer_t objTCA ={
 slaveDevice_t* obj_p;//Zeiger zur der zu beobachtenden USART-Einheit,für dieses Modul ist nur eine USART-Einheit notwendig
 volatile uint32_t usartWatcher = 0;//USART-Einheitswächter,für dieses Modul ist nur eine USART-Einheit notwendig
 #endif
-volatile tickGenerator counter[NO_OF_SUBTIMER];
+
+volatile tickGenerator counter[NO_OF_SUBTIMER];//Zähler-Array
 
 
+/**
+ * \brief Wiederherstellung aller Zähler
+ * 
+ * 
+ * \return void
+ */
 static void resetAllGenerator(){
 	for (uint8_t i = 0; i<NO_OF_SUBTIMER;i++)
 	{
@@ -28,6 +37,13 @@ static void resetAllGenerator(){
 	}
 }
 
+
+/**
+ * \brief Suche eines freien Zähler im Array
+ * 
+ * 
+ * \return int8_t der erste freie Zähler im Array, -1: keine gefunden
+ */
 static int8_t searchFreeGenerator(){
 	int result = -1;
 	for (uint8_t i = 0;i<NO_OF_SUBTIMER;i++){
@@ -45,10 +61,11 @@ static inline void unlockGenerator(uint8_t i){
 
 void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	objTCA.adr->SINGLE.INTCTRL &= ~(1<<0);//Vorlaeufig deaktiviert wird Overflow-Interrupt
-	resetAllGenerator();
+	resetAllGenerator();//Alle Zähler wiederhergestellt
 #ifdef ACTIVE_USART_WATCHER
 	usartWatcher = 0;//Für dieses Modul ist nur eine USART-Einheit notwendig
 #endif
+	//Prescaler aufgerundet
 	if (prescaler==0)
 	{
 		prescaler = 1;
@@ -73,6 +90,7 @@ void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	} else{
 		prescaler = 1024;
 	}
+	//Konfiguration
 	TCA0_CTRLA_t configCTRLA;
 	switch(prescaler){
 		case 1:
@@ -106,13 +124,13 @@ void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	configCTRLA.valueBitField.ENABLE = 1;
 	TCA0_INTCTRL_t configINTCTRL = {.valueBitField.OVF=1};
 	objTCA.resolutionUs = resolutionUs;
-	//Berechnung des Wertes fuer PER
+	//Berechnung des Wertes für PER (Periode)
 	uint16_t value = (uint16_t)((CLK_CPU/prescaler)*(resolutionUs));
 	uint16_t compensation = (CLK_CPU%prescaler)?1:0;
 	objTCA.adr->SINGLE.PER = (value+compensation);
 	objTCA.initStatus = 1;
 	//immer am Ende
-	objTCA.adr->SINGLE.CTRLA = configCTRLA.value;
+	objTCA.adr->SINGLE.CTRLA = configCTRLA.value;//Modul aktiviert
 	objTCA.adr->SINGLE.INTCTRL = configINTCTRL.value;//Overflow-Interrupt wird wieder aktiviert 
 }
 
@@ -128,7 +146,6 @@ uint8_t setWatchedObj(slaveDevice_t *input_p){
 	}
 	return result;
 }
-
 
 void setUsartWatcherTimeout(uint32_t us){
 	if (obj_p!=NULL){
@@ -162,6 +179,7 @@ uint8_t waitUs(uint32_t us){
 }
 
 void waitCycle(uint32_t cycle){
+	//TODO: noch zu verbessern, weil die Zyklen nicht echtzeitig
 	for (uint32_t i = 0; i<cycle;i++);
 }
 
@@ -197,6 +215,6 @@ ISR(TCA0_OVF_vect){
 		}
 #endif
 	}
-	objTCA.adr->SINGLE.INTFLAGS |=  TCA_SINGLE_OVF_bm;//Loeschen von Interrupt-Flag
+	objTCA.adr->SINGLE.INTFLAGS |=  TCA_SINGLE_OVF_bm;//Löschen von Interrupt-Flag
 }
 
