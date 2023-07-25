@@ -1,8 +1,10 @@
 /*
- * solution1.c
+ * main.c:
  *
  * Created: 11.03.2023 16:31:29
  * Author : Thach
+ * Version: 1.0
+ * Revision: 1.0
  */ 
 
 
@@ -13,11 +15,6 @@
 /************************************************************************/
 //Echo-Test
 #define ACTIVE_ECHO_TEST 0
-//Test der Sendefunktion von slaveDevice.c
-#define ACTIVE_USER_DEFINED_SEND_FUNCTION_TEST 1
-//Test der Sendefunktion von HAL-Bibliothek
-#define ACTIVE_HAL_USART_TEST 1
-
 
 /**
  * \brief Initalisierung für das ganze Programm
