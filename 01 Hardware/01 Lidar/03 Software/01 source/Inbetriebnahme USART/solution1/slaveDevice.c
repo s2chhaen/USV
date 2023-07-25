@@ -156,12 +156,12 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 #endif
 
 static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
+	uint16_t writeFIFOPtrTemp = obj.rxObj.writeFIFOPtr;
+	uint16_t strReadPtrTemp = obj.rxObj.strReadPtr;
 #ifdef ACTIVE_USART_WATCHER
 	uint32_t remainTime = getUsartWatcherTimeout();
 	if (remainTime)
 	{
-		uint16_t writeFIFOPtrTemp = obj.rxObj.writeFIFOPtr;
-		uint16_t strReadPtrTemp = obj.rxObj.strReadPtr;
 		//Weiter bis zum Ende der Schreibphase
 		/*wenn die zu empfangenden Daten laenge als die Laenge von rxBuffer,kopieren bis zum Buffer voll, 
 		  die uebrigen werden weggeworfen*/
@@ -172,43 +172,44 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 			strReadPtrTemp = obj.rxObj.strReadPtr;//Aktualisiert des Werts von obj.rxObj.strReadPtr zu Zwischenvariable
 			obj.rxObj.rxByte[writeFIFOPtrTemp]=strReadPtrTemp;
 		} else{
-			uint8_t temp = RX_BUFFER_LEN-obj.rxObj.strReadPtr;
-			memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,temp);//TODO check
+			uint8_t temp = RX_BUFFER_LEN-strReadPtrTemp;
+			memcpy((uint8_t*)&(obj.rxObj.rxBuffer[writeFIFOPtrTemp][strReadPtrTemp]),data,temp);//TODO check
 			obj.rxObj.strReadPtr=0;
-			obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr]=RX_BUFFER_LEN;
+			obj.rxObj.rxByte[writeFIFOPtrTemp]=RX_BUFFER_LEN;
 		}
 	} else{
 		//Anfang der Schreibphase
 		obj.rxObj.strReadPtr = 0;
 		//wenn FIFO nicht voll, dann schreibt, sonst nicht
 		if (obj.statusObj.rxFIFOState!=FULL){
-			memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,length);
-			obj.rxObj.strReadPtr = (obj.rxObj.strReadPtr+length);
-			obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr]=obj.rxObj.strReadPtr;
+			memcpy((uint8_t*)&(obj.rxObj.rxBuffer[writeFIFOPtrTemp][strReadPtrTemp]),data,length);
+			obj.rxObj.strReadPtr += length;
+			strReadPtrTemp = obj.rxObj.strReadPtr;//Aktualisiert des Werts von obj.rxObj.strReadPtr zu Zwischenvariable
+			obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr]=strReadPtrTemp;
 		}
 	}
-	setUsartWatcherTimeout(USART_TIME_PRO_BYTE_US*3);
+	setUsartWatcherTimeout(USART_TIME_PRO_BYTE_US*3/2);
 #else
 	//Wenn keine Stringerkennungsmechanismus aktiv ist, dann bekommt die Charakter bis zum END-Text-Symbol erkennt oder Buffer voll
-	if (length+obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr]<RX_BUFFER_LEN+1){
-		memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,length);
-		obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr]+=length;
-		obj.rxObj.strReadPtr+=length;
+	/*wenn die zu empfangenden Daten laenge als die Laenge von rxBuffer,kopieren bis zum Buffer voll, 
+		  die uebrigen werden weggeworfen*/
+	if (length+obj.rxObj.rxByte[writeFIFOPtrTemp]<=RX_BUFFER_LEN){
+		memcpy((uint8_t*)&(obj.rxObj.rxBuffer[writeFIFOPtrTemp][strReadPtrTemp]),data,length);
+		obj.rxObj.strReadPtr+=length;//Aktualisiert des Werts von obj.rxObj.strReadPtr zu Zwischenvariable
+		strReadPtrTemp=obj.rxObj.strReadPtr;
+		obj.rxObj.rxByte[writeFIFOPtrTemp]=strReadPtrTemp;
+		
 		if (data[length-1]==END_SYM){
-			obj.rxObj.writeFIFOPtr = (obj.rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
+			obj.rxObj.writeFIFOPtr = (writeFIFOPtrTemp+1)%NO_OF_RX_BUFFER;
 			obj.rxObj.strReadPtr=0;
-			if (obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr){
-				obj.statusObj.rxFIFOState=FULL;
-			} else{
-				obj.statusObj.rxFIFOState=FILLED;
-			}
+			obj.statusObj.rxFIFOState=(obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr)?FULL:FILLED;
 		}
 	} else {
-		uint8_t temp = RX_BUFFER_LEN-obj.rxObj.strReadPtr;
-		memcpy((uint8_t*)&(obj.rxObj.rxBuffer[obj.rxObj.writeFIFOPtr][obj.rxObj.strReadPtr]),data,temp);
+		uint8_t temp = RX_BUFFER_LEN-strReadPtrTemp;
+		memcpy((uint8_t*)&(obj.rxObj.rxBuffer[writeFIFOPtrTemp][strReadPtrTemp]),data,temp);
 		obj.rxObj.strReadPtr = 0;
-		obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr] = RX_BUFFER_LEN;
-		obj.rxObj.writeFIFOPtr = (obj.rxObj.writeFIFOPtr+1)%NO_OF_RX_BUFFER;
+		obj.rxObj.rxByte[writeFIFOPtrTemp] = RX_BUFFER_LEN;
+		obj.rxObj.writeFIFOPtr = (writeFIFOPtrTemp+1)%NO_OF_RX_BUFFER;
 		obj.statusObj.rxFIFOState = (obj.rxObj.writeFIFOPtr==obj.rxObj.readFIFOPtr)?FULL:FILLED;
 	}
 #endif
