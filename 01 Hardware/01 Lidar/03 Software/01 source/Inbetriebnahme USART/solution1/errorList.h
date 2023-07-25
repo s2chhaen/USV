@@ -1,8 +1,10 @@
 /*
- * errorList.h
+ * errorList.h: Die Liste der Prozessrückgabe-Code
  *
  * Created: 21.06.2023 13:12:06
  * Author: Thach
+ * Version: 1.0
+ * Revision: 1.0
  */ 
 
 
