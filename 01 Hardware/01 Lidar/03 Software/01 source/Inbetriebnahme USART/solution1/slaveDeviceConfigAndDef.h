@@ -18,8 +18,10 @@
 
 //TODO lässt hier bis zum Ende der Dokumentationsphase, dieses Modus ist sehr schwer und nicht
 //geeignet für hohe Baudrate
-#define ACTIVE_USART_WATCHER 1
+//#define ACTIVE_USART_WATCHER 1
+#ifndef ACTIVE_USART_WATCHER
 #define END_SYM 0x0A
+#endif
 
 //Version 1 von slaveDevice_t
 typedef struct{

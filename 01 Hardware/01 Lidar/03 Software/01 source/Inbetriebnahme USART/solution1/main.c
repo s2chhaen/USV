@@ -12,7 +12,7 @@
 /* Definition der Macros für Testversuche                                                                     */
 /************************************************************************/
 //Echo-Test
-#define ACTIVE_ECHO_TEST 1
+#define ACTIVE_ECHO_TEST 0
 //Test der Sendefunktion von slaveDevice.c
 #define ACTIVE_USER_DEFINED_SEND_FUNCTION_TEST 1
 //Test der Sendefunktion von HAL-Bibliothek
