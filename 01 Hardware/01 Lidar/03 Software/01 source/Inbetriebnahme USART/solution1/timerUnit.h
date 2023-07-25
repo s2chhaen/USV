@@ -1,9 +1,10 @@
 /*
- * timerUnit.h: zu überwachen der USART-Einheit (Slave-Gerät)
+ * timerUnit.h: Header für das timerUnit-Modul
  *
  * Created: 6/29/2023 1:41:01 PM
  * Author: Thach
  * Version: 1.1
+ * Revision: 1.1
  */ 
 
 
@@ -24,18 +25,21 @@
 #define NO_OF_USART 1
 #endif
 
+//Struktur für Zähler
 typedef struct  
 {
 	uint32_t value:31;
 	uint8_t lock:1;
 }tickGenerator;
 
+//Struktur für Verwaltungseinheit des Moduls
 typedef struct{
 	TCA_t *adr;
 	uint8_t initStatus:1;
 	uint8_t resolutionUs;
 }timer_t;
 
+//Register von timer/counter Typ A (vom Mikrocontroller)
 typedef union{
 	uint8_t value;
 	struct{
@@ -91,7 +95,8 @@ typedef union{
 	}valueBitField;
 }TCA0_PER_t;
 
-enum prescaler{
+//Definition des Prescaler vom Timer
+typedef enum{
 	DIV1 = 0x00,
 	DIV2 = 0x01,
 	DIV4 = 0x02,
@@ -100,7 +105,7 @@ enum prescaler{
 	DIV64 = 0x05,
 	DIV256 = 0x06,
 	DIV1024 = 0x07
-};
+}prescaler_t;
 
 extern void timerInit(uint8_t resolutionUs, uint16_t prescaler);
 
