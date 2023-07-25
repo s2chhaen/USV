@@ -44,7 +44,6 @@ typedef struct{
 		uint8_t initState:1;
 		uint8_t crcActive:1;
 		volatile uint8_t rxFIFOState:2;//Leer, Belegt, Voll
-		uint8_t nextPhase:1;
 	}statusObj;
 }slaveDevice_t;
 

@@ -26,8 +26,7 @@ slaveDevice_t obj ={
 	.statusObj.uart = 0,
 	.statusObj.initState= 0,
 	.statusObj.crcActive= 0,
-	.statusObj.rxFIFOState = EMPTY,
-	.statusObj.nextPhase = 0
+	.statusObj.rxFIFOState = EMPTY
 };
 
 #define  VERSION_3 1
@@ -181,7 +180,6 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 			obj.rxObj.strReadPtr=0;
 			obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr]=RX_BUFFER_LEN;
 		}
-		obj.statusObj.nextPhase = 1;
 	} else{
 		//Anfang der Schreibphase
 		obj.rxObj.strReadPtr = 0;
