@@ -219,27 +219,20 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 //Refaktorisierung fertig, dynamische Eigenschaft wird vorlaeufig deaktiviert
 processResult_t initDev(uint8_t USARTnumber, uint32_t baudrate,USART_CHSIZE_t bits, USART_PMODE_t parity,USART_SBMODE_t stopbit,bool sync, bool MPCM, uint8_t address, PORTMUX_USARTx_t PortMux){
 	uint8_t result = NO_ERROR;
-	//initialisieren der zwei rx- und tx-Buffer
-	memset((int**)obj.rxObj.rxBuffer,0,sizeof(obj.rxObj.rxBuffer));
-	memset((int*)obj.txObj.txBuffer,0,sizeof(obj.txObj.txBuffer));
-	memset((int*)obj.rxObj.rxByte,0,sizeof(obj.rxObj.rxByte));
-	//obj.dataTx_p = dataTx;
-	//obj.dataRx_p = dataRx;
 	obj.statusObj.uart = USARTnumber;
 	bool slaveUartInit = USART_init(USARTnumber,baudrate, bits, parity, stopbit, sync, MPCM,address, PortMux);
-	USART_set_send_Array_callback_fnc(USARTnumber,&callbackTx);
-#ifdef ACTIVE_USART_WATCHER
-	USART_set_Bytes_to_receive(USARTnumber,1);
-#else
-	USART_set_Bytes_to_receive(USARTnumber,1); 
-#endif
-	
-	USART_set_receive_Array_callback_fnc(USARTnumber,&callbackRx);
 	obj.statusObj.initState = (!slaveUartInit)?1:0;
+	if(!slaveUartInit){
+		USART_set_send_Array_callback_fnc(USARTnumber,&callbackTx);
+		USART_set_Bytes_to_receive(USARTnumber,1);
+	
+		USART_set_receive_Array_callback_fnc(USARTnumber,&callbackRx);
+	
 #ifdef ACTIVE_USART_WATCHER
-	setUsartWatcherTimeout(USART_TIME_PRO_BYTE_US*3);
-	setWatchedObj(&obj);
+		setUsartWatcherTimeout(USART_TIME_PRO_BYTE_US*3);
+		setWatchedObj(&obj);
 #endif
+	}
 	result = (!slaveUartInit)?NO_ERROR:PROCESS_FAIL;
 	return result;
 }
