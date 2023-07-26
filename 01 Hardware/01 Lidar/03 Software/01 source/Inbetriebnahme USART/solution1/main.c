@@ -1,7 +1,7 @@
 /*
- * main.c:
+ * main.c: Quellcode für ganzes Programm
  *
- * Created: 11.03.2023 16:31:29
+ * Created: 11.06.2023 16:31:29
  * Author : Thach
  * Version: 1.0
  * Revision: 1.0
@@ -21,11 +21,11 @@
  * \return uint8_t 0:Fehlerfrei, sonst Fehler
  */
 static uint8_t init(){
-	uint8_t result;
+	uint8_t result=NO_ERROR;
 	uint8_t prescaler = 1;
 	uint8_t timerResUs = 1;
 	uint16_t timerPre = 1024;
-	uint32_t baudrateSlave = 250000;
+	uint32_t baudrateSlave = BAUDRATE_BAUD;
 	//CPU-Init
 	init_Core_CLK(INTERN_CLK,prescaler);
 	//USART-Beobachter- und Stopuhr-Einheit-Init
