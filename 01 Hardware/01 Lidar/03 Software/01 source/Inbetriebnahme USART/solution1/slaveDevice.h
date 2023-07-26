@@ -1,9 +1,10 @@
 /*
- * slave.h
- * Für die Slave-Gerät
+ * slave.h: Header für das slaveDevice-Modul
+ *
  * Created: 21.06.2023 12:38:43
  * Author: Thach
- * Version: 0.1
+ * Version: 1.0
+ * Revision: 1.0
  */ 
 
 
