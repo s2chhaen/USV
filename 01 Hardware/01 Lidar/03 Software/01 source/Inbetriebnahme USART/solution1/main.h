@@ -1,8 +1,10 @@
 /*
- * main.h
+ * main.h: Alle Inklusionen der Bibliothek und Konfigurationen für main.c
  *
  * Created: 15.06.2023 13:07:06
- *  Author: Thach
+ * Author: Thach
+ * Version: 1.0
+ * Revision: 1.0
  */ 
 
 
