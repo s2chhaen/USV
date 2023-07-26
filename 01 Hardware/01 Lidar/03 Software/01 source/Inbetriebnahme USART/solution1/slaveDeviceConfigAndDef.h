@@ -1,13 +1,15 @@
 /*
- * slaveDeviceConfig.h
+ * slaveDeviceConfigAndDef.h: Alle Konfigurationen und Definitionen für das slaveDevice-Modul
  *
  * Created: 7/3/2023 10:04:33 PM
- *  Author: Thach
+ * Author: Thach
+ * Version: 1.0
+ * Revision: 1.0
  */ 
 
 
-#ifndef SLAVEDEVICECONFIG_H_
-#define SLAVEDEVICECONFIG_H_
+#ifndef SLAVEDEVICECONFIGANDDEF_H_
+#define SLAVEDEVICECONFIGANDDEF_H_
 
 #define MAX_BYTE_SEND 31
 
@@ -16,14 +18,11 @@
 #define NO_OF_RX_BUFFER 2
 #define USART_TIME_PRO_BYTE_US 96
 
-//TODO lässt hier bis zum Ende der Dokumentationsphase, dieses Modus ist sehr schwer und nicht
-//geeignet für hohe Baudrate
-//#define ACTIVE_USART_WATCHER 1
 #ifndef ACTIVE_USART_WATCHER
 #define END_SYM 0x0A
 #endif
 
-//Version 1 von slaveDevice_t
+//Struktur der Verwaltungseinheit
 typedef struct{
 	struct rxUnit{
 		volatile uint8_t rxBuffer[NO_OF_RX_BUFFER][RX_BUFFER_LEN];
@@ -49,15 +48,11 @@ typedef struct{
 	}statusObj;
 }slaveDevice_t;
 
-typedef enum {
-	ON,
-	OFF
-}state_t;
-
+//Zustand der FIFO
 enum fifoState{
 	EMPTY=0,
 	FILLED,
 	FULL
 };
 
-#endif /* SLAVEDEVICECONFIG_H_ */
+#endif /* SLAVEDEVICECONFIGANDDEF_H_ */
