@@ -3,13 +3,13 @@
  *
  * Created: 21.06.2023 13:12:06
  * Author: Thach
- * Version: 1.0
- * Revision: 1.0
+ * Version: 1.1
+ * Revision: 1.1
  */ 
 
 
-#ifndef ERROR_LIST_H_
-#define ERROR_LIST_H_
+#ifndef ERRORLIST_H_
+#define ERRORLIST_H_
 
 typedef enum {
 	NO_ERROR,
@@ -22,4 +22,4 @@ typedef enum {
 	FIFO_EMPTY
 }processResult_t;
 
-#endif /* ERROR_LIST_H_ */
+#endif /* ERRORLIST_H_ */
