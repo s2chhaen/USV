@@ -1,15 +1,15 @@
 /*
- * slave.h: Header für das slaveDevice-Modul
+ * slaveDevice.h: Header für das slaveDevice-Modul
  *
  * Created: 21.06.2023 12:38:43
  * Author: Thach
- * Version: 1.0
- * Revision: 1.0
+ * Version: 1.1
+ * Revision: 1.1
  */ 
 
 
-#ifndef SLAVE_H_
-#define SLAVE_H_
+#ifndef SLAVEDEVICE_H_
+#define SLAVEDEVICE_H_
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -28,4 +28,4 @@ extern processResult_t initDev(uint8_t USARTnumber, uint32_t baudrate, USART_CHS
 extern processResult_t dataTx(uint8_t* data, uint16_t length);
 extern processResult_t dataRx(uint8_t* data, uint16_t* length);
 
-#endif /* SLAVE_H_ */
+#endif /* SLAVEDEVICE_H_ */
