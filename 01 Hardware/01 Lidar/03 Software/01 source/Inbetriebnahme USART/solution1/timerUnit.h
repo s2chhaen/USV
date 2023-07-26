@@ -1,6 +1,7 @@
 /*
  * timerUnit.h: Header für das timerUnit-Modul
- *
+ * Aufgabe des Moduls: Aufgabe als Stopuhr und USART-Wächter (falls Text-Beendung mit timeout 
+ * Modus aktiviert) 
  * Created: 6/29/2023 1:41:01 PM
  * Author: Thach
  * Version: 1.1
