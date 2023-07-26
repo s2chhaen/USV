@@ -55,10 +55,25 @@ static int8_t searchFreeGenerator(){
 	return result;
 }
 
+/**
+ * \brief Befreiung eines gesperrten Zählers
+ * 
+ * \param i die Position des Zählers im Array
+ * 
+ * \return void
+ */
 static inline void unlockGenerator(uint8_t i){
 	counter[i].lock = 0;
 }
 
+/**
+ * \brief Initalization des Moduls
+ * 
+ * \param resolutionUs die erwünschte Auflösung
+ * \param prescaler der Prescacler zur Bestimmung der Taktfrequenz vom Timer
+ * 
+ * \return void
+ */
 void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	objTCA.adr->SINGLE.INTCTRL &= ~(1<<0);//Vorlaeufig deaktiviert wird Overflow-Interrupt
 	resetAllGenerator();//Alle Zähler wiederhergestellt
@@ -136,6 +151,14 @@ void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 
 #ifdef ACTIVE_USART_WATCHER
 
+/**
+ * \brief Hinzufüge der zu überwachenden USART-Einheit (von Slave-Gerät/slaveDevice-Modul) 
+ * \warning nur aktiv und verwendbar beim Text-Beendung mit timeout Modus vom slaveDevice-Modul
+ *
+ * \param input_p der Zeiger zum slaveDevice-Modul
+ * 
+ * \return uint8_t 0: kein Fehler, sonst: Fehler
+ */
 uint8_t setWatchedObj(slaveDevice_t *input_p){
 	uint8_t result = NO_ERROR;
 	if (input_p!=NULL)
@@ -147,6 +170,14 @@ uint8_t setWatchedObj(slaveDevice_t *input_p){
 	return result;
 }
 
+/**
+ * \brief Festlegung der Zeit für Empfangen eines Bytes
+ * \warning nur aktiv und verwendbar beim Text-Beendung mit timeout Modus vom slaveDevice-Modul
+ *
+ * \param us die erwünschte Zeit in Mikrosekunden
+ * 
+ * \return void
+ */
 void setUsartWatcherTimeout(uint32_t us){
 	if (obj_p!=NULL){
 		objTCA.adr->SINGLE.INTCTRL &= ~(1<<0);//Vorlaeufig deaktiviert wird Overflow-Interrupt
@@ -155,12 +186,25 @@ void setUsartWatcherTimeout(uint32_t us){
 	}
 }
 
+/**
+ * \brief Rückgabe der bleibenden Zeit zum Empfangen eines Bytes
+ * \warning nur aktiv und verwendbar beim Text-Beendung mit timeout Modus vom slaveDevice-Modul
+ * 
+ * \return uint32_t die bleibende Zeit zum Empfangen eines Bytes
+ */
 uint32_t getUsartWatcherTimeout(){
 	return usartWatcher;
 }
 
 #endif
 
+/**
+ * \brief Verzögerung der Programmausführung in einem bestimmten Zeitraum
+ * 
+ * \param us die erwünschte Verzögerungszeit in Mikrosekunden
+ * 
+ * \return uint8_t 0:erfolgreich durchgeführt, sonst: Fehler
+ */
 uint8_t waitUs(uint32_t us){
 	uint8_t result = NO_ERROR;
 	int8_t i = 0;
@@ -178,11 +222,25 @@ uint8_t waitUs(uint32_t us){
 	return result;
 }
 
+/**
+ * \brief Verzögerung der Programmausführung in einem bestimmten Zyklen
+ * \warning noch zu verbessern, weil die Zyklen nicht echtzeitig
+ *
+ * \param cycle die erwünschte Verzögerungszeit in Zyklen
+ * 
+ * \return void
+ */
 void waitCycle(uint32_t cycle){
 	//TODO: noch zu verbessern, weil die Zyklen nicht echtzeitig
 	for (uint32_t i = 0; i<cycle;i++);
 }
 
+/**
+ * \brief Interrupt-Service-Routine für Overflow-Interrupt von TCA0
+ * \detailed beim Stopuhr: Nach einer Zeit von resolutionUs wird der Wert vom Counter dekrementiert
+ *  bis zum 0. Beim USART-Wächter: nach einer Zeit von timeout-Zeit beendet es eine Zeichenfolge
+ *  und beginnt neues Empfangen einer neuen Zeichenfolge, wenn kein Zeichen mehr empfängt
+ */
 ISR(TCA0_OVF_vect){
 #ifdef ACTIVE_USART_WATCHER
 	uint8_t loopMax = MAX(NO_OF_SUBTIMER,NO_OF_USART);
