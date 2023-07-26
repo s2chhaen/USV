@@ -1,9 +1,10 @@
 /*
- * slave_device.c
+ * slaveDevice.c: Quellcode für das slaveDevice-Modul
  *
  * Created: 21.06.2023 13:01:53
  * Author: Thach
- * Version: 1.00
+ * Version: 1.0
+ * Revision: 1.0
  */ 
 
 #include "slaveDevice.h"
@@ -29,7 +30,7 @@ slaveDevice_t obj ={
 	.statusObj.rxFIFOState = EMPTY
 };
 
-#define  VERSION_3 1
+#define  VERSION_2 1
 
 #ifdef VERSION_1
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length) /*__attribute__((deprecated("funtcion is in debug time")))*/;
@@ -43,6 +44,15 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length) /*__attribute__((deprecated("funtcion is in debug time")))*/;
 #endif
 
+/**
+ * \brief Zum Senden der Daten über USART
+ * \detailed diese kopiert die Daten in txBuffer von obj, die Sendung erfolgt automatisch im Hintergrund
+ *
+ * \param data der Zeiger zum Datenbuffer
+ * \param length die Länge der Datenbuffer
+ * 
+ * \return processResult_t 0: kein Fehler, erfolgreich; sonst: Fehler
+ */
 processResult_t dataTx(uint8_t* data,uint16_t length){
 	uint8_t result = NO_ERROR;
 	if(length>obj.txObj.txLenMax){
@@ -65,8 +75,14 @@ processResult_t dataTx(uint8_t* data,uint16_t length){
 	return result;
 }
 
-//Daten wird automatisch empfangen, diese ist zum Lesen der Daten in Buffer
-//die Laenge von Input-Daten muss genug fuer die Empfangen Daten sein, selbst auswaehlen
+/**
+ * \brief Lesen der empfangenen Daten aus rxBuffer von obj (Objektierung von slaveDevice_t Struktur)
+ * \detailed Daten wird automatisch im Hintergrund empfangen und in rxBuffer von obj gespeichert
+ * \param data der Zeiger zum Ausgabebuffer
+ * \param length die Länge der zu empfangenden Daten
+ * 
+ * \return processResult_t 0: kein Fehler; sonst: Fehler
+ */
 processResult_t dataRx(uint8_t* data, uint16_t* length){
 	processResult_t result = NO_ERROR;
 	if(data == NULL){//checken null-pointer
@@ -90,7 +106,19 @@ processResult_t dataRx(uint8_t* data, uint16_t* length){
 }
 
 #ifdef VERSION_1
-//zu sendende Byte wird konstant in FIFO jedes Interrupt hinzugefügt. Die weitere Sendung wird hier durchgefuehrt
+/**
+ * \brief die Rückruf-Funktion, es wird aufgeruft in ISR von Daten-Sendung-Erledigung
+ * \detailed Version 1: die zu sendenden Bytes wird konstant in FIFO nach jedem Interrupt-Auflösen  
+ *  hinzugefügt. Die weitere Sendung wird hier durchgefuehrt statt der Verlässung für die TX_Callback
+ *  Funktion in ISR() von HAL-Bibliothek
+ *  
+ * \param adress der Zeiger zum Gerätsadresse
+ * \param data der Zeiger zum Datenbuffer, das man mit HAL-Bibliothek-Funktion weiter senden will
+ * \param length die Länge des ober genannten Datenbuffers
+ * \param max_length die verfügbare Plätze von USART-FIFO (HAL-Bibliothek)
+ * 
+ * \return bool immer true, weil es in HAL-Bibliothek-Funktion nicht betrachtet wird
+ */
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
 	uint16_t toTxByteTemp = obj.txObj.toTxByte;
 	if (toTxByteTemp!=0){
@@ -111,7 +139,17 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 #endif
 
 #ifdef VERSION_2
-//wie oben aber lässt es die Sendung für TX_Callback function in ISR von HAL-Bibliothek
+/**
+ * \brief die Rückruf-Funktion, es wird aufgeruft in ISR() von Daten-Sendung-Erledigung (durch TX_Callback() Funktion)
+ * \detailed Version 2: die in USART-FIFO hinzugefügten Bytes werden angepasst mit freien Plätzen in FIFO. 
+ *  Die weitere Sendung wird für TX_Callback Funktion in ISR von HAL-Bibliothek verlassen
+ * \param adress der Zeiger zum Gerätsadresse
+ * \param data der Zeiger zum Datenbuffer, das man mit HAL-Bibliothek-Funktion weiter senden will
+ * \param length die Länge des ober genannten Datenbuffers
+ * \param max_length die verfügbare Plätze von USART-FIFO (HAL-Bibliothek)
+ * 
+ * \return bool immer true, weil es in HAL-Bibliothek-Funktion nicht betrachtet wird
+ */
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
 	uint8_t lengthForSend = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
 	*data = (uint8_t*)&(obj.txObj.txBuffer[obj.txObj.strReadPtr]);
@@ -131,7 +169,17 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 
 
 #ifdef VERSION_3
-//zu sendende Byte wird angepasst mit den freien Stellen in FIFO. Die Sendung wird hier durchgefuehrt
+/**
+ * \brief die Rückruf-Funktion, es wird aufgeruft in ISR() von Daten-Sendung-Erledigung (durch TX_Callback() Funktion)
+ * \detailed Version 3: die in USART-FIFO hinzugefügten Bytes werden angepasst mit freien Plätzen in FIFO. 
+ *  Die weitere Sendung wird hier durchgeführt statt der Verlassung für TX_Callback Funktion in ISR() von HAL-Bibliothek
+ * \param adress der Zeiger zum Gerätsadresse
+ * \param data der Zeiger zum Datenbuffer, das man mit HAL-Bibliothek-Funktion weiter senden will
+ * \param length die Länge des ober genannten Datenbuffers
+ * \param max_length die verfügbare Plätze von USART-FIFO (HAL-Bibliothek)
+ * 
+ * \return bool immer true, weil es in HAL-Bibliothek-Funktion nicht betrachtet wird
+ */
 bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_length){
 	uint8_t sendByte = (max_length>MAX_BYTE_SEND)?MAX_BYTE_SEND:max_length;
 	uint16_t toTxByteTemp=obj.txObj.toTxByte;
@@ -155,6 +203,15 @@ bool callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length,uint8_t max_le
 }
 #endif
 
+/**
+ * \brief die Rückruf-Funktion, es wird aufgeruft in ISR() von Daten-Empfangen-Erledigung (durch RX_Callback() Funktion)
+ * 
+ * \param adress Gerätsadresse
+ * \param data der Zeiger zum USART-FIFO
+ * \param length die Länge der schon empfangenen Daten
+ * 
+ * \return bool immer true, weil es in HAL-Bibliothek-Funktion nicht betrachtet wird
+ */
 static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	uint16_t writeFIFOPtrTemp = obj.rxObj.writeFIFOPtr;
 	uint16_t strReadPtrTemp = obj.rxObj.strReadPtr;
@@ -188,7 +245,8 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 			obj.rxObj.rxByte[obj.rxObj.writeFIFOPtr]=strReadPtrTemp;
 		}
 	}
-	setUsartWatcherTimeout(USART_TIME_PRO_BYTE_US*3/2);
+	uint64_t timeout = (10000000UL * BIT_PER_SYM*3/BAUDRATE_BAUD*2);
+	setUsartWatcherTimeout(timeout);
 #else
 	//Wenn keine Stringerkennungsmechanismus aktiv ist, dann bekommt die Charakter bis zum END-Text-Symbol erkennt oder Buffer voll
 	/*wenn die zu empfangenden Daten laenge als die Laenge von rxBuffer,kopieren bis zum Buffer voll, 
@@ -216,7 +274,21 @@ static bool callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	return false;
 }
 
-//Refaktorisierung fertig, dynamische Eigenschaft wird vorlaeufig deaktiviert
+/**
+ * \brief Initialization des Moduls
+ * 
+ * \param USARTnumber die Nummer von USART (in USART.h in HAL-Bibliothek definiert)
+ * \param baudrate die Baudrate in Baud
+ * \param bits die Anzahl der Datenbytes in einem Frame
+ * \param parity die Art vom Parity (kein,gerade, ungerade)
+ * \param stopbit die Anzahl der Stopbits
+ * \param sync Synchronmodus aktiv oder nicht 
+ * \param MPCM Multiprocess
+ * \param address adresse des Patnergerätes
+ * \param PortMux Art des PortMultiplexers
+ * 
+ * \return processResult_t 0: kein Fehler, sonst: Fehler
+ */
 processResult_t initDev(uint8_t USARTnumber, uint32_t baudrate,USART_CHSIZE_t bits, USART_PMODE_t parity,USART_SBMODE_t stopbit,bool sync, bool MPCM, uint8_t address, PORTMUX_USARTx_t PortMux){
 	uint8_t result = NO_ERROR;
 	obj.statusObj.uart = USARTnumber;
@@ -229,7 +301,8 @@ processResult_t initDev(uint8_t USARTnumber, uint32_t baudrate,USART_CHSIZE_t bi
 		USART_set_receive_Array_callback_fnc(USARTnumber,&callbackRx);
 	
 #ifdef ACTIVE_USART_WATCHER
-		setUsartWatcherTimeout(USART_TIME_PRO_BYTE_US*3);
+		uint64_t timeout = (10000000UL * BIT_PER_SYM*3/BAUDRATE_BAUD*2);
+		setUsartWatcherTimeout(timeout);
 		setWatchedObj(&obj);
 #endif
 	}
@@ -237,6 +310,12 @@ processResult_t initDev(uint8_t USARTnumber, uint32_t baudrate,USART_CHSIZE_t bi
 	return result;
 }
 
+/**
+ * \brief Deinitialization des Moduls
+ * 
+ * 
+ * \return void
+ */
 void deinitDev(){
 	USART_set_send_Array_callback_fnc(obj.statusObj.uart,NULL);
 	USART_set_Bytes_to_receive(obj.statusObj.uart,0);
