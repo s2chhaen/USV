@@ -151,6 +151,9 @@
     <Compile Include="ATMegaXX09\FIFO\FIFO.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="ATMegaXX09\FIFO\FIFOa.S">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="ATMegaXX09\Port\Port.c">
       <SubType>compile</SubType>
     </Compile>
@@ -166,16 +169,7 @@
     <Compile Include="ATMegaXX09\USART\USART_config.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="dataprep.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="dataprep.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="DebugAndTestHeader.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="error_list.h">
+    <Compile Include="errorList.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
@@ -187,22 +181,13 @@
     <Compile Include="Math\MinMax.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="lockList.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="lock.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="slaveDevice.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="slaveDevice.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="slaveDeviceAPI.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="slaveDeviceConfig.h">
+    <Compile Include="slaveDeviceConfigAndDef.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="timerUnit.c">
