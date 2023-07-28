@@ -3,6 +3,7 @@
  *
  * Created: 7/6/2023 4:59:08 PM
  * Author : Thach
+ * Version: 1.0
  */ 
 
 #include <avr/io.h>
@@ -101,7 +102,7 @@ int main(void)
 	}
 #endif
 
-//#define TEST02 1
+#define TEST02 1
 
 #ifdef TEST02
 	//Schreiben in einem Register
@@ -137,7 +138,8 @@ int main(void)
 	}
 #endif
 
-#define TEST04 1
+//TODO löschen das
+//#define TEST04 1
 #ifdef TEST04
 #define MAX_ARRAY_LENGTH 70
 
