@@ -47,6 +47,15 @@ static const slaveReg_t regSet[]={
 	{ESB_CTRL_ADD,1}
 };
 
+/**
+ * \brief Bildung der checksum-Code für Programm
+ * 
+ * \param data der Zeiger zum Datenblock
+ * \param len die Länge des Datenblocks
+ * \param polynom das binäre Polynom (in hex Form)
+ * 
+ * \return uint8_t das checksum-Code
+ */
 static uint8_t crc8Checksum(uint8_t *data, uint16_t len, uint8_t polynom){
 	uint8_t crc = 0;
 	uint8_t mix;
@@ -65,6 +74,13 @@ static uint8_t crc8Checksum(uint8_t *data, uint16_t len, uint8_t polynom){
 	return crc;
 }
 
+/**
+ * \brief die Position des Registers in der Liste suchen
+ * 
+ * \param reg die Adresse des Registers
+ * 
+ * \return int8_t -1: kein gefunden, sonst: die Position in der Liste
+ */
 static inline int8_t searchReg(uint16_t reg){
 	int8_t result = -1;
 	for (uint8_t i = 0;i<sizeof(regSet)/sizeof(slaveReg_t);i++)
@@ -77,7 +93,16 @@ static inline int8_t searchReg(uint16_t reg){
 	return result;
 }
 
+/**
+ * \brief der Datenblock bilden aus einem Register und einer Länge
+ * 
+ * \param begin das Register, wobei man die Suche beginnt will
+ * \param len die Länge des erwünschten Datenblock
+ * 
+ * \return int8_t die Position des Registers, das mit der Länge erreicht werden kann, in der Liste
+ */
 static inline int8_t searchEnd(int8_t begin, uint16_t len){
+	//TODO noch zu verbessern, weil es viele reservierten Register zwischen zwei definierten Registern gibt
 	int8_t result = -1;
 	uint8_t endOfList = sizeof(regSet)/sizeof(slaveReg_t);
 	int32_t remainLen = (int32_t)len;
@@ -151,7 +176,14 @@ static inline uuaslProtocolHeader_t protocolHeaderPrint(uint16_t add,uint16_t in
 	return result;
 }
 
-//Das Checksum-CRC8-Ergebnis muss davor berechnet werden
+
+/**
+ * \brief zum Bilden der letzten zwei Bytes (als Tail bezeichnet) für das Schreibprotokoll
+ * \warning Das Checksum-CRC8-Ergebnis muss davor berechnet werden
+ * \param crc8 das checksum-Code
+ * 
+ * \return uuaslProtocolTail_t das Tail des Schreibprotokoll
+ */
 static inline uuaslProtocolTail_t writeProtocolTailPrint(uint8_t crc8){
 	uuaslProtocolTail_t result = {
 		.checksum = crc8,
@@ -318,6 +350,17 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 	return result;
 }
 
+/**
+ * \brief zum Lesen in vielen Registern nur mit einem Protokoll (bis zum 255 Bytes unterstützt)
+ * 
+ * \param add die Adresse vom abgefragten Gerät
+ * \param reg die Adresse des ersten Registers im gelesenen Datenblock
+ * \param dev_p der Zeiger zum Handler
+ * \param output_p das Buffer zur Ausgabe
+ * \param outputLen die Länge der Ausgabebuffer
+ * 
+ * \return uint8_t 0: kein Fehler, sonst: Fehler
+ */
 uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
 	uint8_t result = NO_ERROR;
 	if((dev_p==NULL)||(output_p==NULL)){
@@ -382,6 +425,17 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 	return result;
 }
 
+/**
+ * \brief zum Schreiben in vielen Registern nur mit einem Protokoll (bis zum 255 Bytes unterstützt)
+ * 
+ * \param add die Adresse vom geschriebenen Gerät
+ * \param reg die Adresse des ersten Registers im geschriebenen Datenblock
+ * \param dev_p der Zeiger zum Handler
+ * \param input_p das Eingabebuffer
+ * \param inputLen die Länge vom Eingabebuffer
+ * 
+ * \return uint8_t 0: kein Fehler, sonst: Fehler
+ */
 uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t inputLen){
 	uint8_t result = NO_ERROR;
 	if((dev_p==NULL)||(input_p==NULL)){
