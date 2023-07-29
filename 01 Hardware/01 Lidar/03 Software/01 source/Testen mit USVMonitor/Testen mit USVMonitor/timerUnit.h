@@ -18,7 +18,7 @@
 #include "Math/MinMax.h"
 #include "errorList.h"
 
-#define NO_OF_SUBTIMER 2
+#define NO_OF_SUBTIMER 10
 
 typedef struct  
 {
