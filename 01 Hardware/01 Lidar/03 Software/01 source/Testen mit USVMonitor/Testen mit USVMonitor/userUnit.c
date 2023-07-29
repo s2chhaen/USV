@@ -4,11 +4,13 @@
  * Created: 7/10/2023 4:59:46 AM
  * Author: Thach
  * Version: 1.0
+ * Revision: 1.0
  */ 
 
 #include "userUnit.h"
 
-userUnit_t uu={
+//Objektivierung der User-Unit-Gerät
+userUnit_t uu = {
 	//rxObj
 	.rxObj.toRxByte = 0,
 	.rxObj.strPtr = 0,
@@ -26,6 +28,17 @@ userUnit_t uu={
 	.statusObj.receive = 0
 };
 
+/**
+ * \brief die Funktion, die bei ISR() von USART-Transmit zurückgeruft wird
+ * \detailed diese Funktion ermöglicht die Sendung der mehr als 31-Byte-langen Zeichenfolge
+ *
+ * \param adress die Adresse von Empfanger
+ * \param data Zeiger zur Adresse des nach Ende dieser Funktion weiter in USART-FIFO kopierten Datenblockes
+ * \param length die Länge des obergenannten Datenblockes
+ * \param max_length die max. frei Plätze in USART-FIFO
+ * 
+ * \return bool immer true, da es bisher nicht weiter betrachtet wird
+ */
 static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, uint8_t max_length){
 	if (uu.txObj.toTxByte == 0){//Wenn keine Daten mehr zu senden
 		uu.statusObj.send = 0;
@@ -46,6 +59,15 @@ static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, u
 	return true;
 }
 
+/**
+ * \brief die Funktion, die bei ISR() von USART-Receive zurückgeruft wird
+ * 
+ * \param adress die Adresse von Sender
+ * \param data Zeiger zum Datenblock, in dem die Daten aus USART-FIFO gespeichert werden
+ * \param length die Länge des obergenannten Datenblockes
+ * 
+ * \return bool immer true, da es bisher nicht weiter betrachtet wird
+ */
 static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	//Empfangen der Daten in USART-FIFO und Kopieren in das Zwischenbuffer
 	uu.rxObj.toRxByte -= length;
@@ -54,10 +76,21 @@ static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	return true;
 }
 
-//Warte-Funktion mit Anwendung von Schleife
+/**
+ * \brief Funktion zum Überwachen einer Variable, ob es erwünschten Wert in bestimmter Zeit erreicht
+ * \detailed diese Funktion überwächt die Variable obj in bestimmter Zeitraum (in Schleifen), wenn sie
+ * den Wert desiredValue erreicht dann gibt die Funktion keinen Fehler zurück. Sonst gibt sie 
+ * timeout-Fehler zurück
+ *
+ * \param cycles die max. Timeout-Zeit (in Zyklen)
+ * \param obj die zu überwachende Variable
+ * \param desiredValue der erwünschte Wert
+ * 
+ * \return uint8_t 0: kein Fehler, die Variable den Wert rechtzeitig erreicht, sonst: nicht
+ */
 static uint8_t waitWithBreak(uint64_t cycles, uint8_t* obj, uint8_t desiredValue){
 	uint8_t result = NO_ERROR;
-	//Betrachtet den Wert von obj in einer bestimmten Zeit
+	//Betrachtet den Wert von obj in einer bestimmten Zeit (in Anzahl der Schleife)
 	for (uint64_t i = 0; i<cycles;i++){
 		if ((*obj)==desiredValue){
 			break;
@@ -106,6 +139,14 @@ uint8_t usartDataTx(uint8_t* data, uint16_t length){
 	return result;
 }
 
+/**
+ * \brief Funktion zur Empfangen der Daten über USART
+ * 
+ * \param data der Zeiger zum Speicherbuffer
+ * \param length die Länge der Speicherbuffer
+ * 
+ * \return uint8_t 0: kein Fehler, sonst Fehler
+ */
 uint8_t usartDataRx(uint8_t* data, uint16_t length){
 	uint8_t result = NO_ERROR;
 	if (data==NULL){
@@ -127,6 +168,13 @@ uint8_t usartDataRx(uint8_t* data, uint16_t length){
 	return result;
 }
 
+/**
+ * \brief Funktion zur Initialisation des User-Unit-Objektes
+ * 
+ * \param config die Struktur mit der Konfigurationsinformation (für USART)
+ * 
+ * \return uint8_t 0: kein Fehler, sonst: Fehler
+ */
 uint8_t initUserUnit(usartConfig_t config){
 	uint8_t result = NO_ERROR;
 	volatile uint8_t usartInit = USART_init(config.usartNo,config.baudrate, config.usartChSize, config.parity, \
