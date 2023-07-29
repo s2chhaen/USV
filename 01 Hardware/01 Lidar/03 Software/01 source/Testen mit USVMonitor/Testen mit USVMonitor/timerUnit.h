@@ -4,6 +4,7 @@
  * Created: 6/29/2023 1:41:01 PM
  * Author: Thach
  * Version: 1.0
+ * Revision: 1.0
  */ 
 
 
@@ -18,22 +19,12 @@
 #include "errorList.h"
 
 #define NO_OF_SUBTIMER 2
-#define NO_OF_USART 4
 
-//erste Moeglichkeit
 typedef struct  
 {
 	uint32_t value:31;
 	uint8_t lock:1;
 }tickGenerator;
-
-//zweite Moeglichkeit
-typedef struct{
-	uint8_t day:5;
-	uint8_t hour:5;
-	uint8_t min:6;
-	uint32_t us;
-}clockTimer_t;
 
 typedef struct{
 	TCA_t *adr;
