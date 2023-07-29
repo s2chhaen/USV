@@ -1,9 +1,10 @@
 /*
- * Datenframe testen.c
+ * main.c
  *
  * Created: 7/6/2023 4:59:08 PM
  * Author : Thach
  * Version: 1.0
+ * Revision: 1.0
  */ 
 
 #include <avr/io.h>
@@ -18,6 +19,7 @@
 //verhindern Reset bei falschen Interrupt
 EMPTY_INTERRUPT(BADISR_vect)
 
+//TODO noch zu testen
 static void ioInit(){
 	PORTD.DIR |= (1<<ERR1);
 	PORTD.PIN0CTRL |= (INPUT_DISABLE<<0);
