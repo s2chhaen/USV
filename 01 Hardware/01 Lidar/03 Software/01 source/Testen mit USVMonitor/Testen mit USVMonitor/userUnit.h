@@ -4,6 +4,7 @@
  * Created: 7/10/2023 4:48:20 AM
  * Author: Thach
  * Version: 1.0
+ * Revision: 1.1
  */ 
 
 
@@ -12,13 +13,13 @@
 
 #include <stdint.h>
 #include <avr/io.h>
+#include <stdlib.h>
 #include <string.h>
 #include "errorList.h"
 #include "ATMegaXX09/USART/USART.h"
 #include "ATMegaXX09/FIFO/FIFO.h"
 #include "Math/MinMax.h"
 #include "timerUnit.h"
-#include <stdlib.h>
 
 #define RX_BUFFER_LEN 360
 #define TX_BUFFER_LEN 360
@@ -26,7 +27,7 @@
 #define NO_OF_TX_BUFFER 1
 #define BYTE_RECEIVE_TIME_US 100
 
-
+//Struktur für Konfiguration der USART-Einheit
 typedef struct{
 	uint8_t usartNo:2;
 	uint32_t baudrate;
@@ -39,8 +40,7 @@ typedef struct{
 	uint8_t portMux:2;
 }usartConfig_t;
 
-#define DEBUG_1 0
-
+//Struktur für User-Unit
 typedef struct{
 	struct rxUnit{
 		volatile uint8_t rxBuffer[RX_BUFFER_LEN];
@@ -67,9 +67,5 @@ typedef struct{
 extern uint8_t initUserUnit(usartConfig_t config);
 extern uint8_t usartDataTx(uint8_t* data, uint16_t length);
 extern uint8_t usartDataRx(uint8_t* data, uint16_t length);
-
-
-
-
 
 #endif /* USERUNIT_H_ */
