@@ -4,10 +4,12 @@
  * Created: 6/29/2023 11:57:34 PM
  * Author: Thach
  * Version: 1.0
+ * Revision: 1.1
  */ 
 
 #include "timerUnit.h"
 
+//Zuweisung der Zähler/Timer Typ A von Mikrocontroller zur Verwaltungsobjekt des Moduls
 volatile timer_t objTCA ={
 	.adr=&(TCA0),
 	.resolutionUs=1
@@ -15,6 +17,12 @@ volatile timer_t objTCA ={
 
 volatile tickGenerator counter[NO_OF_SUBTIMER];
 
+/**
+ * \brief Wiederherstellung aller Zähler
+ * 
+ * 
+ * \return void
+ */
 static void resetAllGenerator(){
 	for (uint8_t i = 0; i<NO_OF_SUBTIMER;i++)
 	{
@@ -23,6 +31,12 @@ static void resetAllGenerator(){
 	}
 }
 
+/**
+ * \brief Suche eines freien Zähler im Array
+ * 
+ * 
+ * \return int8_t der erste freie Zähler im Array, -1: keine gefunden
+ */
 static int8_t searchFreeGenerator(){
 	int result = -1;
 	for (uint8_t i = 0;i<NO_OF_SUBTIMER;i++){
@@ -34,10 +48,25 @@ static int8_t searchFreeGenerator(){
 	return result;
 }
 
+/**
+ * \brief Befreiung eines gesperrten Zählers
+ * 
+ * \param i die Position des Zählers im Array
+ * 
+ * \return void
+ */
 static inline void unlockGenerator(uint8_t i){
 	counter[i].lock = 0;
 }
 
+/**
+ * \brief Initalization des Moduls
+ * 
+ * \param resolutionUs die erwünschte Auflösung
+ * \param prescaler der Prescacler zur Bestimmung der Taktfrequenz vom Timer
+ * 
+ * \return void
+ */
 void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	objTCA.adr->SINGLE.INTCTRL &= ~(1<<0);//Vorlaeufig deaktiviert wird Overflow-Interrupt
 	resetAllGenerator();
@@ -108,8 +137,14 @@ void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	objTCA.adr->SINGLE.INTCTRL = configINTCTRL.value;//Overflow-Interrupt wird wieder aktiviert 
 }
 
+/**
+ * \brief Verzögerung der Programmausführung in einem bestimmten Zeitraum
+ * 
+ * \param us die erwünschte Verzögerungszeit in Mikrosekunden
+ * 
+ * \return void
+ */
 void waitUs(uint32_t us){
-	//uint8_t result = NO_ERROR;
 	int8_t i = 0;
 	i = searchFreeGenerator();//suchen die freie Stopuhr
 	//Falls gefunden, macht weiter sonst gibt Fehler zurueck
@@ -119,16 +154,26 @@ void waitUs(uint32_t us){
 		counter[i].value = us/objTCA.resolutionUs + (us%objTCA.resolutionUs)?1:0;
 		objTCA.adr->SINGLE.INTCTRL |= (1<<0);//Overflow-Interrupt wird wieder aktiviert 
 		while (counter[i].value);
-	} else{
-		//result = FIFO_FULL;
 	}
-	//return result;
 }
 
+/**
+ * \brief Verzögerung der Programmausführung in einem bestimmten Zyklen
+ * \warning noch zu verbessern, weil die Zyklen nicht echtzeitig
+ *
+ * \param cycle die erwünschte Verzögerungszeit in Zyklen
+ * 
+ * \return void
+ */
 void waitCycle(uint32_t cycle){
 	for (uint32_t i = 0; i<cycle*5;i++);
 }
 
+/**
+ * \brief Interrupt-Service-Routine für Overflow-Interrupt von TCA0
+ * \detailed beim Stopuhr: Nach einer Zeit von resolutionUs wird der Wert vom Counter dekrementiert
+ *  bis zum 0.
+ */
 ISR(TCA0_OVF_vect){
 	uint8_t loopMax = NO_OF_SUBTIMER;
 	for (int i = 0; i<loopMax;i++){
