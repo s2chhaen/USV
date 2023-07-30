@@ -216,6 +216,9 @@
     <Compile Include="usvMonitorHandlerAPI.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="usVMonitorHandlerAPIConfig.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ATMegaXX09" />
