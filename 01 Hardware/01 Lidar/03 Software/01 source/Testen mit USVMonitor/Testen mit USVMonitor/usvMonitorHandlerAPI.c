@@ -4,6 +4,7 @@
  * Created: 7/7/2023 8:42:59 AM
  * Author: Thach
  * Version: 1.0
+ * Revision: 1.1
  */
 
 #include "usvMonitorHandlerAPI.h"
@@ -19,6 +20,7 @@ typedef enum {
 	HANDLER_NOT_INIT
 }processResult_t;
 
+//Liste der Register und deren Länge
 static const slaveReg_t regSet[]={
 	//Sensorblock
 	{SEN_GESB_ADD,1},
@@ -236,6 +238,7 @@ uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRxFunc_p, dataTx_t inp
  * \return uint8_t 0: keinen Fehler, sonst: Fehler
  */
 uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t length){
+	//TODO zu optimieren
 	uint8_t result = NO_ERROR;
 	int8_t index = searchReg(reg);
 	if ((dev_p==NULL)|(input_p==NULL)){
@@ -245,26 +248,26 @@ uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 			if (regSet[index].len != length){
 				result = DATA_INVALID;
 			} else{
-				uint8_t buffer[MAX_SIZE_FRAME]={0};//Gesamtarray
-				uint16_t positionPtr=0;
+				uint8_t buffer[MAX_SIZE_FRAME] = {0};//Zwischenspeicherbuffer
+				uint16_t positionPtr = 0;//der Zeiger zur nächsten freien Position, die Länge der genutzten Bytes
 				//Header im Gesamtarray kopieren
 				uuaslProtocolHeader_t head = protocolHeaderPrint(add,index,UUASL_W_REQ);
 				head.length+=7;
-				memcpy((uint8_t*)(&buffer[positionPtr]),(uint8_t*)&head,sizeof(head)/sizeof(uint8_t));
+				memcpy((&buffer[positionPtr]),(uint8_t*)&head,sizeof(head)/sizeof(uint8_t));
 				positionPtr+= sizeof(head)/sizeof(uint8_t);
 				//Inhalt im Gesamtarray kopieren
-				memcpy((uint8_t*)(&buffer[positionPtr]),input_p,length);
+				memcpy((&buffer[positionPtr]),input_p,length);
 				positionPtr+=length;
 				//Tail im Gesamtarray kopieren
 				uint8_t crc8 = crc8Checksum(input_p,length,dev_p->crc8Polynom);
 				uuaslProtocolTail_t tail = writeProtocolTailPrint(crc8);
-				memcpy((uint8_t*)(&buffer[positionPtr]),(uint8_t*)&tail,sizeof(tail)/sizeof(uint8_t));
+				memcpy((&buffer[positionPtr]),(uint8_t*)&tail,sizeof(tail)/sizeof(uint8_t));
 				positionPtr += sizeof(tail)/sizeof(uint8_t);
 				//Senden die Daten
-				result = (*(dev_p->transmitFunc_p))((uint8_t*)buffer,positionPtr);
+				result = (*(dev_p->transmitFunc_p))(buffer,positionPtr);
 				positionPtr = 1;
 				(*(dev_p->waitFunc_p))(700);//warten 0,5ms für Datensendung
-				(*(dev_p->receiveFunc_p))((uint8_t*)buffer, positionPtr);
+				(*(dev_p->receiveFunc_p))(buffer, positionPtr);
 				if (buffer[0]!=0xA1){
 					result = PROCESS_FAIL;
 				}
@@ -288,6 +291,7 @@ uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
  * \return uint8_t 0: keinen Fehler, sonst: Fehler
  */
 uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
+	//TODO zu optimieren
 	uint8_t result = NO_ERROR;
 	if((dev_p==NULL)||(output_p==NULL)){
 		result = NULL_POINTER;
@@ -297,8 +301,8 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 	} else{
 		int8_t index = searchReg(reg);
 		if (index!=-1){
-			uint8_t tempBuffer[MAX_SIZE_FRAME]={0};
-			uint16_t rxLength=1;
+			uint8_t buffer[MAX_SIZE_FRAME] = {0};//Zwischenspeicherbuffer
+			uint16_t positionPtr = 0;//der Zeiger zur nächsten freien Position, die Länge der nutzbaren Bytes
 			//Bildung von Datenrahmen
 			/**
 			 * Bei Byte 3,4 (Adresse-Bytes) wird ein 2-Byte-langes Register dafür festgelegt. 
@@ -307,35 +311,36 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 			 */
 			uuaslReadProtocol_t protocol;
 			protocol = readProtocolPrint(add,index,dev_p->crc8Polynom);
-			memcpy((uint8_t*)tempBuffer,(uint8_t*)&protocol,sizeof(protocol)/sizeof(uint8_t));			
-			(*(dev_p->transmitFunc_p))((uint8_t*)tempBuffer, sizeof(protocol)/sizeof(uint8_t));
+			positionPtr = sizeof(protocol)/sizeof(uint8_t);
+			memcpy(buffer,(uint8_t*)&protocol, positionPtr);			
+			(*(dev_p->transmitFunc_p))(buffer, positionPtr);
 			if (!dev_p->dynamicWait){
 				(*(dev_p->waitFunc_p))(800);//Warte 0,8ms
 			}
-			memset((uint8_t*)tempBuffer,0,8);
+			positionPtr = 1;
 			//Nach dem Request-Senden, empfangen erste Byte
-			(*(dev_p->receiveFunc_p))((uint8_t*)tempBuffer, rxLength);
+			(*(dev_p->receiveFunc_p))(buffer, positionPtr);
 			//checken erste Byte
-			if(tempBuffer[0]==0xA2){
+			if(buffer[0]==0xA2){
 				result = DATA_INVALID;
-			} else if(tempBuffer[0] == 0xA5){ //Wenn erfolgreich, checken weitere 4 Bytes
+			} else if(buffer[0] == 0xA5){ //Wenn erfolgreich, checken weitere 4 Bytes
 				//Byte 4 beim Daten lesen: Bei Hinprotokoll 0x4X, bei Rückprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
-				rxLength=4;
-				(*(dev_p->receiveFunc_p))((uint8_t*)tempBuffer, rxLength);
-				bool checkByteReg = (tempBuffer[0]==protocol.header.slaveAdd);
-				bool checkByteAddAndRw = ((tempBuffer[2]^protocol.header.rwaBytes.value[1])==0x40) && (tempBuffer[1]==protocol.header.rwaBytes.value[0]);
+				positionPtr=4;
+				(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+				bool checkByteReg = (buffer[0]==protocol.header.slaveAdd);
+				bool checkByteAddAndRw = ((buffer[2]^protocol.header.rwaBytes.value[1])==0x40) && (buffer[1]==protocol.header.rwaBytes.value[0]);
 				bool checkAll = checkByteReg&&checkByteAddAndRw;
 				if(!(checkAll)){
 					result = PROCESS_FAIL;
 				} else{
 					//empfangen weitere n Datenbytes sowie 1 CRC8- und 1 Endbyte
-					rxLength =tempBuffer[3]-5;//Die Länge vom Header = 5
-					(*(dev_p->receiveFunc_p))((uint8_t*)tempBuffer, rxLength);
-					bool checkDataBlock = checkRxData((uint8_t*)tempBuffer,rxLength-2,tempBuffer[rxLength-2],dev_p->crc8Polynom);
-					bool checkEnd = tempBuffer[rxLength-1]==0xA6;
+					positionPtr =buffer[3]-5;//Die Länge vom Header = 5
+					(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+					bool checkDataBlock = checkRxData(buffer,positionPtr-2,buffer[positionPtr-2],dev_p->crc8Polynom);
+					bool checkEnd = buffer[positionPtr-1]==0xA6;
 					if (checkEnd&&checkDataBlock){
 						//kopieren aller Datenbytes in Ausgabe
-						memcpy(output_p,(uint8_t*)tempBuffer,rxLength-2);
+						memcpy(output_p,buffer,positionPtr-2);
 					} else {
 						result = PROCESS_FAIL;
 					}
@@ -362,6 +367,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
  * \return uint8_t 0: kein Fehler, sonst: Fehler
  */
 uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
+	//TODO zu optimieren
 	uint8_t result = NO_ERROR;
 	if((dev_p==NULL)||(output_p==NULL)){
 		result = NULL_POINTER;
@@ -372,43 +378,42 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 		int8_t begin = searchReg(reg);
 		int8_t end = searchEnd(begin, outputLen);
 		if ((begin!=-1)&&(end!=-1)){
-			uint8_t bufferMulti[MAX_SIZE_FRAME]={0};
-			uint16_t bufferMultiPtr = 0;
+			uint8_t buffer[MAX_SIZE_FRAME] = {0};//Zwischenspeicherbuffer
+			uint16_t positionPtr = 0;//der Zeiger zur nächsten freien Position, die Länge der nutzbaren Bytes
 			outputLen = getTotalLen(begin,end);
 			uuaslProtocolHeader_t header = protocolHeaderPrint(add,begin,UUASL_R_REQ);
 			header.length = 8;//magic number: Bytes vom gesamten Protokoll: 1 für Datenlängenanfrage, 7 für übrigen
-			memcpy((uint8_t*)(&bufferMulti[bufferMultiPtr]),(uint8_t*)&header,sizeof(header)/sizeof(uint8_t));
-			bufferMultiPtr += sizeof(header)/sizeof(uint8_t);
-			uint8_t dataSegLen = 0;
-			dataSegLen = outputLen;
-			memcpy((uint8_t*)&(bufferMulti[bufferMultiPtr]),(uint8_t*)&dataSegLen,sizeof(dataSegLen)/sizeof(uint8_t));
-			bufferMultiPtr += sizeof(dataSegLen)/sizeof(uint8_t);
+			positionPtr += sizeof(header)/sizeof(uint8_t);
+			memcpy((&buffer[positionPtr]),(uint8_t*)&header,positionPtr);
+			uint8_t dataSegLen = outputLen;
+			memcpy(&(buffer[positionPtr]),&dataSegLen,1);//magic number: Die Länge von dataSegLen in Byte
+			positionPtr += sizeof(dataSegLen)/sizeof(uint8_t);
 			uint8_t checksumCode = crc8Checksum(&dataSegLen,1,dev_p->crc8Polynom);
 			uint8_t endByte = 0xA6;
-			bufferMulti[bufferMultiPtr++]=checksumCode;
-			bufferMulti[bufferMultiPtr++]=endByte;
-			(*(dev_p->transmitFunc_p))((uint8_t*)bufferMulti,bufferMultiPtr);
+			buffer[positionPtr++]=checksumCode;
+			buffer[positionPtr++]=endByte;
+			(*(dev_p->transmitFunc_p))(buffer,positionPtr);
 			if (!dev_p->dynamicWait){
-				(*(dev_p->waitFunc_p))(bufferMultiPtr*100);//Warte 0,8ms
+				(*(dev_p->waitFunc_p))(positionPtr*100);//Warte 0,8ms
 			}
-			bufferMultiPtr=1;
-			(*(dev_p->receiveFunc_p))((uint8_t*)bufferMulti, bufferMultiPtr);
-			if (bufferMulti[bufferMultiPtr-1]==0xA2){
+			positionPtr=1;
+			(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+			if (buffer[0]==0xA2){
 				result = DATA_INVALID;
-			} else if (bufferMulti[bufferMultiPtr-1]==0xA5){
-				bufferMultiPtr=4;
-				(*(dev_p->receiveFunc_p))((uint8_t*)bufferMulti, bufferMultiPtr);
+			} else if (buffer[0]==0xA5){
+				positionPtr=4;
+				(*(dev_p->receiveFunc_p))(buffer, positionPtr);
 				//Checken Protokollrelevante Informationen
-				bool checkRxDataInfo = (bufferMulti[0]==add) && \
-								   (bufferMulti[1]==header.rwaBytes.value[0]) && \
-								   ((bufferMulti[2]^header.rwaBytes.value[1])==0x40);
+				bool checkRxDataInfo = (buffer[0]==add) && \
+								   (buffer[1]==header.rwaBytes.value[0]) && \
+								   ((buffer[2]^header.rwaBytes.value[1])==0x40);
 				if (checkRxDataInfo){
-					bufferMultiPtr=bufferMulti[3]-7+2;
-					(*(dev_p->receiveFunc_p))((uint8_t*)bufferMulti, bufferMultiPtr);
-					bool checkDataBlock = checkRxData((uint8_t*)bufferMulti,bufferMultiPtr-2,bufferMulti[bufferMultiPtr-2],dev_p->crc8Polynom);;
-					bool checkEndByte = bufferMulti[bufferMultiPtr-1]==0xA6;
+					positionPtr=buffer[3]-5;//Die Länge vom Header = 5
+					(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+					bool checkDataBlock = checkRxData(buffer,positionPtr-2,buffer[positionPtr-2],dev_p->crc8Polynom);;
+					bool checkEndByte = buffer[positionPtr-1]==0xA6;
 					if (checkDataBlock&&checkEndByte){
-						memcpy(output_p,(uint8_t*)bufferMulti,bufferMultiPtr-2);
+						memcpy(output_p,buffer,positionPtr-2);
 					} else {
 						result = PROCESS_FAIL;
 					}
@@ -445,27 +450,27 @@ uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 		int8_t end = searchEnd(begin, inputLen);
 		inputLen = getTotalLen(begin,end);
 		if ((begin != -1)&&(end>=begin)){
-			uint8_t bufferMultiTx[MAX_SIZE_FRAME]={0};
-			uint16_t positionPtrTX=0;
+			uint8_t buffer[MAX_SIZE_FRAME] = {0};//Zwischenspeicherbuffer
+			uint16_t positionPtr = 0;//der Zeiger zur nächsten freien Position, die Länge der nutzbaren Bytes
 			//Header im Gesamtarray kopieren
 			uuaslProtocolHeader_t head = protocolHeaderPrint(add,begin,UUASL_W_REQ);
 			head.length = inputLen+7;
-			memcpy((uint8_t*)(&bufferMultiTx[positionPtrTX]),(uint8_t*)&head,sizeof(head)/sizeof(uint8_t));
-			positionPtrTX+= sizeof(head)/sizeof(uint8_t);
+			positionPtr+= sizeof(head)/sizeof(uint8_t);
+			memcpy((&buffer[positionPtr]),(uint8_t*)&head,positionPtr);
 			//Inhalt im Gesamtarray kopieren
-			memcpy((uint8_t*)(&bufferMultiTx[positionPtrTX]),input_p,inputLen);
-			positionPtrTX+=inputLen;
+			memcpy((&buffer[positionPtr]),input_p,inputLen);
+			positionPtr+=inputLen;
 			//Tail im Gesamtarray kopieren
 			uint8_t crc8 = crc8Checksum(input_p,inputLen,dev_p->crc8Polynom);
 			volatile uuaslProtocolTail_t tail = writeProtocolTailPrint(crc8);
-			memcpy((uint8_t*)(&bufferMultiTx[positionPtrTX]),(uint8_t*)&tail,sizeof(tail)/sizeof(uint8_t));
-			positionPtrTX += sizeof(tail)/sizeof(uint8_t);
+			memcpy((&buffer[positionPtr]),(uint8_t*)&tail,2);//magic number: Länge des Endteils/Tails in Byte
+			positionPtr += sizeof(tail)/sizeof(uint8_t);
 			//Senden die Daten
-			result = (*(dev_p->transmitFunc_p))((uint8_t*)bufferMultiTx,positionPtrTX);
-			positionPtrTX = 1;
+			result = (*(dev_p->transmitFunc_p))(buffer,positionPtr);
+			positionPtr = 1;
 			(*(dev_p->waitFunc_p))(700);//warten 0,5ms für Datensendung
-			(*(dev_p->receiveFunc_p))((uint8_t*)bufferMultiTx, positionPtrTX);
-			if (bufferMultiTx[0]!=0xA1){
+			(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+			if (buffer[0]!=0xA1){
 				result = PROCESS_FAIL;
 			}
 		} else{
