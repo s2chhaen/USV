@@ -3,7 +3,8 @@
  *
  * Created: 7/7/2023 5:25:53 AM
  * Author: Thach
- * Version: 1.0
+ * Version: 1.1
+ * Revision: 1.0
  */ 
 
 
@@ -13,6 +14,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include "usVMonitorHandlerAPIConfig.h"
 
 #define UUASL_W_REQ 8
 #define UUASL_R_REQ 4
@@ -21,6 +23,7 @@
 #define SET_SLAVE_ADD_LOW_PART(add) (uint8_t)(add&0xff)
 #define SET_SLAVE_ADD_HIGH_PART(add,rw) (uint8_t)((add>>8)|(rw<<4))
 #define MAX_SIZE_FRAME 400
+
 
 typedef struct{
 	uint8_t start;
@@ -91,7 +94,6 @@ typedef struct {
 	dataTx_t transmitFunc_p;
 	wait_t waitFunc_p;
 	uint8_t initState:1;
-	uint8_t dynamicWait:1;
 	uint8_t crc8Polynom;
 }usvMonitorHandler_t;
 
