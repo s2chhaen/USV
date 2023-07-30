@@ -4,7 +4,7 @@
  * Created: 7/7/2023 8:42:59 AM
  * Author: Thach
  * Version: 1.0
- * Revision: 1.1
+ * Revision: 1.2
  */
 
 #include "usvMonitorHandlerAPI.h"
@@ -265,9 +265,10 @@ uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 				positionPtr += sizeof(tail)/sizeof(uint8_t);
 				//Senden die Daten
 				result = (*(dev_p->transmitFunc_p))(buffer,positionPtr);
+				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 				positionPtr = 1;
-				(*(dev_p->waitFunc_p))(700);//warten 0,5ms für Datensendung
 				(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 				if (buffer[0]!=0xA1){
 					result = PROCESS_FAIL;
 				}
@@ -314,12 +315,11 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 			positionPtr = sizeof(protocol)/sizeof(uint8_t);
 			memcpy(buffer,(uint8_t*)&protocol, positionPtr);			
 			(*(dev_p->transmitFunc_p))(buffer, positionPtr);
-			if (!dev_p->dynamicWait){
-				(*(dev_p->waitFunc_p))(800);//Warte 0,8ms
-			}
+			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 			positionPtr = 1;
 			//Nach dem Request-Senden, empfangen erste Byte
 			(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 			//checken erste Byte
 			if(buffer[0]==0xA2){
 				result = DATA_INVALID;
@@ -327,6 +327,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 				//Byte 4 beim Daten lesen: Bei Hinprotokoll 0x4X, bei Rückprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
 				positionPtr=4;
 				(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 				bool checkByteReg = (buffer[0]==protocol.header.slaveAdd);
 				bool checkByteAddAndRw = ((buffer[2]^protocol.header.rwaBytes.value[1])==0x40) && (buffer[1]==protocol.header.rwaBytes.value[0]);
 				bool checkAll = checkByteReg&&checkByteAddAndRw;
@@ -336,6 +337,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 					//empfangen weitere n Datenbytes sowie 1 CRC8- und 1 Endbyte
 					positionPtr =buffer[3]-5;//Die Länge vom Header = 5
 					(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+					(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 					bool checkDataBlock = checkRxData(buffer,positionPtr-2,buffer[positionPtr-2],dev_p->crc8Polynom);
 					bool checkEnd = buffer[positionPtr-1]==0xA6;
 					if (checkEnd&&checkDataBlock){
@@ -393,16 +395,16 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			buffer[positionPtr++]=checksumCode;
 			buffer[positionPtr++]=endByte;
 			(*(dev_p->transmitFunc_p))(buffer,positionPtr);
-			if (!dev_p->dynamicWait){
-				(*(dev_p->waitFunc_p))(positionPtr*100);//Warte 0,8ms
-			}
+			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 			positionPtr=1;
 			(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 			if (buffer[0]==0xA2){
 				result = DATA_INVALID;
 			} else if (buffer[0]==0xA5){
 				positionPtr=4;
 				(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 				//Checken Protokollrelevante Informationen
 				bool checkRxDataInfo = (buffer[0]==add) && \
 								   (buffer[1]==header.rwaBytes.value[0]) && \
@@ -410,6 +412,7 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 				if (checkRxDataInfo){
 					positionPtr=buffer[3]-5;//Die Länge vom Header = 5
 					(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+					(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 					bool checkDataBlock = checkRxData(buffer,positionPtr-2,buffer[positionPtr-2],dev_p->crc8Polynom);;
 					bool checkEndByte = buffer[positionPtr-1]==0xA6;
 					if (checkDataBlock&&checkEndByte){
@@ -467,9 +470,10 @@ uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			positionPtr += sizeof(tail)/sizeof(uint8_t);
 			//Senden die Daten
 			result = (*(dev_p->transmitFunc_p))(buffer,positionPtr);
+			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 			positionPtr = 1;
-			(*(dev_p->waitFunc_p))(700);//warten 0,5ms für Datensendung
 			(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 			if (buffer[0]!=0xA1){
 				result = PROCESS_FAIL;
 			}
