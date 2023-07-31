@@ -4,7 +4,7 @@
  * Created: 7/7/2023 8:42:59 AM
  * Author: Thach
  * Version: 1.2
- * Revision: 1.1
+ * Revision: 1.2
  */
 
 #include "usvMonitorHandlerAPI.h"
@@ -395,6 +395,7 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			uint8_t buffer[MAX_SIZE_FRAME] = {0};//Zwischenspeicherbuffer
 			uint16_t positionPtr = 0;//der Zeiger zur nächsten freien Position, die Länge der nutzbaren Bytes
 			outputLen = getTotalLen(begin,end);
+#ifdef ACTIVE_VERSION_1_1
 			uuaslProtocolHeader_t header = protocolHeaderPrint(add,begin,UUASL_R_REQ);
 			header.length = 8;//magic number: Bytes vom gesamten Protokoll: 1 für Datenlängenanfrage, 7 für übrigen
 			positionPtr += sizeof(header)/sizeof(uint8_t);
@@ -446,6 +447,7 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			} else{
 				result = PROCESS_FAIL;
 			}
+#endif
 		} else{
 			result = DATA_INVALID;
 		}
@@ -472,10 +474,12 @@ uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 	} else{
 		int8_t begin = searchReg(reg);
 		int8_t end = searchEnd(begin, inputLen);
-		inputLen = getTotalLen(begin,end);
+		
 		if ((begin != -1)&&(end>=begin)){
 			uint8_t buffer[MAX_SIZE_FRAME] = {0};//Zwischenspeicherbuffer
 			uint16_t positionPtr = 0;//der Zeiger zur nächsten freien Position, die Länge der nutzbaren Bytes
+			inputLen = getTotalLen(begin,end);
+#ifdef ACTIVE_VERSION_1_1
 			//Header im Gesamtarray kopieren
 			uuaslProtocolHeader_t head = protocolHeaderPrint(add,begin,UUASL_W_REQ);
 			head.length = inputLen+7;
@@ -502,9 +506,12 @@ uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			if (buffer[0]!=0xA1){
 				result = PROCESS_FAIL;
 			}
+#endif
+
 		} else{
 			result = DATA_INVALID;
 		}
+
 	}
 	return result;
 }
