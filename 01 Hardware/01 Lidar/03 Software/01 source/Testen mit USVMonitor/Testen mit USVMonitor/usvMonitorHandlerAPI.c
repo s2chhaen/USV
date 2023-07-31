@@ -4,7 +4,7 @@
  * Created: 7/7/2023 8:42:59 AM
  * Author: Thach
  * Version: 1.2
- * Revision: 1.0
+ * Revision: 1.1
  */
 
 #include "usvMonitorHandlerAPI.h"
@@ -33,8 +33,6 @@ static const slaveReg_t regSet[]={
 	//Radar
 	{RADAR_1_ADD,1},
 	{RADAR_1_ADD,2},
-	//Lidar
-	{LIDAR_VALUE_ADD,180},
 	//Führungsgrößen der Antriebsregelung
 	{REF_DRV_CTRL_REF_A_ADD,8},
 	{REF_DRV_CTRL_REF_B_ADD,8},
@@ -46,7 +44,9 @@ static const slaveReg_t regSet[]={
 	//lokaler Error Block
 	{ESB_GPS_ADD,1},
 	{ESB_COMPASS_ADD,1},
-	{ESB_CTRL_ADD,1}
+	{ESB_CTRL_ADD,1},
+	//Lidar
+	{LIDAR_VALUE_ADD,360},
 };
 
 /**
@@ -381,7 +381,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
  * \return uint8_t 0: kein Fehler, sonst: Fehler
  */
 uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
-	//TODO zu optimieren
+	//TODO zu refaktorisieren
 	uint8_t result = NO_ERROR;
 	if((dev_p==NULL)||(output_p==NULL)){
 		result = NULL_POINTER;
@@ -465,6 +465,7 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
  * \return uint8_t 0: kein Fehler, sonst: Fehler
  */
 uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t inputLen){
+	//TODO zu refaktorisieren
 	uint8_t result = NO_ERROR;
 	if((dev_p==NULL)||(input_p==NULL)){
 		result = NULL_POINTER;
