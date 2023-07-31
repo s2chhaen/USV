@@ -4,7 +4,7 @@
  * Created: 7/7/2023 5:25:53 AM
  * Author: Thach
  * Version: 1.1
- * Revision: 1.0
+ * Revision: 1.1
  */ 
 
 
@@ -63,8 +63,6 @@ typedef enum {
 	//Radar
 	RADAR_1_ADD = 0x12,
 	RADAR_2_ADD = 0x13,
-	//Lidar
-	LIDAR_VALUE_ADD =0x15,
 	//Führungsgrößen der Antriebsregelung
 	REF_DRV_CTRL_REF_A_ADD = 0x100,
 	REF_DRV_CTRL_REF_B_ADD = 0x108,
@@ -76,7 +74,9 @@ typedef enum {
 	//lokaler Error Block
 	ESB_GPS_ADD = 0x200,
 	ESB_COMPASS_ADD = 0x201,
-	ESB_CTRL_ADD = 0x202
+	ESB_CTRL_ADD = 0x202,
+	//Lidar
+	LIDAR_VALUE_ADD =0x203
 }slaveRegAdd_t;
 
 typedef struct{
