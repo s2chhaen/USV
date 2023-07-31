@@ -3,7 +3,7 @@
  *
  * Created: 7/10/2023 4:59:46 AM
  * Author: Thach
- * Version: 1.0
+ * Version: 1.1
  * Revision: 1.0
  */ 
 
@@ -97,7 +97,7 @@ static uint8_t waitWithBreak(uint64_t cycles, uint8_t* obj, uint8_t desiredValue
 		}
 	}
 	//Wird es nach der Zeit den Wert nicht erreicht, dann Fehler zurückgegeben
-	if((*obj)==desiredValue){
+	if((*obj)!=desiredValue){
 		result = TIME_OUT;
 	}
 	return result;
@@ -134,7 +134,7 @@ uint8_t usartDataTx(uint8_t* data, uint16_t length){
 			uu.txObj.strPtr += uu.txObj.usartFIFOMax;
 			USART_send_Array(uu.statusObj.usart, 0, (uint8_t*)(uu.txObj.txBuffer), uu.txObj.usartFIFOMax);
 		}
-		result = waitWithBreak(BYTE_RECEIVE_TIME_US*length*100,(uint8_t*)&(uu.txObj.toTxByte),0);
+		result = waitWithBreak(BYTE_RECEIVE_TIME_US*length*5000,(uint8_t*)&(uu.txObj.toTxByte),0);
 	}
 	return result;
 }
