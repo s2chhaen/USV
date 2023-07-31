@@ -4,7 +4,7 @@
  * Created: 7/6/2023 4:59:08 PM
  * Author : Thach
  * Version: 1.0
- * Revision: 1.0
+ * Revision: 1.1
  */ 
 
 #include <avr/io.h>
@@ -19,12 +19,38 @@
 //verhindern Reset bei falschen Interrupt
 EMPTY_INTERRUPT(BADISR_vect)
 
-//TODO noch zu testen
+/************************************************************************/
+/* Definition des Macros für das Test                                                                     */
+/************************************************************************/
+
+//Einschalten des LEDs zum Testen
+//#define  LED_ERR1_TEST 1
+//Lesen eines Registers
+//#define READ_ONE_REGISTER 1
+//Schreiben in eines Register
+//#define WRITE_IN_ONE_REGISTER 1
+//Echo (Schreiben und dann Lesen Multiregister)
+#define WRITE_AND_READ_MULTI_REGISTER 1
+
+
+/**
+ * \brief Initialisation des I/O-Pin D0 als Ausgabe
+ * 
+ * 
+ * \return void
+ */
 static void ioInit(){
 	PORTD.DIR |= (1<<ERR1);
 	PORTD.PIN0CTRL |= (INPUT_DISABLE<<0);
 }
 
+/**
+ * \brief Ein- oder Auschalten des LEDs
+ * 
+ * \param state der Zustand von LED (0:Aus, sonst: Ein)
+ * 
+ * \return void
+ */
 static void setErr1State(uint8_t state){
 	switch(state){
 		case OFF:
@@ -38,9 +64,32 @@ static void setErr1State(uint8_t state){
 			break;	
 	};
 }
-
-volatile uint8_t output[500]={0};
 	
+/**
+ * \brief Vergleich der zwei Zeichenfolge
+ * 
+ * \param str1_p der Zeiger zur ersten Zeichenfolge
+ * \param lenStr1 die Länge der ersten Zeichenfolge
+ * \param str2_p der Zeiger zur zweiten Zeichenfolge
+ * \param lenStr2 die Länge der zweiten Zeichenfolge
+ * 
+ * \return uint8_t 1: gleich, 0:ungleich
+ */
+uint8_t stringCmp(uint8_t* str1_p, uint16_t lenStr1, uint8_t* str2_p, uint16_t lenStr2){
+	uint8_t result = 1;
+	if (lenStr1==lenStr2){
+		for (uint16_t i = 0; i<lenStr1; i++){
+			if (str1_p[i]!=str2_p[i]){
+				result = 0;
+				break;
+			}
+		}
+	} else{
+		result = 0;
+	}
+	return result;
+}
+
 int main(void)
 {
 	/************************************************************************/
@@ -79,7 +128,7 @@ int main(void)
 	/* Testbeginn                                                                     */
 	/************************************************************************/
 	
-//#define  LED_ERR1_TEST 1
+
 #ifdef LED_ERR1_TEST
 	setErr1State(ON);
 #endif	
@@ -88,10 +137,9 @@ int main(void)
 	const uint8_t add = 1;
 	uint16_t reg = 0;
 	uint8_t rxLen = 0;
+	volatile uint8_t output[500] = {0};
 	
-//#define TEST01 1
-
-#ifdef TEST01
+#ifdef READ_ONE_REGISTER
 	//Lesen in Registern
 	reg = SEN_COURSE_ANGLE_ADD;
 	rxLen = 2;
@@ -104,14 +152,12 @@ int main(void)
 	}
 #endif
 
-#define TEST02 1
-
-#ifdef TEST02
+#ifdef WRITE_IN_ONE_REGISTER
 	//Schreiben in einem Register
-	uint8_t input[]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+	uint8_t input1[]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 	reg = REF_DRV_CTRL_REF_A_ADD;	
 	rxLen = 8;
-	error1 = setData(add,reg,&handler,(uint8_t*)input, rxLen);
+	error1 = setData(add,reg,&handler,(uint8_t*)input1, rxLen);
 	if (error1!=NO_ERROR){
 		setErr1State(ON);
 	} else {
@@ -119,14 +165,13 @@ int main(void)
 	}
 #endif
 
-//#define TEST03 1
-
-#ifdef TEST03
+#ifdef WRITE_AND_READ_MULTI_REGISTER
 	//Multiregister schreiben und lesen
-	uint8_t input[]={0,1,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20};
+	volatile uint8_t input2[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19};
+	
 	reg = REF_DRV_CTRL_REF_A_ADD;
 	rxLen = 20;
-	error1 = setMultiregister(add,reg,&handler,(uint8_t*)input, rxLen);
+	error1 = setMultiregister(add,reg,&handler,(uint8_t*)input2, rxLen);
 	if (error1!=NO_ERROR){
 		setErr1State(ON);
 	} else {
@@ -138,25 +183,15 @@ int main(void)
 	} else {
 		setErr1State(OFF);
 	}
-#endif
-
-//TODO löschen das
-//#define TEST04 1
-#ifdef TEST04
-#define MAX_ARRAY_LENGTH 70
-
-	uint8_t array[MAX_ARRAY_LENGTH]={0};
-	for (int i = 0; i<MAX_ARRAY_LENGTH;i++){
-		array[i]=i;
-	}
-	error1 = (*(handler.transmitFunc_p))(array,MAX_ARRAY_LENGTH);
-	if (error1!=NO_ERROR){
+	
+	error1 = stringCmp((uint8_t*)input2,rxLen,(uint8_t*)output,rxLen);
+	if (error1==0){
 		setErr1State(ON);
 	} else {
 		setErr1State(OFF);
 	}
+#endif
 
-#endif // TEST04
     /* Replace with your application code */
     while (1){
     }
