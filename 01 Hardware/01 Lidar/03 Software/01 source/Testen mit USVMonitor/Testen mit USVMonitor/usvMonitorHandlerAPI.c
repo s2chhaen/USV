@@ -3,7 +3,7 @@
  *
  * Created: 7/7/2023 8:42:59 AM
  * Author: Thach
- * Version: 1.1
+ * Version: 1.2
  * Revision: 1.0
  */
 
@@ -398,7 +398,7 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			uuaslProtocolHeader_t header = protocolHeaderPrint(add,begin,UUASL_R_REQ);
 			header.length = 8;//magic number: Bytes vom gesamten Protokoll: 1 für Datenlängenanfrage, 7 für übrigen
 			positionPtr += sizeof(header)/sizeof(uint8_t);
-			memcpy((&buffer[positionPtr]),(uint8_t*)&header,positionPtr);
+			memcpy((&buffer[0]),(uint8_t*)&header,positionPtr);
 			uint8_t dataSegLen = outputLen;
 			memcpy(&(buffer[positionPtr]),&dataSegLen,1);//magic number: Die Länge von dataSegLen in Byte
 			positionPtr += sizeof(dataSegLen)/sizeof(uint8_t);
@@ -479,7 +479,7 @@ uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			uuaslProtocolHeader_t head = protocolHeaderPrint(add,begin,UUASL_W_REQ);
 			head.length = inputLen+7;
 			positionPtr+= sizeof(head)/sizeof(uint8_t);
-			memcpy((&buffer[positionPtr]),(uint8_t*)&head,positionPtr);
+			memcpy((&buffer[0]),(uint8_t*)&head,positionPtr);
 			//Inhalt im Gesamtarray kopieren
 			memcpy((&buffer[positionPtr]),input_p,inputLen);
 			positionPtr+=inputLen;
@@ -494,7 +494,7 @@ uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 #endif
 			positionPtr = 1;
-			(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+			result = (*(dev_p->receiveFunc_p))(buffer, positionPtr);
 #if WAIT_FUNCTION_ACTIVE
 			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 #endif
