@@ -4,7 +4,7 @@
  * Created: 7/7/2023 8:42:59 AM
  * Author: Thach
  * Version: 1.2
- * Revision: 1.2
+ * Revision: 1.3
  */
 
 #include "usvMonitorHandlerAPI.h"
@@ -395,34 +395,72 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			uint8_t buffer[MAX_SIZE_FRAME] = {0};//Zwischenspeicherbuffer
 			uint16_t positionPtr = 0;//der Zeiger zur nächsten freien Position, die Länge der nutzbaren Bytes
 			outputLen = getTotalLen(begin,end);
-#ifdef ACTIVE_VERSION_1_1
-			uuaslProtocolHeader_t header = protocolHeaderPrint(add,begin,UUASL_R_REQ);
-			header.length = 8;//magic number: Bytes vom gesamten Protokoll: 1 für Datenlängenanfrage, 7 für übrigen
-			positionPtr += sizeof(header)/sizeof(uint8_t);
-			memcpy((&buffer[0]),(uint8_t*)&header,positionPtr);
-			uint8_t dataSegLen = outputLen;
-			memcpy(&(buffer[positionPtr]),&dataSegLen,1);//magic number: Die Länge von dataSegLen in Byte
-			positionPtr += sizeof(dataSegLen)/sizeof(uint8_t);
-			uint8_t checksumCode = crc8Checksum(&dataSegLen,1,dev_p->crc8Polynom);
-			uint8_t endByte = 0xA6;
-			buffer[positionPtr++]=checksumCode;
-			buffer[positionPtr++]=endByte;
-			(*(dev_p->transmitFunc_p))(buffer,positionPtr);
+			uint8_t processTime = outputLen/PAYLOAD_PER_FRAME + ((outputLen%PAYLOAD_PER_FRAME)?1:0);
+			for (uint8_t i = 0;i<processTime;i++){
+				positionPtr = 0;
+				begin = begin + PAYLOAD_PER_FRAME*i;
+				uuaslProtocolHeader_t header = protocolHeaderPrint(add,begin,UUASL_R_REQ);
+				header.length = 8;//magic number: Bytes vom gesamten Protokoll: 1 für Datenlängenanfrage, 7 für übrigen
+				positionPtr += sizeof(header)/sizeof(uint8_t);
+				memcpy((&buffer[0]),(uint8_t*)&header,positionPtr);
+				uint8_t dataSegLen = (outputLen<PAYLOAD_PER_FRAME)?outputLen:PAYLOAD_PER_FRAME;
+				memcpy(&(buffer[positionPtr]),&dataSegLen,1);//magic number: Die Länge von den zu empfangenen Nutzdaten in Byte
+				positionPtr += sizeof(dataSegLen)/sizeof(uint8_t);
+				buffer[positionPtr++] = crc8Checksum(&dataSegLen,1,dev_p->crc8Polynom);
+				buffer[positionPtr++] = 0xA6;
+				//Datensenden
+				(*(dev_p->transmitFunc_p))(buffer,positionPtr);
 #if WAIT_FUNCTION_ACTIVE
-			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
+				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 #endif
-			positionPtr=1;
-			(*(dev_p->receiveFunc_p))(buffer, positionPtr);
-#if WAIT_FUNCTION_ACTIVE
-			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
-#endif
-			if (buffer[0]==0xA2){
-				result = DATA_INVALID;
-			} else if (buffer[0]==0xA5){
-				positionPtr=4;
+				positionPtr=1;//hier dient als die zu empfangenen Daten
 				(*(dev_p->receiveFunc_p))(buffer, positionPtr);
 #if WAIT_FUNCTION_ACTIVE
 				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
+#endif
+				if (buffer[0]==0xA2){
+					result = DATA_INVALID;
+				} else if (buffer[0]==0xA5){
+					positionPtr=4;//hier dient als die zu empfangenen Daten
+					(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+#if WAIT_FUNCTION_ACTIVE
+					(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
+#endif
+				}
+				
+				//Immer am Ende der Schleife
+				outputLen -= PAYLOAD_PER_FRAME;
+			}
+			
+			
+#ifdef ACTIVE_VERSION_1_1
+			uuaslProtocolHeader_t header = protocolHeaderPrint(add,begin,UUASL_R_REQ);//OK
+			header.length = 8;//magic number: Bytes vom gesamten Protokoll: 1 für Datenlängenanfrage, 7 für übrigen //OK
+			positionPtr += sizeof(header)/sizeof(uint8_t);//OK
+			memcpy((&buffer[0]),(uint8_t*)&header,positionPtr);//OK
+			uint8_t dataSegLen = outputLen;//OK
+			memcpy(&(buffer[positionPtr]),&dataSegLen,1);//magic number: Die Länge von dataSegLen in Byte OK
+			positionPtr += sizeof(dataSegLen)/sizeof(uint8_t);//OK
+			uint8_t checksumCode = crc8Checksum(&dataSegLen,1,dev_p->crc8Polynom);//OK
+			uint8_t endByte = 0xA6;//OK
+			buffer[positionPtr++]=checksumCode;//OK
+			buffer[positionPtr++]=endByte;//OK
+			(*(dev_p->transmitFunc_p))(buffer,positionPtr);//OK
+#if WAIT_FUNCTION_ACTIVE
+			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten OK
+#endif
+			positionPtr=1;//OK
+			(*(dev_p->receiveFunc_p))(buffer, positionPtr);//OK
+#if WAIT_FUNCTION_ACTIVE
+			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten OK
+#endif
+			if (buffer[0]==0xA2){ //OK
+				result = DATA_INVALID; //OK
+			} else if (buffer[0]==0xA5){//OK
+				positionPtr=4;//OK
+				(*(dev_p->receiveFunc_p))(buffer, positionPtr);//OK
+#if WAIT_FUNCTION_ACTIVE
+				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten OK
 #endif
 				//Checken Protokollrelevante Informationen
 				bool checkRxDataInfo = (buffer[0]==add) && \
@@ -467,7 +505,7 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
  * \return uint8_t 0: kein Fehler, sonst: Fehler
  */
 uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t inputLen){
-	//TODO zu refaktorisieren
+	//TODO zu testen
 	uint8_t result = NO_ERROR;
 	if((dev_p==NULL)||(input_p==NULL)){
 		result = NULL_POINTER;
@@ -522,7 +560,6 @@ uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 		} else{
 			result = DATA_INVALID;
 		}
-
 	}
 	return result;
 }
