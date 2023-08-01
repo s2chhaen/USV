@@ -3,8 +3,8 @@
  *
  * Created: 7/7/2023 5:25:53 AM
  * Author: Thach
- * Version: 1.1
- * Revision: 1.1
+ * Version: 1.2
+ * Revision: 1.0
  */ 
 
 
@@ -22,8 +22,14 @@
 #define GET_SLAVE_ADD_HIGH_PART(a) a>>8
 #define SET_SLAVE_ADD_LOW_PART(add) (uint8_t)(add&0xff)
 #define SET_SLAVE_ADD_HIGH_PART(add,rw) (uint8_t)((add>>8)|(rw<<4))
+//Parameter für Zwischenspeicherbuffer
 #define MAX_SIZE_FRAME 400
-
+//Parameter des Datenrahmens
+#define DATA_REG_LENGTH_BIT 8
+#define MAX_FRAME_LEN (1<<DATA_REG_LENGTH_BIT)
+#define MAX_VALUE_DATA_REG (MAX_FRAME_LEN -1)
+#define OVERHEAD_LEN 7
+#define PAYLOAD_PER_FRAME (MAX_VALUE_DATA_REG-OVERHEAD_LEN)
 
 typedef struct{
 	uint8_t start;
