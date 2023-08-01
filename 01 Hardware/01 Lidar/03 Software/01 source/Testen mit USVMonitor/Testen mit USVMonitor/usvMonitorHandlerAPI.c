@@ -479,29 +479,71 @@ uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			uint8_t buffer[MAX_SIZE_FRAME] = {0};//Zwischenspeicherbuffer
 			uint16_t positionPtr = 0;//der Zeiger zur nächsten freien Position, die Länge der nutzbaren Bytes
 			inputLen = getTotalLen(begin,end);
+			//Anzahl der Protocol im abhängig von Nutzdaten (erwartet Nutzdaten = 247)
+			uint8_t processTime = inputLen/PAYLOAD_PER_FRAME + ((inputLen%PAYLOAD_PER_FRAME)?1:0);
+			uint8_t temp = 0;
+			for (uint8_t i = 0; i<processTime;i++){
+				positionPtr = 0;
+				//Header im Gesamtarray kopieren
+				begin = begin + i*PAYLOAD_PER_FRAME;
+				uuaslProtocolHeader_t head = protocolHeaderPrint(add,begin,UUASL_W_REQ);
+				temp = (inputLen>PAYLOAD_PER_FRAME)?PAYLOAD_PER_FRAME:inputLen;
+				head.length = temp+7;
+				positionPtr+= sizeof(head)/sizeof(uint8_t);
+				memcpy((&buffer[0]),(uint8_t*)&head,positionPtr);
+				
+				//TODO Inhalt im Gesamtarray kopieren
+				memcpy((&buffer[positionPtr]),&(input_p[i*PAYLOAD_PER_FRAME]),temp);
+				positionPtr+=temp;
+				
+				//Tail im Gesamtarray kopieren
+				uint8_t crc8 = crc8Checksum(&(input_p[i*PAYLOAD_PER_FRAME]),temp,dev_p->crc8Polynom);
+				uuaslProtocolTail_t tail = writeProtocolTailPrint(crc8);
+				memcpy((&buffer[positionPtr]),(uint8_t*)&tail,2);//magic number: Länge des Endteils/Tails in Byte
+				positionPtr += sizeof(tail)/sizeof(uint8_t);
+				
+				//Senden der Daten
+				result = (*(dev_p->transmitFunc_p))(buffer,positionPtr);
+#if WAIT_FUNCTION_ACTIVE
+				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
+#endif
+				positionPtr = 1;
+				(*(dev_p->receiveFunc_p))(buffer, positionPtr);
+#if WAIT_FUNCTION_ACTIVE
+				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
+#endif
+				if (buffer[0]!=0xA1){
+					result = PROCESS_FAIL;
+					break;
+				}
+				//Immer am Ende der Schleife
+				//TODO Checken das und entscheiden
+				//inputLen = (inputLen>PAYLOAD_PER_FRAME)?(inputLen-PAYLOAD_PER_FRAME):inputLen;
+				inputLen -= PAYLOAD_PER_FRAME;
+			}
 #ifdef ACTIVE_VERSION_1_1
 			//Header im Gesamtarray kopieren
-			uuaslProtocolHeader_t head = protocolHeaderPrint(add,begin,UUASL_W_REQ);
-			head.length = inputLen+7;
-			positionPtr+= sizeof(head)/sizeof(uint8_t);
-			memcpy((&buffer[0]),(uint8_t*)&head,positionPtr);
+			uuaslProtocolHeader_t head = protocolHeaderPrint(add,begin,UUASL_W_REQ);//OK
+			head.length = inputLen+7;//OK
+			positionPtr+= sizeof(head)/sizeof(uint8_t);//OK
+			memcpy((&buffer[0]),(uint8_t*)&head,positionPtr);//OK
 			//Inhalt im Gesamtarray kopieren
-			memcpy((&buffer[positionPtr]),input_p,inputLen);
-			positionPtr+=inputLen;
+			memcpy((&buffer[positionPtr]),input_p,inputLen);//OK
+			positionPtr+=inputLen;//OK
 			//Tail im Gesamtarray kopieren
-			uint8_t crc8 = crc8Checksum(input_p,inputLen,dev_p->crc8Polynom);
-			volatile uuaslProtocolTail_t tail = writeProtocolTailPrint(crc8);
-			memcpy((&buffer[positionPtr]),(uint8_t*)&tail,2);//magic number: Länge des Endteils/Tails in Byte
-			positionPtr += sizeof(tail)/sizeof(uint8_t);
+			uint8_t crc8 = crc8Checksum(input_p,inputLen,dev_p->crc8Polynom);//OK
+			volatile uuaslProtocolTail_t tail = writeProtocolTailPrint(crc8);//OK
+			memcpy((&buffer[positionPtr]),(uint8_t*)&tail,2);//magic number: Länge des Endteils/Tails in Byte //OK
+			positionPtr += sizeof(tail)/sizeof(uint8_t);//OK
 			//Senden die Daten
-			result = (*(dev_p->transmitFunc_p))(buffer,positionPtr);
+			result = (*(dev_p->transmitFunc_p))(buffer,positionPtr);//OK
 #if WAIT_FUNCTION_ACTIVE
-			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
+			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten OK
 #endif
-			positionPtr = 1;
-			result = (*(dev_p->receiveFunc_p))(buffer, positionPtr);
+			positionPtr = 1;//OK
+			result = (*(dev_p->receiveFunc_p))(buffer, positionPtr);//OK
 #if WAIT_FUNCTION_ACTIVE
-			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
+			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten //OK
 #endif
 			if (buffer[0]!=0xA1){
 				result = PROCESS_FAIL;
