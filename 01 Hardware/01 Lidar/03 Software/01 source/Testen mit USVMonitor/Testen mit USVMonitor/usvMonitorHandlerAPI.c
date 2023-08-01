@@ -507,7 +507,7 @@ uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 #if WAIT_FUNCTION_ACTIVE
 				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
 #endif
-				positionPtr = 1;
+				positionPtr = 1;//hier dient als die zu empfangenen Daten
 				(*(dev_p->receiveFunc_p))(buffer, positionPtr);
 #if WAIT_FUNCTION_ACTIVE
 				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
@@ -517,39 +517,8 @@ uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 					break;
 				}
 				//Immer am Ende der Schleife
-				//TODO Checken das und entscheiden
-				//inputLen = (inputLen>PAYLOAD_PER_FRAME)?(inputLen-PAYLOAD_PER_FRAME):inputLen;
 				inputLen -= PAYLOAD_PER_FRAME;
 			}
-#ifdef ACTIVE_VERSION_1_1
-			//Header im Gesamtarray kopieren
-			uuaslProtocolHeader_t head = protocolHeaderPrint(add,begin,UUASL_W_REQ);//OK
-			head.length = inputLen+7;//OK
-			positionPtr+= sizeof(head)/sizeof(uint8_t);//OK
-			memcpy((&buffer[0]),(uint8_t*)&head,positionPtr);//OK
-			//Inhalt im Gesamtarray kopieren
-			memcpy((&buffer[positionPtr]),input_p,inputLen);//OK
-			positionPtr+=inputLen;//OK
-			//Tail im Gesamtarray kopieren
-			uint8_t crc8 = crc8Checksum(input_p,inputLen,dev_p->crc8Polynom);//OK
-			volatile uuaslProtocolTail_t tail = writeProtocolTailPrint(crc8);//OK
-			memcpy((&buffer[positionPtr]),(uint8_t*)&tail,2);//magic number: Länge des Endteils/Tails in Byte //OK
-			positionPtr += sizeof(tail)/sizeof(uint8_t);//OK
-			//Senden die Daten
-			result = (*(dev_p->transmitFunc_p))(buffer,positionPtr);//OK
-#if WAIT_FUNCTION_ACTIVE
-			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten OK
-#endif
-			positionPtr = 1;//OK
-			result = (*(dev_p->receiveFunc_p))(buffer, positionPtr);//OK
-#if WAIT_FUNCTION_ACTIVE
-			(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten //OK
-#endif
-			if (buffer[0]!=0xA1){
-				result = PROCESS_FAIL;
-			}
-#endif
-
 		} else{
 			result = DATA_INVALID;
 		}
