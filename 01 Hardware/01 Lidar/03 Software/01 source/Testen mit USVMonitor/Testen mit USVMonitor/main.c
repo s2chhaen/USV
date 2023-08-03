@@ -136,7 +136,7 @@ int main(void)
 	volatile uint8_t error1 = NO_ERROR;
 	const uint8_t add = 1;
 	uint16_t reg = 0;
-	uint8_t rxLen = 0;
+	uint16_t rxLen = 0;
 	volatile uint8_t output[500] = {0};
 	
 #ifdef READ_ONE_REGISTER
@@ -166,11 +166,16 @@ int main(void)
 #endif
 
 #ifdef WRITE_AND_READ_MULTI_REGISTER
+#define INPUT_2_LEN 20
 	//Multiregister schreiben und lesen
-	volatile uint8_t input2[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19};
-	
-	reg = REF_DRV_CTRL_REF_A_ADD;
-	rxLen = 20;
+	volatile uint8_t input2[INPUT_2_LEN] = {0};
+	//memset((uint8_t*)input2,0x14,INPUT_2_LEN);
+	for (int i = 0; i<INPUT_2_LEN;i++)
+	{
+		input2[i] = i;
+	}
+	reg = LIDAR_VALUE_ADD;
+	rxLen = 360;
 	error1 = setMultiregister(add,reg,&handler,(uint8_t*)input2, rxLen);
 	if (error1!=NO_ERROR){
 		setErr1State(ON);
