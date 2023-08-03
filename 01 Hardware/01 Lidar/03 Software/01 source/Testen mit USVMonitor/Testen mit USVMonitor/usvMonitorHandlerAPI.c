@@ -126,7 +126,7 @@ static inline int8_t searchEnd(int8_t begin, uint16_t len){
 
 static inline uint16_t getTotalLen(int8_t begin, int8_t end){
 	uint16_t result = 0;
-	if ((begin>-1)&&(end>begin)){
+	if ((begin>-1)&&(end>=begin)){
 		for (int i = begin;i<end+1;i++){
 			result+=regSet[i].len;
 		}
