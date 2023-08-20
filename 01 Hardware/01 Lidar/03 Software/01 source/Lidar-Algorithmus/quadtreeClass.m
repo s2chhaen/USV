@@ -18,7 +18,7 @@ classdef quadtreeClass < handle
     end
     methods
         %Constructor
-        function obj=quadtreeClass(inputVal,mainCoord)
+        function obj=quadtreeClass()
             obj.depth = 0;
             obj.node = [];
             obj.parent = [];
