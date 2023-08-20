@@ -16,6 +16,21 @@ classdef quadtreeClass < handle
         parent = []%Stelle der Eltern von einem Node, 0,0 bedeutet root
         id = 3
     end
+
+    methods (Access=private)
+        function boolVal=checkPoint(point)
+            boolVal = false;
+            if nargin == 1
+                checkEmpty = ~isempty(point);
+                checkElementNo = numel(point)==2;
+                checkElementType = isnumeric(point);
+                if checkEmpty && checkElementType && checkElementNo
+                    boolVal = true;    
+                end
+            end
+        end
+    end
+
     methods
         %Constructor
         function obj=quadtreeClass()
@@ -24,19 +39,9 @@ classdef quadtreeClass < handle
             obj.parent = [];
         end
 
-        function boolVal=checkPoint(point)
-            boolVal = false;
-            if nargin == 1
-                checkEmpty = isempty(point);
-                checkElementNo = numel(point)==2;
-                checkElementType = isnumeric(point);
-                if checkEmpty && checkElementType && checkElementNo
-                    boolVal = true;    
-                end
-            end
-        end
+        
 
-        function boolVal=checkTopAndBotPoints(top,bot)
+        function boolVal=checkTopAndBotPoints(obj,top,bot)
             boolVal = false;
             checkPointType = checkPoint(top) && checkPoint(bot);
             if checkPointType
