@@ -56,15 +56,13 @@ classdef quadtreeClass < handle
             obj.parent = [];
         end
 
-        
-
         function []=setRoot(obj,top,bot)
             if nargin~=3
                 error('nicht genug Parameter für Funktion');
-            elseif isempty(obj)
+            elseif isempty(obj) || (obj.id~=3)
                 error('Eingabe ungültig');
             else
-                checkPoints = checkTopAndBotPoints(top,bot);
+                checkPoints = obj.checkTopAndBotPoints(top,bot);
                 if checkPoints
                     root = quadtreeNodeClass(bot(1,1),top(1,1), ...
                         bot(1,2),top(1,2));
@@ -73,8 +71,7 @@ classdef quadtreeClass < handle
                     obj.parent = {[0,0]};
                 else
                     error('Eingabe ungültig');
-                end
-                
+                end 
             end
         end
 
