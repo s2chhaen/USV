@@ -18,9 +18,9 @@ classdef quadtreeClass < handle
     end
 
     methods (Access=private)
-        function boolVal=checkPoint(point)
+        function boolVal=checkPoint(obj,point)
             boolVal = false;
-            if nargin == 1
+            if nargin == 2
                 checkEmpty = ~isempty(point);
                 checkElementNo = numel(point)==2;
                 checkElementType = isnumeric(point);
@@ -29,6 +29,23 @@ classdef quadtreeClass < handle
                 end
             end
         end
+
+        function boolVal=checkTopAndBotPoints(obj,top,bot)
+            boolVal = false;
+            if nargin == 3
+                checkTop = obj.checkPoint(top);
+                checkBot = obj.checkPoint(bot);
+                checkPointType = checkTop && checkBot;
+                if checkPointType
+                    checkX = top(1,1) > bot(1,1);
+                    checkY = top(1,2) > bot(1,2);
+                    if checkX && checkY
+                        boolVal = true;
+                    end
+                end
+            end
+        end
+
     end
 
     methods
@@ -40,18 +57,6 @@ classdef quadtreeClass < handle
         end
 
         
-
-        function boolVal=checkTopAndBotPoints(obj,top,bot)
-            boolVal = false;
-            checkPointType = checkPoint(top) && checkPoint(bot);
-            if checkPointType
-                checkX = top(1,1) > bot(1,1);
-                checkY = top(1,2) > bot(1,2);
-                if checkX && checkY
-                    boolVal = true;
-                end
-            end
-        end
 
         function []=setRoot(obj,top,bot)
             if nargin~=3
