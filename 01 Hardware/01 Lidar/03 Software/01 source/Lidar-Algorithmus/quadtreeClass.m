@@ -24,7 +24,48 @@ classdef quadtreeClass < handle
             obj.parent = [];
         end
 
-        function []=setRoot()
+        function boolVal=checkPoint(point)
+            boolVal = false;
+            if nargin == 1
+                checkEmpty = isempty(point);
+                checkElementNo = numel(point)==2;
+                checkElementType = isnumeric(point);
+                if checkEmpty && checkElementType && checkElementNo
+                    boolVal = true;    
+                end
+            end
+        end
+
+        function boolVal=checkTopAndBotPoints(top,bot)
+            boolVal = false;
+            checkPointType = checkPoint(top) && checkPoint(bot);
+            if checkPointType
+                checkX = top(1,1) > bot(1,1);
+                checkY = top(1,2) > bot(1,2);
+                if checkX && checkY
+                    boolVal = true;
+                end
+            end
+        end
+
+        function []=setRoot(obj,top,bot)
+            if nargin~=3
+                error('nicht genug Parameter für Funktion');
+            elseif isempty(obj)
+                error('Eingabe ungültig');
+            else
+                checkPoints = checkTopAndBotPoints(top,bot);
+                if checkPoints
+                    root = quadtreeNodeClass(bot(1,1),top(1,1), ...
+                        bot(1,2),top(1,2));
+                    obj.depth = 1;
+                    obj.node = [root];
+                    obj.parent = {[0,0]};
+                else
+                    error('Eingabe ungültig');
+                end
+                
+            end
         end
 
 	%TODO Noch in Bearbeitung
