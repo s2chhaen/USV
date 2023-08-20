@@ -10,6 +10,7 @@ classdef quadtreeClass < handle
     end
     properties (Access = private)
         maxChild = 4
+        maxPointsPerNode = 4
     end
     properties (GetAccess = public, SetAccess=private)
         depth{mustBeNumeric}%Anzahl von der Schichte vom Tree
