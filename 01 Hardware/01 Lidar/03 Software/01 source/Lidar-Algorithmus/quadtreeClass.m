@@ -7,7 +7,6 @@
 classdef quadtreeClass < handle
     properties
         node=[]
-        pointData=[]%Wo die Koordinatedaten gespeicheirt werden, cell array
     end
     properties (Access = private)
         maxChild = 4
@@ -19,22 +18,10 @@ classdef quadtreeClass < handle
     end
     methods
         %Constructor
-        function obj=quadtreeClass()
-            obj.depth=1;
-            obj.node = [nodeClass([],[],0)];%Root erzeugt
-            obj.parent = [{0,0}];
-        end
-
-        function []=setPointData(obj,inputVal)
-            if nargin~=1
-                error('Eingabe nicht gültig');
-            elseif ~isnumeric(inputVal)
-                error('Eingabe ist kein nodeClass');
-            elseif (obj.id~=3) || isempty(obj)
-                error('obj ist kein quadtreeClass oder ist leer');
-            else
-                obj.pointData=inputVal;
-            end
+        function obj=quadtreeClass(inputVal,mainCoord)
+            obj.depth = 0;
+            obj.node = [];
+            obj.parent = [];
         end
 
         function []=makeNodes(obj)
