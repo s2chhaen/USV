@@ -24,11 +24,7 @@ classdef quadtreeClass < handle
             obj.parent = [];
         end
 
-        function []=makeNodes(obj)
-            if nargin~=1
-                error('Eingabe nicht gültig');
-            elseif obj.id~=3
-            end
+        function []=setRoot()
         end
 
 	%TODO Noch in Bearbeitung
