@@ -42,7 +42,7 @@ clc;
 
 a = {10 20 30 40 50 60 70 80 90 100 101 102 103 104};%Array
 b = numel(a);
-d = 10000;%Hinzugefügtes Elementes
+d = 0;%Hinzugefügtes Elementes
 %floor(): round down, ceil(): round up
 %Hinzufüge d in a ohne Wiedersortieren
 beginIdx = 1;
@@ -67,7 +67,6 @@ else
         a = [a{1:(beginIdx-1)} d a{beginIdx:end}];%Array, da leicht zu gucken
     end
 end
-
 
 % c=dataOutputXY(:,:,1);
 % x=c(:,1);
