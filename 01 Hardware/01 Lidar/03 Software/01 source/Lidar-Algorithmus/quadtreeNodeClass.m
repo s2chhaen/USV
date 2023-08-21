@@ -2,17 +2,19 @@
 % Verwendungszweck: Modellierung eines Nodes vom Quadtree
 % Erstellt am 14.08.2023
 % Version: 1.00
-% Revision: 1.05
+% Revision: 1.06
 
-classdef quadtreeNodeClass < handle
+classdef quadtreeNodeClass
     properties (Access = public)
         pointsList = []%das Array für die Punktepositionen in X und Y
+        child = []
     end
     properties (GetAccess = public, SetAccess=private)
         xValMin{mustBeNumeric}
         xValMax{mustBeNumeric}
         yValMin{mustBeNumeric}
         yValMax{mustBeNumeric}
+        parent = []
         id = 2
     end
 
@@ -65,9 +67,11 @@ classdef quadtreeNodeClass < handle
 
     methods (Access=public)
         %Constructor
-        function obj=quadtreeNodeClass(xValMin,xValMax,yValMin,yValMax)
-            if nargin~=4
+        function obj=quadtreeNodeClass(xValMin, xValMax, yValMin, yValMax,parent)
+            if nargin~=5
                 error('nicht genug Parameter für Konstruktor');
+            elseif isempty(parent)||~isnumeric(parent)||(numel(parent)~=2)
+                error('Eingabe ist nicht gültig');
             elseif ~isnumeric(xValMin) || ~isnumeric(xValMax) || ~isnumeric( ...
                     yValMin) || ~isnumeric(yValMax)
                 error('Eingabe ist nicht gültig');
@@ -78,6 +82,7 @@ classdef quadtreeNodeClass < handle
                 temp = [yValMin,yValMax];
                 obj.yValMin = min(temp);
                 obj.yValMax = max(temp);
+                obj.parent = parent;
             end
         end
 
