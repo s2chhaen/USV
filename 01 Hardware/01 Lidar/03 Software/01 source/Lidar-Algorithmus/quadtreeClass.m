@@ -2,7 +2,7 @@
 % Verwendungszweck: Modellierung des Quadtrees
 % Erstellt am 17.08.2023
 % Version: 1.00
-% Revision: 1.07
+% Revision: 1.08
 
 classdef quadtreeClass < handle
     properties
@@ -13,7 +13,6 @@ classdef quadtreeClass < handle
     end
     properties (GetAccess = public, SetAccess=private)
         depth{mustBeNumeric}%Anzahl von der Schichte vom Tree
-        parent = []%Stelle der Eltern von einem Node, 0,0 bedeutet root
         id = 3
     end
 
@@ -102,7 +101,6 @@ classdef quadtreeClass < handle
         function obj=quadtreeClass()
             obj.depth = 0;
             obj.node = {[]};
-            obj.parent = [];
         end
 
         function []=setRoot(obj,top,bot)
@@ -113,11 +111,9 @@ classdef quadtreeClass < handle
             else
                 checkPoints = obj.checkTopAndBotPoints(top,bot);
                 if checkPoints
-                    root = quadtreeNodeClass(bot(1,1),top(1,1), ...
-                        bot(1,2),top(1,2));
+                    root = quadtreeNodeClass(bot(1,1),top(1,1),bot(1,2),top(1,2),[0,0]);
                     obj.depth = 1;
                     obj.node = {root};
-                    obj.parent = {[0,0]};
                 else
                     error('Eingabe ungültig');
                 end 
