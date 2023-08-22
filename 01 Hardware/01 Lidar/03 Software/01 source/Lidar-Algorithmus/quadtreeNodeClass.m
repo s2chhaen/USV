@@ -7,14 +7,13 @@
 classdef quadtreeNodeClass
     properties (Access = public)
         pointsList = []%das Array für die Punktepositionen in X und Y
-        child = []
+        child = 0
     end
     properties (GetAccess = public, SetAccess=private)
         xValMin{mustBeNumeric}
         xValMax{mustBeNumeric}
         yValMin{mustBeNumeric}
         yValMax{mustBeNumeric}
-        parent = []
         id = 2
     end
 
@@ -67,11 +66,9 @@ classdef quadtreeNodeClass
 
     methods (Access=public)
         %Constructor
-        function obj=quadtreeNodeClass(xValMin, xValMax, yValMin, yValMax,parent)
+        function obj=quadtreeNodeClass(xValMin, xValMax, yValMin, yValMax)
             if nargin~=5
                 error('nicht genug Parameter für Konstruktor');
-            elseif isempty(parent)||~isnumeric(parent)||(numel(parent)~=2)
-                error('Eingabe ist nicht gültig');
             elseif ~isnumeric(xValMin) || ~isnumeric(xValMax) || ~isnumeric( ...
                     yValMin) || ~isnumeric(yValMax)
                 error('Eingabe ist nicht gültig');
