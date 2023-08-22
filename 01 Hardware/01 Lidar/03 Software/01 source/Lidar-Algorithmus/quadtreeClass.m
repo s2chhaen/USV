@@ -16,7 +16,7 @@ classdef quadtreeClass < handle
         id = 3
     end
 
-    methods (Access=private)
+    methods (Access=public)
         function boolVal=checkPoint(obj,point)
             boolVal = false;
             if nargin == 2
@@ -45,6 +45,17 @@ classdef quadtreeClass < handle
             end
         end
 
+        function [row,col]=searchNode(obj,node)
+            if nargin~=2
+                error('Eingabe ungültig');
+            elseif isempty(obj) || isempty(node)
+                error('Eingabe ungültig');
+            elseif (obj.id~=3) || (node.id~=2)
+                error('Eingabe ungültig');
+            else
+
+            end
+        end
         % Beim Aufruf wird 4 Kinder für das Node hinzugefügt
         function cellVal=addChildForNode(obj,node)
             if nargin~=2
@@ -104,9 +115,10 @@ classdef quadtreeClass < handle
             obj.node = {};
         end
 
-        function []=setRoot(obj,top,bot)
+        function [] = setRoot(obj,top,bot)
             if nargin~=3
                 error('nicht genug Parameter für Funktion');
+                %TODO checken top und bot Parameter noch
             elseif isempty(obj) || (obj.id~=3)
                 error('Eingabe ungültig');
             else
@@ -114,13 +126,23 @@ classdef quadtreeClass < handle
                 if checkPoints
                     root = quadtreeNodeClass(bot(1,1),top(1,1),bot(1,2),top(1,2),[0,0]);
                     obj.depth = 1;
-                    obj.node = {root};
+                    obj.node = root;
                 else
                     error('Eingabe ungültig');
                 end 
             end
         end
 
-
+        function [] = addPoints(obj, points)
+            if nargin~=2
+                error('nicht genug Parameter für Funktion');
+            elseif isempty(obj) || (obj.id~=3)
+                error('Eingabe ungültig');
+            elseif isempty(points) || isnumeric(points)
+                error('Eingabe ungültig');
+            else
+                childrenNumber = numel(obj)
+            end
+        end
     end
 end
