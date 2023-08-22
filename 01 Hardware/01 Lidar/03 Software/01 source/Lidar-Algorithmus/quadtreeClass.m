@@ -94,13 +94,14 @@ classdef quadtreeClass < handle
                 end
             end
         end
+
     end
 
     methods
         %Constructor
         function obj=quadtreeClass()
             obj.depth = 0;
-            obj.node = {[]};
+            obj.node = {};
         end
 
         function []=setRoot(obj,top,bot)
