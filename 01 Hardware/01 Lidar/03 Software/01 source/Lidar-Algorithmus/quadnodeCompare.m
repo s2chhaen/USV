@@ -1,4 +1,4 @@
-function compareVal = quadnodeCompare(node1,node2)
+function strVal = quadnodeCompare(node1,node2)
 %NODECOMPARE Summary of this function goes here
 %   Detailed explanation goes here
     if nargin~=2
@@ -8,10 +8,10 @@ function compareVal = quadnodeCompare(node1,node2)
     elseif (node1.id~=2)||(node2.id~=2)
         error('Eingabe nicht gültig');
     else
-        compareXMax = numComp(node1.xValMax,node2.xValMax);
-        compareXMin = numComp(node1.xValMin,node2.xValMin);
-        compareYMax = numComp(node1.yValMax,node2.yValMax);
-        compareYMin = numComp(node1.yValMin,node2.yValMin);
+        compareXMax = numCmp(node1.xValMax,node2.xValMax);
+        compareXMin = numCmp(node1.xValMin,node2.xValMin);
+        compareYMax = numCmp(node1.yValMax,node2.yValMax);
+        compareYMin = numCmp(node1.yValMin,node2.yValMin);
         %Für X
         %Schneiden/intersect
         case1X = ((compareXMax==1)&&(compareXMin==1))||( ...
@@ -35,15 +35,15 @@ function compareVal = quadnodeCompare(node1,node2)
         case4Y = (compareYMax==0)&&(compareYMin==0);
 
         if case1X==true || case1Y==true
-            compareVal='intersect';
+            strVal='intersect';
         elseif case4X==true && case4Y==true
-            compareVal='coincide';
+            strVal='coincide';
         elseif case2X==true && case2Y==true
-            compareVal='include';
+            strVal='include';
         elseif case3X==true && case3Y==true
-            compareVal='included';
+            strVal='included';
         else
-            compareVal='apart';
+            strVal='apart';
         end
     end
 end
