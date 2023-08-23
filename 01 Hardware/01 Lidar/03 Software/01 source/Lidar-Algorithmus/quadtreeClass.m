@@ -6,7 +6,10 @@
 
 classdef quadtreeClass < handle
     properties
-        node=[]
+        node={}
+        child={}
+        parent={}
+        level={}
     end
     properties (Access = private)
         maxPointsPerNode = 4
@@ -111,8 +114,6 @@ classdef quadtreeClass < handle
     methods
         %Constructor
         function obj=quadtreeClass()
-            obj.depth = 0;
-            obj.node = {};
         end
 
         function [] = setRoot(obj,top,bot)
@@ -124,7 +125,9 @@ classdef quadtreeClass < handle
             else
                 checkPoints = obj.checkTopAndBotPoints(top,bot);
                 if checkPoints
-                    root = quadtreeNodeClass(bot(1,1),top(1,1),bot(1,2),top(1,2),[0,0]);
+                    root = quadtreeNodeClass(bot(1,1),top(1,1),bot(1,2),top(1,2),1);
+                    obj.parent = {[0,0]};
+                    obj.level = {[1,1]};
                     obj.depth = 1;
                     obj.node = root;
                 else
