@@ -2,7 +2,7 @@
 % Verwendungszweck: Modellierung des Quadtrees
 % Erstellt am 17.08.2023
 % Version: 1.00
-% Revision: 1.08
+% Revision: 1.09
 
 classdef quadtreeClass < handle
     properties
@@ -194,9 +194,6 @@ classdef quadtreeClass < handle
                     southWestNode = southWestNode.setLevel(subNodeLvl);
                     [insertPos,front] = obj.insert2ParentAttribute(nodePos);
                     obj = obj.insert2NodeAttribute(southWestNode,insertPos,front);
-                    % cellVal = {nordWestNode, nordEastNode, southEastNode, ...
-                    %            southWestNode};
-                    %obj.node = [obj.node cellVal];
                     obj.node(nodePos).child = 4;%TODO über getter/setter festlegen
                     treeDepth = obj.depth;
                     if subNodeLvl==(treeDepth+1)
@@ -208,11 +205,6 @@ classdef quadtreeClass < handle
                     elseif subNodeLvl<=treeDepth
                         obj.level(subNodeLvl,2) = obj.level(subNodeLvl,2)+4;
                     end
-                    % for i=1:4
-                    %     temp = cellVal{1,i};
-                    %     [insertPos,front] = obj.insert2ParentAttribute(nodePos);
-                    %     obj = obj.insert2NodeAttribute(temp,insertPos,front);
-                    % end
                 else
                     error('Eingabe ungültig');
                 end
@@ -222,14 +214,9 @@ classdef quadtreeClass < handle
     end
 
     methods
-        %Constructor
-        function obj=quadtreeClass()
-        end
-
         function obj = setRoot(obj,top,bot)
             if nargin~=3
                 error('nicht genug Parameter für Funktion');
-                %TODO checken top und bot Parameter noch
             elseif isempty(obj) || (obj.id~=3)
                 error('Eingabe ungültig');
             else
