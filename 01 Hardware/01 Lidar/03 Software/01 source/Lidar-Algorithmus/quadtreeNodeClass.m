@@ -15,6 +15,7 @@ classdef quadtreeNodeClass
         yValMin{mustBeNumeric}
         yValMax{mustBeNumeric}
         id = 2
+        level=0
     end
 
     methods (Access=private)
@@ -66,7 +67,8 @@ classdef quadtreeNodeClass
 
     methods (Access=public)
         %Constructor
-        function obj=quadtreeNodeClass(xValMin, xValMax, yValMin, yValMax)
+        function obj=quadtreeNodeClass(xValMin, xValMax, yValMin, yValMax, ...
+                                       level)
             if nargin~=5
                 error('nicht genug Parameter für Konstruktor');
             elseif ~isnumeric(xValMin) || ~isnumeric(xValMax) || ~isnumeric( ...
@@ -79,7 +81,7 @@ classdef quadtreeNodeClass
                 temp = [yValMin,yValMax];
                 obj.yValMin = min(temp);
                 obj.yValMax = max(temp);
-                obj.parent = parent;
+                obj.level = level;
             end
         end
 
