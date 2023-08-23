@@ -45,7 +45,7 @@ radiusCol = 2;
 angleCol = 3;
 xCol = 4;
 yCol = 5;
-format shortG
+% format shortG
 for i=1:numOfSubArray
     beginIndex = double(363*uint16(i) - 362);
     endIndex = double(363*uint16(i) - 2);
@@ -63,7 +63,6 @@ for i=1:numOfSubArray
     temp = rawDataTemp(beginIndex:endIndex,yCol);
     dataOutputXY(1:subArrayLen,2,i)=cellfun(@(a) str2double(a),temp);
 end
-    datasetNumbers = i;
 
 %Löschen der nicht-notwendigen Variablen
 clear yCol xCol temp subArrayLen rawDataTemp rawData radiusCol opts ...
