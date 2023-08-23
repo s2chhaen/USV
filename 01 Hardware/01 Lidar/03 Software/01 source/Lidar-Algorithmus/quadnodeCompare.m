@@ -7,6 +7,8 @@ function strVal = quadnodeCompare(node1,node2)
         error('Eingabe nicht gültig');
     elseif (node1.id~=2)||(node2.id~=2)
         error('Eingabe nicht gültig');
+    elseif (node1.init~=1) || (node2.init~=1)
+        error('Koordinaten von Node1 oder Node2 oder beide sind leer');
     else
         compareXMax = numCmp(node1.xValMax,node2.xValMax);
         compareXMin = numCmp(node1.xValMin,node2.xValMin);
