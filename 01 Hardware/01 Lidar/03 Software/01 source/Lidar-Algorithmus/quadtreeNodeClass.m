@@ -2,20 +2,21 @@
 % Verwendungszweck: Modellierung eines Nodes vom Quadtree
 % Erstellt am 14.08.2023
 % Version: 1.00
-% Revision: 1.06
+% Revision: 1.07
 
-classdef quadtreeNodeClass
+classdef quadtreeNodeClass < handle
     properties (Access = public)
         pointsList = []%das Array für die Punktepositionen in X und Y
-        child;
+        child = 0
     end
     properties (GetAccess = public, SetAccess=private)
         xValMin{mustBeNumeric}
         xValMax{mustBeNumeric}
         yValMin{mustBeNumeric}
         yValMax{mustBeNumeric}
+        level{mustBeNumeric}
+        init = false
         id = 2
-        level=0
     end
 
     methods (Access=private)
@@ -66,23 +67,33 @@ classdef quadtreeNodeClass
     end
 
     methods (Access=public)
-        %Constructor
-        function obj=quadtreeNodeClass(xValMin, xValMax, yValMin, yValMax, ...
-                                       level)
-            if nargin~=5
-                error('nicht genug Parameter für Konstruktor');
-            elseif ~isnumeric(xValMin) || ~isnumeric(xValMax) || ~isnumeric( ...
-                    yValMin) || ~isnumeric(yValMax)
+        function obj=quadNodeInit(obj,bot,top)
+            if nargin~=3
+                error('Anzahl von Parametern für Konstruktor ungültig');
+            elseif isempty(bot)||isempty(top)||isempty(obj)
                 error('Eingabe ist nicht gültig');
             else
-                temp = [xValMin,xValMax];
-                obj.xValMin = min(temp);
-                obj.xValMax = max(temp);
-                temp = [yValMin,yValMax];
-                obj.yValMin = min(temp);
-                obj.yValMax = max(temp);
+                xCmp = numCmp(top(1),bot(1));
+                yCmp = numCmp(top(2),bot(2));
+                if xCmp == 1 && yCmp == 1
+                    obj.xValMax = top(1);
+                    obj.yValMax = top(2);
+                    obj.xValMin = bot(1);
+                    obj.yValMin = bot(2);
+                    obj.init = true;
+                else
+                    error('Eingabe ist nicht gültig');
+                end
+            end
+        end
+
+        function obj=setLevel(obj,level)
+            if nargin~=2
+                error('Anzahl von Parametern für Konstruktor ungültig');
+            elseif isempty(level)||isempty(obj)
+                error('Eingabe ist nicht gültig');
+            else
                 obj.level = level;
-                obj.child = 0;
             end
         end
 
