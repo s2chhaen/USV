@@ -22,9 +22,6 @@ function compareVal = quadnodeCompare(node1,node2)
         case3X = (compareXMax==-1)&&(compareXMin==1);
         %Übereinstimmen/coincide
         case4X = (compareXMax==0)&&(compareXMin==0);
-        %getrennt
-        case5X = (case1X~=false)&&(case2X~=false)&&( ...
-                  case3X~=false)&&(case4X~=false);
         
         %Für Y
         %Schneiden/intersect
@@ -36,10 +33,8 @@ function compareVal = quadnodeCompare(node1,node2)
         case3Y = (compareYMax==-1)&&(compareYMin==1);
         %Übereinstimmend/coincide
         case4Y = (compareYMax==0)&&(compareYMin==0);
-        %getrennt/apart
-        case5Y = (case1Y~=false)&&(case2Y~=false)&&( ...
-                  case3Y~=false)&&(case4Y~=false);
-        if case1X==true || case2Y==true
+
+        if case1X==true || case1Y==true
             compareVal='intersect';
         elseif case4X==true && case4Y==true
             compareVal='coincide';
