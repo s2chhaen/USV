@@ -7,7 +7,7 @@
 classdef quadtreeNodeClass
     properties (Access = public)
         pointsList = []%das Array für die Punktepositionen in X und Y
-        child = 0
+        child;
     end
     properties (GetAccess = public, SetAccess=private)
         xValMin{mustBeNumeric}
@@ -82,6 +82,7 @@ classdef quadtreeNodeClass
                 obj.yValMin = min(temp);
                 obj.yValMax = max(temp);
                 obj.level = level;
+                obj.child = 0;
             end
         end
 
