@@ -2,10 +2,8 @@
 % Verwendungszweck: Extrakt der Daten aus der rohen Datei vom Lidar
 % Erstellt am 08.08.2023
 % Version: 1.00
-% Revision: 1.05
+% Revision: 1.06
 
-tic;%Laufzeitsberechnung
-%Alte Ergebnisse Löschen
 clc;
 
 %Laden "ImportOptions" in Var opts
@@ -65,26 +63,9 @@ for i=1:numOfSubArray
     temp = rawDataTemp(beginIndex:endIndex,yCol);
     dataOutputXY(1:subArrayLen,2,i)=cellfun(@(a) str2double(a),temp);
 end
+    datasetNumbers = i;
 
-%Speichern der Daten in .mat Datei
+%Löschen der nicht-notwendigen Variablen
+clear yCol xCol temp subArrayLen rawDataTemp rawData radiusCol opts ...
+      numOfSubArray lenRawData i endIndex beginIndex avoidedLines angleCol
 
-%Radius und Winkel
-baseFileName = "extractedRadiusAngleVals.mat";%Text-Scalar-Form der Dateinamen
-varNameinText = "dataOutputRA";%Text-Scalar-Form der Variablenamen
-save(baseFileName,varNameinText,'-mat');%Datei Format .mat
-%Radius und Winkel
-baseFileName = "extractedXYVals.mat";%Text-Scalar-Form der Dateinamen
-varNameinText = "dataOutputXY";%Text-Scalar-Form der Variablenamen
-save(baseFileName,varNameinText,'-mat');%Datei Format .mat
-%Daten mit Einheit
-baseFileName = "rawData.mat";%Text-Scalar-Form der Dateinamen
-varNameinText = "rawData";%Text-Scalar-Form der Variablenamen
-save(baseFileName,varNameinText,'-mat');
-%Daten ohne Einheit
-baseFileName = "rawDataTemp.mat";%Text-Scalar-Form der Dateinamen
-varNameinText = "rawDataTemp";%Text-Scalar-Form der Variablenamen
-save(baseFileName,varNameinText,'-mat');
-
-clear
-%Laufzeitsberechnung
-toc
