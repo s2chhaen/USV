@@ -1,4 +1,4 @@
-function compVal = numCompare(a,b)
+function compVal = numCmp(a,b)
 %NUMCOMPARE Summary of this function goes here
 %   Detailed explanation goes here
     if nargin~=2
