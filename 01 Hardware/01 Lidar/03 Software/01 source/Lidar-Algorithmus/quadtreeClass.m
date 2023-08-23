@@ -21,23 +21,11 @@ classdef quadtreeClass < handle
 
     %TODO als Private nach dem Debuggen festzulegen
     methods (Access=public)
-        function boolVal=checkPoint(obj,point)
-            boolVal = false;
-            if nargin == 2
-                checkEmpty = ~isempty(point);
-                checkElementNo = numel(point)==2;
-                checkElementType = isnumeric(point);
-                if checkEmpty && checkElementType && checkElementNo
-                    boolVal = true;    
-                end
-            end
-        end
-
         function boolVal=checkTopAndBotPoints(obj,top,bot)
             boolVal = false;
             if nargin == 3
-                checkTop = obj.checkPoint(top);
-                checkBot = obj.checkPoint(bot);
+                checkTop = checkPoint(top);
+                checkBot = checkPoint(bot);
                 checkPointType = checkTop && checkBot;
                 if checkPointType
                     checkX = top(1,1) > bot(1,1);
@@ -235,7 +223,20 @@ classdef quadtreeClass < handle
             end
         end
 
-        function [] = addPoints(obj, points)
+        function arrayVal=getLeaf(obj)
+            arrayVal = [];
+            if nargin~=1
+                error('nicht genug Parameter für Funktion');
+            elseif isempty(obj) || (obj.id~=3)
+                error('Eingabe ungültig');
+            else
+                if ~isempty(obj.node)
+                    for i=1:numel(obj.node)
+                end
+            end
+        end
+
+        function obj = addPoints(obj, points)
             if nargin~=2
                 error('nicht genug Parameter für Funktion');
             elseif isempty(obj) || (obj.id~=3)
@@ -243,7 +244,7 @@ classdef quadtreeClass < handle
             elseif isempty(points) || isnumeric(points)
                 error('Eingabe ungültig');
             else
-                childrenNumber = numel(obj);
+                pointsNum = numel(points);
             end
         end
     end
