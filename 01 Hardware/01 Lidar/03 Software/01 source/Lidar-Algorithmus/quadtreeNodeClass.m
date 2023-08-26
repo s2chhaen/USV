@@ -2,7 +2,7 @@
 % Verwendungszweck: Modellierung eines Nodes vom Quadtree
 % Erstellt am 14.08.2023
 % Version: 1.00
-% Revision: 1.07
+% Revision: 1.08
 
 classdef quadtreeNodeClass < handle
     properties (Access = public)
@@ -10,12 +10,21 @@ classdef quadtreeNodeClass < handle
         child = 0
     end
     properties (GetAccess = public, SetAccess=private)
+        %Bot- und Top-Punkt
+        %Bot
         xValMin{mustBeNumeric}
-        xValMax{mustBeNumeric}
         yValMin{mustBeNumeric}
+        %Top
+        xValMax{mustBeNumeric}
         yValMax{mustBeNumeric}
+
+        %Position in der Quadtree-Stufe
         level{mustBeNumeric}
+        %Die Name - nur zum Betrachten
+        name
+        %Init-Flag
         init = false
+        %Klasse-ID
         id = 2
     end
 
@@ -94,6 +103,17 @@ classdef quadtreeNodeClass < handle
                 error('Eingabe ist nicht gültig');
             else
                 obj.level = level;
+            end
+        end
+
+        function obj=setName(obj,name)
+            if nargin~=2
+                error('Anzahl von Parametern für Konstruktor ungültig');
+            elseif isempty(name)||isempty(obj)
+                error('Eingabe ist nicht gültig');
+            else
+                mustBeTextScalar(name);
+                obj.name = name;
             end
         end
 
