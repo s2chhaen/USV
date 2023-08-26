@@ -2,25 +2,27 @@
 % Verwendungszweck: Modellierung des Quadtrees
 % Erstellt am 17.08.2023
 % Version: 1.00
-% Revision: 1.09
+% Revision: 1.10
 
 classdef quadtreeClass < handle
-    properties
-        node=[]
-        child=[]
-        parent=[]
-        level=[]
-    end
-    properties (Access = private)
-        maxPointsPerNode = 4
-    end
-    properties (GetAccess = public, SetAccess=private)
-        depth{mustBeNumeric}%Anzahl von der Schichte vom Tree
-        id = 3
-    end
+properties
+    node=[]%Zeile-Vektor
+    child=[]%2xn Matrix
+    parent=[]%Zeile-Vektor
+    level=[]%nx2 Matrix
+end
+
+properties (Access = private)
+    maxPointsPerNode = 4
+end
+
+properties (GetAccess = public, SetAccess=private)
+    depth{mustBeNumeric}%Anzahl von der Schichte vom Tree
+    id = 3
+end
 
     %TODO als Private nach dem Debuggen festzulegen
-    methods (Access=public)
+methods (Access=public)
         function boolVal=checkTopAndBotPoints(obj,top,bot)
             boolVal = false;
             if nargin == 3
@@ -156,6 +158,7 @@ classdef quadtreeClass < handle
                     nordWestNode = quadtreeNodeClass();
                     nordWestNode = nordWestNode.quadNodeInit(bot,top);
                     nordWestNode = nordWestNode.setLevel(subNodeLvl);
+                    nordWestNode = nordWestNode.setName('nord-west');
                     [insertPos,front] = obj.insert2ParentAttribute(nodePos);
                     obj = obj.insert2NodeAttribute(nordWestNode,insertPos,front);
                     % Nord-Ost-Bereich
@@ -164,6 +167,7 @@ classdef quadtreeClass < handle
                     nordEastNode = quadtreeNodeClass();
                     nordEastNode = nordEastNode.quadNodeInit(bot,top);
                     nordEastNode = nordEastNode.setLevel(subNodeLvl);
+                    nordEastNode = nordEastNode.setName('nord-east');
                     [insertPos,front] = obj.insert2ParentAttribute(nodePos);
                     obj = obj.insert2NodeAttribute(nordEastNode,insertPos,front);
                     %Süd-Ost-Bereich
@@ -172,21 +176,23 @@ classdef quadtreeClass < handle
                     southEastNode = quadtreeNodeClass();
                     southEastNode = southEastNode.quadNodeInit(bot,top);
                     southEastNode = southEastNode.setLevel(subNodeLvl);
+                    southEastNode = southEastNode.setName('south-east');
                     [insertPos,front] = obj.insert2ParentAttribute(nodePos);
                     obj = obj.insert2NodeAttribute(southEastNode,insertPos,front);
-                    %Süd-West OK
+                    %Süd-West
                     top = [avgX,avgY];
                     bot = [node.xValMin,node.yValMin];
                     southWestNode = quadtreeNodeClass();
                     southWestNode = southWestNode.quadNodeInit(bot,top);
                     southWestNode = southWestNode.setLevel(subNodeLvl);
+                    southWestNode = southWestNode.setName('south-west');
                     [insertPos,front] = obj.insert2ParentAttribute(nodePos);
                     obj = obj.insert2NodeAttribute(southWestNode,insertPos,front);
                     obj.node(nodePos).child = 4;%TODO über getter/setter festlegen
                     treeDepth = obj.depth;
                     if subNodeLvl==(treeDepth+1)
                         beginPos = obj.level(treeDepth,2)+1;
-                        endPos = beginPos + 4;
+                        endPos = obj.level(treeDepth,2)+4;
                         obj.level(treeDepth+1,1)=beginPos;
                         obj.level(treeDepth+1,2)=endPos;
                         obj.depth = treeDepth+1;
@@ -199,7 +205,77 @@ classdef quadtreeClass < handle
             end
         end
 
-    end
+        function obj=updateChildAttNode(obj,node)
+            if nargin~=2
+                error('Eingabe ungültig');
+            elseif isempty(obj)||isempty(node)||(node.id~=2)
+                error('Eingabe ungültig');
+            else
+                [~,col] = obj.searchNode(node);
+                %TODO return level not used col col is the real idx in obj.node Array
+                if col~=0
+                    beginIdx0 = 1;
+                    tempSize = size(obj.level);
+                    endIdx0 = tempSize(1,1);
+                    while beginIdx0~=endIdx0
+                        pivot = ceil((beginIdx0+endIdx0)/2);
+                        temp = obj.level(pivot,:);
+                        if (col>=temp(1)) && (col<=temp(2))
+                            beginIdx0 = pivot;
+                            endIdx0 = pivot;
+                        elseif col < temp(1)
+                            endIdx0 = pivot-1;
+                        elseif col > temp(2)
+                            beginIdx0 = pivot;
+                        end
+                    end
+
+                    if obj.depth > beginIdx0
+                        lvlMemIdx = obj.level(beginIdx0+1,:);
+                        beginIdx = lvlMemIdx(1,1);
+                        endIdx = lvlMemIdx(1,2);
+                        firstChildIdx = 0;
+                        for i=beginIdx:endIdx
+                            parentIdx = obj.parent(i);
+                            if col == parentIdx
+                                firstChildIdx = i;
+                                break;%In diesem quadTree liegen die Kinder nebeneinander
+                            end
+                        end
+                        if firstChildIdx~=0
+                            nodeChildNum = obj.node(1,col).child;
+                            obj.child(:,col) = [firstChildIdx;(firstChildIdx+nodeChildNum-1)];
+                        else
+                            obj.child(:,col) = [0;0];
+                        end
+                    else
+                        %Wenn die vorne Knoten kein Kind haben, 
+                        % dann wird es automatisch dafür hinzugefügt
+                        obj.child(:,col) = [0;0];
+                    end
+                else
+                    error('Node ist nicht zum Quadtree');
+                end
+            end
+        end
+
+        function obj=updateChildAttLvl(obj,level)
+            if nargin~=2
+                error('Eingabe ungültig');
+            elseif isempty(obj)||isempty(level)||~isnumeric(level)
+                error('Eingabe ungültig');
+            else
+                if level <= obj.depth
+                    levelIdx = obj.level(level,:);
+                    for i= levelIdx(1):levelIdx(2)
+                        tempNode = obj.node(i);
+                        obj = obj.updateChildAttNode(tempNode);
+                    end
+                end
+            end
+        end
+
+end
 
     methods
         function obj = setRoot(obj,top,bot)
@@ -213,6 +289,7 @@ classdef quadtreeClass < handle
                     root = quadtreeNodeClass();
                     root = root.quadNodeInit(bot,top);
                     root = root.setLevel(1);
+                    root = root.setName('root');
                     obj.parent = [0];
                     obj.level = [1,1];
                     obj.depth = 1;
@@ -232,6 +309,9 @@ classdef quadtreeClass < handle
             else
                 if ~isempty(obj.node)
                     for i=1:numel(obj.node)
+                        tempNode = obj.node(i);
+                        tempParent = obj.node(i);
+                    end
                 end
             end
         end
