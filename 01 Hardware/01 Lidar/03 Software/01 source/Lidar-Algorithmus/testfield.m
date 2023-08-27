@@ -5,6 +5,29 @@
 % Revision: 1.05
 
 clc;
+clear;
+c = stackClass();
+c = c.push(10);
+c = c.push(9);
+c = c.push(8);
+c = c.push(7);
+c = c.push(6);
+d = c.stackLen();
+[c,a] = c.pop();
+d = c.stackLen();
+[c,a] = c.pop();
+d = c.stackLen();
+[c,a] = c.pop();
+d = c.stackLen();
+[c,a] = c.pop();
+d = c.stackLen();
+[c,a] = c.pop();
+d = c.stackLen();
+[c,a] = c.pop();
+d = c.stackLen();
+[c,a] = c.pop();
+d = c.stackLen();
+
 % pointvectorX = cellfun(@(x)x(1,1),c.nodeList);
 %nur beachtet die 2.Ausgabe von sort nicht die erste, in diesem Fall nur index
 % [~,sortIndex] = sort(pointvectorX);
@@ -34,15 +57,21 @@ clc;
 %a = c.removePointCoord(1,20);
 %c.pointList = [];
 
-%c = quadtreeClass();
-%d = c.checkPoint([1,1]);
-%d = c.checkTopAndBotPoints([2,2],[0,0]);
-%c.setRoot([2,2],[0,0]);
-%temp = c.addChildForNode(c.node{1,1});
+% tic;
+% c = quadtreeClass();
+% c = c.setRoot([2,2],[0,0]);
+% % d = c.checkPoint([1,1]);
+% % d = c.checkTopAndBotPoints([2,2],[0,0]);
+% root = c.node{1,1};
+% c = c.addChildrenForNode(c.node(1,1));
+% toc
 
-% a = {10 20 30 40 50 60 70 80 90 100 101 102 103 104};%Array
+% root = c.node{1,1};
+% [row,col]=c.searchNode(root);
+
+% a = [10 20 30 40 50 60 70 80 90 100 101 102 103 104];%Array
 % b = numel(a);
-% d = 11;%Hinzugefügtes Elementes
+% d = 105;%Hinzugefügtes Elementes
 % %floor(): round down, ceil(): round up
 % %Hinzufüge d in a ohne Wiedersortieren
 % beginIdx = 1;
@@ -53,7 +82,7 @@ clc;
 % else
 %     while(beginIdx~=endIdx)
 %         pivot = ceil((beginIdx+endIdx)/2);
-%         temp = a{1,pivot};
+%         temp = a(pivot);
 %         if temp < d
 %             beginIdx = pivot;
 %         else
@@ -61,10 +90,10 @@ clc;
 %         end
 %     end
 % 
-%     if(d>a{1,beginIdx})
-%         a = [a{1:beginIdx} d a{(beginIdx+1):end}];%Array, da leicht zu gucken
+%     if d>a(beginIdx)
+%         a = [a(1:beginIdx) d a((beginIdx+1):end)];%Array, da leicht zu gucken
 %     else
-%         a = [a{1:(beginIdx-1)} d a{beginIdx:end}];%Array, da leicht zu gucken
+%         a = [a(1:(beginIdx-1)) d a(beginIdx:end)];%Array, da leicht zu gucken
 %     end
 % end
 
