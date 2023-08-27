@@ -23,88 +23,89 @@ end
 
     %TODO als Private nach dem Debuggen festzulegen
 methods (Access=public)
-        function boolVal=checkTopAndBotPoints(obj,top,bot)
-            boolVal = false;
-            if nargin == 3
-                checkTop = checkPoint(top);
-                checkBot = checkPoint(bot);
-                checkPointType = checkTop && checkBot;
-                if checkPointType
-                    checkX = top(1,1) > bot(1,1);
-                    checkY = top(1,2) > bot(1,2);
-                    if checkX && checkY
-                        boolVal = true;
-                    end
-                end
+
+function boolVal=checkTopAndBotPoints(obj,top,bot)
+    boolVal = false;
+    if nargin == 3
+        checkTop = checkPoint(top);
+        checkBot = checkPoint(bot);
+        checkPointType = checkTop && checkBot;
+        if checkPointType
+            checkX = top(1,1) > bot(1,1);
+            checkY = top(1,2) > bot(1,2);
+            if checkX && checkY
+                boolVal = true;
             end
         end
+    end
+end
 
-        function [posVal,frontPos]=insert2ParentAttribute(obj,newParentPos)
-            if nargin~=2
-                error('Nicht genug Parameter für Funktion');
-            elseif isempty(obj) || isempty(newParentPos)
-                error('Eingabe ungültig');
-            elseif (obj.id~=3) || ~isnumeric(newParentPos)
-                error('Eingabe ungültig');
+function [posVal,frontPos]=insert2ParentAtt(obj,newParentPos)
+    if nargin~=2
+        error('Nicht genug Parameter für Funktion');
+    elseif isempty(obj) || isempty(newParentPos)
+        error('Eingabe ungültig');
+    elseif (obj.id~=3) || ~isnumeric(newParentPos)
+        error('Eingabe ungültig');
+    else
+        maxEl = numel(obj.parent);
+        if maxEl == 0
+            obj.parent = [newParentPos];
+        else
+            beginIdx = 1;
+            endIdx = maxEl;
+            %pivot = 0;
+            while(beginIdx~=endIdx)
+                pivot = ceil((beginIdx+endIdx)/2);
+                temp = obj.parent(pivot);
+                if temp < newParentPos
+                    beginIdx = pivot;
+                else
+                    endIdx = pivot-1;
+                end
+            end
+
+            posVal = beginIdx;
+            if newParentPos>obj.parent(beginIdx)
+                %hinter dem Index hinzugefügt
+                obj.parent = [obj.parent(1:beginIdx) newParentPos obj.parent((beginIdx+1):end)];
+                frontPos = 0;%für hintere Position kennzeichen
             else
-                maxEl = numel(obj.parent);
-                if maxEl == 0
-                    obj.parent = [newParentPos];
-                else
-                    beginIdx = 1;
-                    endIdx = maxEl;
-                    %pivot = 0;
-                    while(beginIdx~=endIdx)
-                        pivot = ceil((beginIdx+endIdx)/2);
-                        temp = obj.parent(pivot);
-                        if temp < newParentPos
-                            beginIdx = pivot;
-                        else
-                            endIdx = pivot-1;
-                        end
-                    end
+                %vorne dem Index hinzugefügt
+                obj.parent = [obj.parent(1:(beginIdx-1)) newParentPos obj.parent(beginIdx:end)];
+                frontPos = 1;%für vorne Position kennzeichen
+            end
+        end
+    end
+end
 
-                    posVal = beginIdx;
-                    if newParentPos>obj.parent(beginIdx)
-                        %hinter dem Index hinzugefügt
-                        obj.parent = [obj.parent(1:beginIdx) newParentPos obj.parent((beginIdx+1):end)];
-                        frontPos = 0;%für hintere Position kennzeichen
-                    else
-                        %vorne dem Index hinzugefügt
-                        obj.parent = [obj.parent(1:(beginIdx-1)) newParentPos obj.parent(beginIdx:end)];
-                        frontPos = 1;%für vorne Position kennzeichen
-                    end
+function obj=insert2NodeAttribute(obj,node,pos,front)
+        if nargin~=4
+            error('Nicht genug Parameter für Funktion');
+        %TODO Fehlerfall zu trennen
+        else
+            temp0 = obj.node;
+            if front==0
+                if pos == numel(temp0)
+                    obj.node(1,(pos+1)) = node;
+                else
+                    temp1 = temp0(1:pos);
+                    temp2 = temp0((pos+1):end);
+                    obj.node = [temp1 node temp2];
+                end
+            else
+                if pos==1
+                    temp1 = obj.node;
+                    obj.node = node;
+                    obj.node(1,2) = temp1;
+                else
+                    temp1 = temp0(1:(pos-1));
+                    temp2 = temp0(pos:end);
+                    obj.node = [temp1 node temp2];
                 end
             end
         end
-
-        function obj=insert2NodeAttribute(obj,node,pos,front)
-                if nargin~=4
-                    error('Nicht genug Parameter für Funktion');
-                %TODO Fehlerfall zu trennen
-                else
-                    temp0 = obj.node;
-                    if front==0
-                        if pos == numel(temp0)
-                            obj.node(1,(pos+1)) = node;
-                        else
-                            temp1 = temp0(1:pos);
-                            temp2 = temp0((pos+1):end);
-                            obj.node = [temp1 node temp2];
-                        end
-                    else
-                        if pos==1
-                            temp1 = obj.node;
-                            obj.node = node;
-                            obj.node(1,2) = temp1;
-                        else
-                            temp1 = temp0(1:(pos-1));
-                            temp2 = temp0(pos:end);
-                            obj.node = [temp1 node temp2];
-                        end
-                    end
-                end
-        end
+end
 
         function [row,col]=searchNode(obj,node)
             if nargin~=2
@@ -159,7 +160,7 @@ methods (Access=public)
                     nordWestNode = nordWestNode.quadNodeInit(bot,top);
                     nordWestNode = nordWestNode.setLevel(subNodeLvl);
                     nordWestNode = nordWestNode.setName('nord-west');
-                    [insertPos,front] = obj.insert2ParentAttribute(nodePos);
+                    [insertPos,front] = obj.insert2ParentAtt(nodePos);
                     obj = obj.insert2NodeAttribute(nordWestNode,insertPos,front);
                     % Nord-Ost-Bereich
                     top = [node.xValMax,node.yValMax];
@@ -168,7 +169,7 @@ methods (Access=public)
                     nordEastNode = nordEastNode.quadNodeInit(bot,top);
                     nordEastNode = nordEastNode.setLevel(subNodeLvl);
                     nordEastNode = nordEastNode.setName('nord-east');
-                    [insertPos,front] = obj.insert2ParentAttribute(nodePos);
+                    [insertPos,front] = obj.insert2ParentAtt(nodePos);
                     obj = obj.insert2NodeAttribute(nordEastNode,insertPos,front);
                     %Süd-Ost-Bereich
                     top = [node.xValMax,avgY];
@@ -177,7 +178,7 @@ methods (Access=public)
                     southEastNode = southEastNode.quadNodeInit(bot,top);
                     southEastNode = southEastNode.setLevel(subNodeLvl);
                     southEastNode = southEastNode.setName('south-east');
-                    [insertPos,front] = obj.insert2ParentAttribute(nodePos);
+                    [insertPos,front] = obj.insert2ParentAtt(nodePos);
                     obj = obj.insert2NodeAttribute(southEastNode,insertPos,front);
                     %Süd-West
                     top = [avgX,avgY];
@@ -186,7 +187,7 @@ methods (Access=public)
                     southWestNode = southWestNode.quadNodeInit(bot,top);
                     southWestNode = southWestNode.setLevel(subNodeLvl);
                     southWestNode = southWestNode.setName('south-west');
-                    [insertPos,front] = obj.insert2ParentAttribute(nodePos);
+                    [insertPos,front] = obj.insert2ParentAtt(nodePos);
                     obj = obj.insert2NodeAttribute(southWestNode,insertPos,front);
                     obj.node(nodePos).child = 4;%TODO über getter/setter festlegen
                     treeDepth = obj.depth;
@@ -277,28 +278,29 @@ methods (Access=public)
 
 end
 
-    methods
-        function obj = setRoot(obj,top,bot)
-            if nargin~=3
-                error('nicht genug Parameter für Funktion');
-            elseif isempty(obj) || (obj.id~=3)
-                error('Eingabe ungültig');
-            else
-                checkPoints = obj.checkTopAndBotPoints(top,bot);
-                if checkPoints
-                    root = quadtreeNodeClass();
-                    root = root.quadNodeInit(bot,top);
-                    root = root.setLevel(1);
-                    root = root.setName('root');
-                    obj.parent = [0];
-                    obj.level = [1,1];
-                    obj.depth = 1;
-                    obj.node = [root];
-                else
-                    error('Eingabe ungültig');
-                end 
-            end
+methods
+    
+function obj = setRoot(obj,top,bot)
+    if nargin~=3
+        error('nicht genug Parameter für Funktion');
+    elseif isempty(obj) || (obj.id~=3)
+        error('Eingabe ungültig');
+    else
+        checkPoints = obj.checkTopAndBotPoints(top,bot);
+        if checkPoints
+            root = quadtreeNodeClass();
+            root = root.quadNodeInit(bot,top);
+            root = root.setLevel(1);
+            root = root.setName('root');
+            obj.parent = [0];
+            obj.level = [1,1];
+            obj.depth = 1;
+            obj.node = [root];
+        else
+            error('Eingabe ungültig');
         end
+    end
+end
 
         function arrayVal=getLeaf(obj)
             arrayVal = [];
@@ -341,5 +343,6 @@ end
                 pointsNum = numel(points);
             end
         end
-    end
+end
+
 end
