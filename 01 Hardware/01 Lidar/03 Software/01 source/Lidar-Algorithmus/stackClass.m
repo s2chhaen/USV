@@ -2,7 +2,7 @@
 % Verwendungszweck: Modellierung eines Stackes
 % Erstellt am 25.08.2023
 % Version: 1.00
-% Revision: 1.00
+% Revision: 1.01
 
 classdef stackClass  
     properties (Access = private)
@@ -16,6 +16,7 @@ classdef stackClass
             elseif isempty(obj)||isempty(input)||~isnumeric(input)
                 error('Eingabe ungültig');
             else
+                input = flip(input);
                 obj.buffer = cat(2,input,obj.buffer);
             end
         end
