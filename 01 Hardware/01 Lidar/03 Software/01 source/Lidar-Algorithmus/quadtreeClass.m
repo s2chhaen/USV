@@ -2,7 +2,7 @@
 % Verwendungszweck: Modellierung des Quadtrees
 % Erstellt am 17.08.2023
 % Version: 1.00
-% Revision: 1.10
+% Revision: 1.11
 
 classdef quadtreeClass < handle
 properties
@@ -307,10 +307,24 @@ end
             elseif isempty(obj) || (obj.id~=3)
                 error('Eingabe ungültig');
             else
-                if ~isempty(obj.node)
-                    for i=1:numel(obj.node)
-                        tempNode = obj.node(i);
-                        tempParent = obj.node(i);
+                if numel(obj.node)>1
+                    for j=1:numel(obj.level)
+                        obj = obj.updateChildAttLvl(j);
+                    end
+                    childNum = 0;
+                    childrenSet = zeros(1,numel(obj.child));
+                    endOfLoop = size(obj.child);
+                    for i=1:endOfLoop(1,2)
+                        childBeginIdx = obj.child(1,i);
+                        %Wenn Knot kein Kind hat, dann die Beginn- und Endindex
+                        % der Kinder in obj.children-Array beide gleich 0
+                        if childBeginIdx==0
+                            childrenSet(childNum+1) = i;
+                            childNum = childNum+1;
+                        end
+                    end
+                    if childNum~=0
+                        arrayVal = childrenSet(1:childNum);
                     end
                 end
             end
