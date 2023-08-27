@@ -172,6 +172,17 @@ classdef quadtreeNodeClass < handle
             end
         end
 
+        function arrayVal=removeAllPoints(obj)
+            if nargin~=1
+                error('Anzahl von Parametern ungültig');
+            elseif isempty(obj) || (obj.id~=2)
+                error('Parameter ungültig');
+            else
+                arrayVal = obj.pointsList;
+                obj.pointsList = [];
+            end
+        end
+
         function []=sortPointsList(obj,coordinate)
             if nargin~=2
                 error('Eingabe nicht gültig');
