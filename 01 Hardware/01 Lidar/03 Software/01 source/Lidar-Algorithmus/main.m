@@ -28,25 +28,22 @@ top = [xMaxVal,yMaxVal];
 bot = [xMinVal,yMinVal];
 tree = quadtreeClass();
 tree = tree.setRoot(top,bot);
-tree = tree.updateChildAttLvl(1);
 
 temp = tree.node(1);
 tree = tree.addChildrenForNode(temp);
-tree = tree.updateChildAttLvl(2);
-
 temp = tree.node(5);
 tree = tree.addChildrenForNode(temp);
-
 temp = tree.node(2);
 tree = tree.addChildrenForNode(temp);
-
 temp = tree.node(4);
 tree = tree.addChildrenForNode(temp);
-
 temp = tree.node(3);
 tree = tree.addChildrenForNode(temp);
 
+tree = tree.updateChildAttLvl(1);
 tree = tree.updateChildAttLvl(2);
+tree = tree.updateChildAttLvl(3);
+leavesSet = tree.getLeaf();
 
 
 clear xMaxVal yMaxVal xMinVal yMinVal dataOutputXY dataOutputRA i top bot ...
