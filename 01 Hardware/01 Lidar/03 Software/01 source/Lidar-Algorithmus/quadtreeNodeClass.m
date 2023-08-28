@@ -6,7 +6,7 @@
 
 classdef quadtreeNodeClass < handle
     properties (Access = public)
-        pointsList = []%das Array für die Punktepositionen in X und Y
+        pointsList = {}%das Cell für die Punktepositionen in X und Y
         child = 0
     end
     properties (GetAccess = public, SetAccess=private)
@@ -117,6 +117,22 @@ classdef quadtreeNodeClass < handle
             end
         end
 
+        function boolVal=isInNode(obj,input)
+            if nargin~=2
+                error('nicht genug Parameter für Funktion');
+            elseif isempty(input) || ~isnumeric(input) || numel(input)~=2
+                error('Eingabe nicht gültig');
+            elseif isempty(obj) || (obj.id~=2)
+                error('Eingabe nicht gültig');
+            else
+                xVal = input(1);
+                yVal = input(2);
+                checkX = (xVal>=obj.xValMin) && (xVal<=obj.xValMax);
+                checkY = (yVal>=obj.yValMin) && (yVal<=obj.yValMax);
+                boolVal = checkX && checkY;
+            end
+        end
+
         function []=addAPoint(obj,input)
             if nargin~=2
                 error('nicht genug Parameter für Funktion');
@@ -178,8 +194,18 @@ classdef quadtreeNodeClass < handle
             elseif isempty(obj) || (obj.id~=2)
                 error('Parameter ungültig');
             else
-                arrayVal = obj.pointsList;
-                obj.pointsList = [];
+                listLen = numel(obj.pointsList);
+                if(listLen~=0)
+                    tempArray = zeros(listLen,2);
+                    for i=1:listLen
+                        tempArray(i,:) = obj.pointsList{i};
+                    end
+                    arrayVal = tempArray;
+                    obj.pointsList = [];
+                else
+                    arrayVal=[];
+                end
+                
             end
         end
 
