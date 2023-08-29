@@ -50,7 +50,7 @@ function [posVal,frontPos]=insert2ParentAtt(obj,newParentPos)
     else
         maxEl = numel(obj.parent);
         if maxEl == 0
-            obj.parent = [newParentPos];
+            obj.parent = newParentPos;
         else
             beginIdx = 1;
             endIdx = maxEl;
@@ -147,7 +147,7 @@ function obj=addChildrenForNode(obj,node)
         error('Eingabe ungültig');
     elseif (obj.id~=3) || (node.id~=2)
         error('Eingabe ungültig');
-    elseif node.child==0
+    else
         [~,nodePos]=obj.searchNode(node);
         if nodePos~=0
             subNodeLvl = node.level + 1;
@@ -189,7 +189,7 @@ function obj=addChildrenForNode(obj,node)
             southWestNode = southWestNode.setName('south-west');
             [insertPos,front] = obj.insert2ParentAtt(nodePos);
             obj = obj.insert2NodeAttribute(southWestNode,insertPos,front);
-            obj.node(nodePos).child = 4;%TODO über getter/setter festlegen
+            obj.node(nodePos).child = 4;%TODO child-Attribute weg löschen
             treeDepth = obj.depth;
             if subNodeLvl==(treeDepth+1)
                 beginPos = obj.level(treeDepth,2)+1;
@@ -217,26 +217,12 @@ function obj=updateChildAttNode(obj,node)
         error('Eingabe ungültig');
     else
         [~,col] = obj.searchNode(node);
-        %TODO return level not used col col is the real idx in obj.node Array
-        if col~=0
-            beginIdx0 = 1;
-            tempSize = size(obj.level);
-            endIdx0 = tempSize(1,1);
-            while beginIdx0~=endIdx0
-                pivot = ceil((beginIdx0+endIdx0)/2);
-                temp = obj.level(pivot,:);
-                if (col>=temp(1)) && (col<=temp(2))
-                    beginIdx0 = pivot;
-                    endIdx0 = pivot;
-                elseif col < temp(1)
-                    endIdx0 = pivot-1;
-                elseif col > temp(2)
-                    beginIdx0 = pivot;
-                end
-            end
-
-            if obj.depth > beginIdx0
-                lvlMemIdx = obj.level(beginIdx0+1,:);
+        if col==0
+            error('Eingabe ungültig');
+        else
+            lvl = node.level;
+            if (obj.depth) > lvl
+                lvlMemIdx = obj.level(lvl+1,:);
                 beginIdx = lvlMemIdx(1,1);
                 endIdx = lvlMemIdx(1,2);
                 firstChildIdx = 0;
@@ -248,18 +234,18 @@ function obj=updateChildAttNode(obj,node)
                     end
                 end
                 if firstChildIdx~=0
-                    nodeChildNum = obj.node(1,col).child;
+                    nodeChildNum = 4;
+                    % obj.child(1,col) = firstChildIdx;
+                    % obj.child(2,col) = firstChildIdx+nodeChildNum-1;
                     obj.child(:,col) = [firstChildIdx;(firstChildIdx+nodeChildNum-1)];
                 else
                     obj.child(:,col) = [0;0];
                 end
             else
-                %Wenn die vorne Knoten kein Kind haben, 
+                %Wenn die vorne Knoten kein Kind haben,
                 % dann wird es automatisch dafür hinzugefügt
                 obj.child(:,col) = [0;0];
             end
-        else
-            error('Node ist nicht zum Quadtree');
         end
     end
 end
@@ -271,10 +257,13 @@ function obj=updateChildAttLvl(obj,level)
         error('Eingabe ungültig');
     else
         if level <= obj.depth
-            levelIdx = obj.level(level,:);
-            for i= levelIdx(1):levelIdx(2)
-                tempNode = obj.node(i);
-                obj = obj.updateChildAttNode(tempNode);
+            endLevel = numel(obj.level)/2;
+            for j = level:endLevel
+                levelIdx = obj.level(j,:);
+                for i= levelIdx(1):levelIdx(2)
+                    tempNode = obj.node(i);
+                    obj = obj.updateChildAttNode(tempNode);
+                end
             end
         end
     end
@@ -288,7 +277,7 @@ function obj=updateChildAttAll(obj)
     elseif obj.depth==0
         error('keinen Knoten im quadTree');
     else
-        for i=1:obj.depth
+        for i=1:(numel(obj.level)/2)
             obj = obj.updateChildAttLvl(i);
         end
     end
@@ -303,6 +292,43 @@ function boolVal = checkPoint(obj,point)
         checkObj = ~isempty(obj);
         if checkEmpty && checkElementType && checkElementNo && checkObj
             boolVal = true;    
+        end
+    end
+end
+
+function []=updateLvlAtt(obj)
+    if nargin~=1
+        error('nicht genug Parameter für Funktion');
+    elseif isempty(obj)||(obj.id~=3)
+        error('ungültige Eingabe');
+    elseif isempty(obj.node)
+        error('keinen Knoten in Quadtree');
+    else
+        bufferMaxLen = numel(obj.node);%max. Anzahl des Knotens
+        memIdxBuffer = zeros(1,bufferMaxLen);
+        maxLevel = obj.node(bufferMaxLen).level;
+        nextIdx = 1;
+        for j=1:maxLevel
+            i = nextIdx;
+            while i<=bufferMaxLen
+                memIdxBufferLen = 0;
+                if obj.node(i).level == j
+                    memIdxBuffer(1,memIdxBufferLen+1) = i;
+                    memIdxBufferLen = memIdxBufferLen+1;
+                else
+                    nextIdx = i;
+                    break;
+                end
+                i = i + 1;
+            end
+            if memIdxBufferLen==1
+                beginPosIdx = 1;
+                endPosIdx = 1;
+            else
+                beginPosIdx = memIdxBuffer(1);
+                endPosIdx = memIdxBuffer(memIdxBufferLen);
+            end
+            obj.level(j,:) = [beginPosIdx,endPosIdx];
         end
     end
 end
@@ -323,10 +349,11 @@ function obj = setRoot(obj,top,bot)
             root = root.quadNodeInit(bot,top);
             root = root.setLevel(1);
             root = root.setName('root');
-            obj.parent = [0];
+            obj.parent = 0;
             obj.level = [1,1];
             obj.depth = 1;
-            obj.node = [root];
+            obj.node = root;
+            obj.updateLvlAtt();
         else
             error('Eingabe ungültig');
         end
@@ -420,9 +447,10 @@ function obj = addPoints(obj, pointSet)
                         tempBuffer = tempBuffer(1:tempBufferLen);
                         if tempBufferLen>obj.maxPointsPerNode
                             obj = obj.addChildrenForNode(tempNode);
-                            obj = obj.updateChildAttNode(tempNode);
+                            obj.updateLvlAtt();
+                            obj = obj.updateChildAttAll();
                             %Nehmen der Beginn- und Endposition von Kinder in Node-Attribut
-                            childIdx = obj.child(tempNodeIdx);
+                            childIdx = obj.child(:,tempNodeIdx);
                             %WARNING hohe Bugwahrscheinlichkeit hier
                             stackNodeIdx = stackNodeIdx.push(childIdx(1):childIdx(2));
                             stackPointIdx = stackPointIdx.push(tempBuffer);
@@ -454,7 +482,7 @@ function obj = addPoints(obj, pointSet)
                     if stackPointIdxLen>0
                         if stackPointIdxLen > obj.maxPointsPerNode
                             obj = obj.addChildrenForNode(tempNode);
-                            obj = obj.updateChildAttNode(tempNode);
+                            obj = obj.updateChildAttAll();
                             %Nehmen der Beginn- und Endposition von Kinder in Node-Attribut
                             childIdx = obj.child(:,tempNodeIdx);
                             stackNodeIdx = stackNodeIdx.push(childIdx(1):childIdx(2));
