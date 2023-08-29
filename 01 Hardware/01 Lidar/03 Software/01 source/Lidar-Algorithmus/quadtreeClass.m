@@ -280,6 +280,20 @@ function obj=updateChildAttLvl(obj,level)
     end
 end
 
+function obj=updateChildAttAll(obj)
+    if nargin~=1
+        error('Eingabe ungültig');
+    elseif isempty(obj)
+        error('Eingabe ungültig');
+    elseif obj.depth==0
+        error('keinen Knoten im quadTree');
+    else
+        for i=1:obj.depth
+            obj = obj.updateChildAttLvl(i);
+        end
+    end
+end
+
 function boolVal = checkPoint(obj,point)
     boolVal = false;
     if nargin == 2
