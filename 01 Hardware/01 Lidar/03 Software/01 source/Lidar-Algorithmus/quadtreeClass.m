@@ -2,7 +2,7 @@
 % Verwendungszweck: Modellierung des Quadtrees
 % Erstellt am 17.08.2023
 % Version: 1.00
-% Revision: 1.11
+% Revision: 1.12
 
 classdef quadtreeClass < handle
 properties
@@ -199,6 +199,10 @@ function obj=addChildrenForNode(obj,node)
                 obj.depth = treeDepth+1;
             elseif subNodeLvl<=treeDepth
                 obj.level(subNodeLvl,2) = obj.level(subNodeLvl,2)+4;
+                for i=(subNodeLvl+1):obj.depth
+                    obj.level(i,1) = obj.level(i,1) + 4;
+                    obj.level(i,2) = obj.level(i,2) + 4;
+                end
             end
         else
             error('Eingabe ungültig');
@@ -276,6 +280,19 @@ function obj=updateChildAttLvl(obj,level)
     end
 end
 
+function boolVal = checkPoint(obj,point)
+    boolVal = false;
+    if nargin == 2
+        checkEmpty = ~isempty(point);
+        checkElementNo = numel(point)==2;
+        checkElementType = isnumeric(point);
+        checkObj = ~isempty(obj);
+        if checkEmpty && checkElementType && checkElementNo && checkObj
+            boolVal = true;    
+        end
+    end
+end
+
 end
 
 methods (Access=public)
@@ -348,8 +365,7 @@ function obj = addPoints(obj, pointSet)
         endOfLoop = numel(pointSet)/2;
         for i=1:endOfLoop
             tempPoint = pointSet(i,:);
-            %WARNING hohe Bugwahrscheinlichkeit hier
-            checkPointSet = checkPoint(tempPoint);
+            checkPointSet = obj.checkPoint(tempPoint);
             if checkPointSet == false
                 break;
             end
@@ -361,25 +377,27 @@ function obj = addPoints(obj, pointSet)
         if checkPointSet == false
             error('Punkte-Form ist nicht gültig');
         else
+            clear checkPointSet;
             stackNodeIdx = stackClass();
-            stackNodeIdxLen = stackNodeIdx.stackLen();
-            stackPointIdx = stackClass();
-            stackPointIdxLen = stackPointIdx.stackLen();
             %Root in stack hinzufügen
             stackNodeIdx = stackNodeIdx.push(1);
+            stackNodeIdxLen = stackNodeIdx.stackLen();
+
+            stackPointIdx = stackClass();
+            stackPointIdxLen = stackPointIdx.stackLen();
             
             while (stackNodeIdxLen~=0)
                 [stackNodeIdx,tempNodeIdx] = stackNodeIdx.pop();
+                tempNode = obj.node(tempNodeIdx);
                 if stackPointIdxLen~=0
-                    tempBuffer = zeros(stackPointIdxLen,1);
+                    tempBuffer = zeros(1,stackPointIdxLen);
                     tempBufferLen = 0;
-                    tempNode = obj.node(tempNodeIdx);
                     for i=1:stackPointIdxLen
-                        tempPointIdx = stackPointIdx.pop();
+                        [stackPointIdx,tempPointIdx] = stackPointIdx.pop();
                         tempPoint = pointSet(tempPointIdx,:);
                         checkPoint = tempNode.isInNode(tempPoint);
                         if checkPoint == true
-                            tempBuffer(tempBufferLen+1) = tempPoint;
+                            tempBuffer(tempBufferLen+1) = tempPointIdx;
                             tempBufferLen = tempBufferLen+1;
                         end
                     end
@@ -396,16 +414,19 @@ function obj = addPoints(obj, pointSet)
                             stackPointIdx = stackPointIdx.push(tempBuffer);
                         else
                             for i=1:tempBufferLen
-                                tempPoint = pointSet(i,:);
+                                tempBufferIdx = tempBuffer(i);
+                                tempPoint = pointSet(tempBufferIdx,:);
                                 obj.node(tempNodeIdx).addAPoint(tempPoint);
-                                pointSet(i,:) = [];
                             end
+                            tempBuffer= flip(tempBuffer);%Kippen wegen des Stackes
+                            %Separat löschen wegen des Indexproblems
+                            pointSet(tempBuffer,:) = [];           
                         end
                     end
-
                     %TODO stop here weiter Implementation
+
                 else
-                    tempNode = obj.node(tempNodeIdx);
+                    endOfLoop = numel(pointSet)/2;
                     for i=1:endOfLoop
                         tempPoint = pointSet(i,:);
                         checkPoint = tempNode.isInNode(tempPoint);
@@ -421,15 +442,19 @@ function obj = addPoints(obj, pointSet)
                             obj = obj.addChildrenForNode(tempNode);
                             obj = obj.updateChildAttNode(tempNode);
                             %Nehmen der Beginn- und Endposition von Kinder in Node-Attribut
-                            childIdx = obj.child(tempNodeIdx);
-                            %WARNING hohe Bugwahrscheinlichkeit hier
+                            childIdx = obj.child(:,tempNodeIdx);
                             stackNodeIdx = stackNodeIdx.push(childIdx(1):childIdx(2));
                         else
+                            tempBuffer = zeros(1,stackPointIdxLen);
                             for i=1:stackPointIdxLen
-                                tempPoint = pointSet(i,:);
+                                [stackPointIdx,tempPointIdx]=stackPointIdx.pop();
+                                tempPoint = pointSet(tempPointIdx,:);
                                 obj.node(tempNodeIdx).addAPoint(tempPoint);
-                                pointSet(i,:) = [];
+                                tempBuffer(i) = tempPointIdx;
                             end
+                            tempBuffer = flip(tempBuffer);%Kippen wegen des Stackes
+                            %Separat löschen wegen des Indexproblems
+                            pointSet(tempBuffer,:) = [];
                         end
                     end
                 end
