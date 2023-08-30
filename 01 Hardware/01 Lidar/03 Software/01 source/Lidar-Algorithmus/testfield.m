@@ -6,29 +6,33 @@
 
 clc;
 clear;
-c = stackClass();
-c = c.push(10);
-c = c.push(9);
-c = c.push(8);
-c = c.push(7);
-c = c.push(6);
-a = [5,4,3,2,1];
-c = c.push(a);
-d = c.stackLen();
-[c,a] = c.pop();
-d = c.stackLen();
-[c,a] = c.pop();
-d = c.stackLen();
-[c,a] = c.pop();
-d = c.stackLen();
-[c,a] = c.pop();
-d = c.stackLen();
-[c,a] = c.pop();
-d = c.stackLen();
-[c,a] = c.pop();
-d = c.stackLen();
-[c,a] = c.pop();
-d = c.stackLen();
+% c = stackClass();
+% c = c.push(10);
+% c = c.push(9);
+% c = c.push(8);
+% c = c.push(7);
+% c = c.push(6);
+% a = [5,4,3,2,1];
+% c = c.push(a);
+% d = c.stackLen();
+% [c,a] = c.pop();
+% d = c.stackLen();
+% [c,a] = c.pop();
+% d = c.stackLen();
+% [c,a] = c.pop();
+% d = c.stackLen();
+% [c,a] = c.pop();
+% d = c.stackLen();
+% [c,a] = c.pop();
+% d = c.stackLen();
+% [c,a] = c.pop();
+% d = c.stackLen();
+% [c,a] = c.pop();
+% d = c.stackLen();
+
+a = [10,10;9,9;8,8;7,7;6,6;5,5;4,4;3,3;2,2;1,1;0,0];
+deleteIdx = [5,3,1];
+a(deleteIdx,:) = [];
 
 % pointvectorX = cellfun(@(x)x(1,1),c.nodeList);
 %nur beachtet die 2.Ausgabe von sort nicht die erste, in diesem Fall nur index

@@ -7,7 +7,8 @@
 classdef quadtreeNodeClass < handle
     properties (Access = public)
         pointsList = {}%das Cell für die Punktepositionen in X und Y
-        child = 0
+        nodeId{mustBeNumeric}
+        child=4;
     end
     properties (GetAccess = public, SetAccess=private)
         %Bot- und Top-Punkt
@@ -114,6 +115,16 @@ classdef quadtreeNodeClass < handle
             else
                 mustBeTextScalar(name);
                 obj.name = name;
+            end
+        end
+
+        function []=setNodeId(obj,nodeId)
+            if nargin~=2
+                error('Anzahl von Parametern für Konstruktor ungültig');
+            elseif isempty(nodeId)||isempty(obj)
+                error('Eingabe ist nicht gültig');
+            else
+                obj.nodeId = nodeId;
             end
         end
 

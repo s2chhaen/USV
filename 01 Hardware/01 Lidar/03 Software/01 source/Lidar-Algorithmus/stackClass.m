@@ -4,12 +4,26 @@
 % Version: 1.00
 % Revision: 1.01
 
-classdef stackClass  
-    properties (Access = private)
+classdef stackClass < handle  
+    properties (Access = public)
         buffer{mustBeNumeric}
     end
     
     methods
+        function numVal = peek(obj)
+            if nargin ~=1
+                error('Anzahl der Eingabe ungültig');
+            elseif isempty(obj)
+                error('Eingabe ungültig');
+            else
+                if numel(obj.buffer)~=0
+                    numVal = obj.buffer(1);
+                else
+                    numVal = [];
+                end
+            end
+        end
+
         function obj = push(obj,input)
             if nargin ~=2
                 error('Anzahl der Eingabe ungültig');

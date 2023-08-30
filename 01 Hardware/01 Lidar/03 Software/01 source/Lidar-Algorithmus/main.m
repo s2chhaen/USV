@@ -8,6 +8,9 @@ clear;
 clc;
 format short g
 
+%cd 'C:\BA ME\USV\01 Hardware\01 Lidar\03 Software\01 source\Lidar-Algorithmus';
+
+
 LidarDataExtract; %Ausführung der LidarDataExtract.m Skript
 lenXY = size(dataOutputXY);
 xCol = 1;
@@ -28,24 +31,9 @@ top = [xMaxVal,yMaxVal];
 bot = [xMinVal,yMinVal];
 tree = quadtreeClass();
 tree = tree.setRoot(top,bot);
-
-temp = tree.node(1);
-tree = tree.addChildrenForNode(temp);
-temp = tree.node(5);
-tree = tree.addChildrenForNode(temp);
-temp = tree.node(2);
-tree = tree.addChildrenForNode(temp);
-temp = tree.node(4);
-tree = tree.addChildrenForNode(temp);
-temp = tree.node(3);
-tree = tree.addChildrenForNode(temp);
-
-tree = tree.updateChildAttLvl(1);
-tree = tree.updateChildAttLvl(2);
-tree = tree.updateChildAttLvl(3);
-leavesSet = tree.getLeaf();
+clear xMaxVal yMaxVal xMinVal yMinVal dataOutputXY dataOutputRA i temp;
+clear xCol yCol lenXY;
+tree = tree.addPoints(sample);
 
 
-clear xMaxVal yMaxVal xMinVal yMinVal dataOutputXY dataOutputRA i top bot ...
-      temp;
 
