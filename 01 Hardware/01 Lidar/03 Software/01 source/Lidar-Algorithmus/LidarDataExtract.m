@@ -12,6 +12,7 @@ rawData=readcell("Testdaten_Labor_mitBuch30cm_15-45Grd.csv",opts);
 rawDataTemp=rawData;
 lenRawData=size(rawData);%Array = {Zeilenanzahl,Spaltenanzahl}
 
+%Löschen der Einheit in der Messwerte
 %Löschen letzte 2 Charakter von allen Elementen von Spalte 2,4,5 in rawData
 %Löschen letztes Charakter von allen Elementen von Spalte 1 in rawData
 for i=1:lenRawData(1,1)
@@ -30,7 +31,6 @@ for i=1:lenRawData(1,1)
     end  
 end
 
-%clear temp
 avoidedLines = uint16(numOfSubArray);%Zeile mit Daten
 numOfSubArray = numOfSubArray/2+1;
 
@@ -39,12 +39,12 @@ subArrayLen = (uint16(lenRawData(1,1))-avoidedLines)/uint16(numOfSubArray);
 %Extrakt der Radius- und Winkelwerte
 dataOutputRA = zeros(subArrayLen,2,numOfSubArray);
 %Extrakt der Koordinatewerte
-dataOutputXY = zeros(subArrayLen,2,numOfSubArray);
+% dataOutputXY = zeros(subArrayLen,2,numOfSubArray);
 %Betrachtet nur Radius und Winkel-Spalten
 radiusCol = 2;
 angleCol = 3;
-xCol = 4;
-yCol = 5;
+% xCol = 4;
+% yCol = 5;
 % format shortG
 for i=1:numOfSubArray
     beginIndex = double(363*uint16(i) - 362);
@@ -57,11 +57,11 @@ for i=1:numOfSubArray
     temp = rawDataTemp(beginIndex:endIndex,angleCol);
     dataOutputRA(1:subArrayLen,2,i)=cellfun(@(a) str2double(a),temp);
     %Analog für X Spalte
-    temp = rawDataTemp(beginIndex:endIndex,xCol);
-    dataOutputXY(1:subArrayLen,1,i)=cellfun(@(a) str2double(a),temp);
+    % temp = rawDataTemp(beginIndex:endIndex,xCol);
+    % dataOutputXY(1:subArrayLen,1,i)=cellfun(@(a) str2double(a),temp);
     %Analog für Y Spalte
-    temp = rawDataTemp(beginIndex:endIndex,yCol);
-    dataOutputXY(1:subArrayLen,2,i)=cellfun(@(a) str2double(a),temp);
+    % temp = rawDataTemp(beginIndex:endIndex,yCol);
+    % dataOutputXY(1:subArrayLen,2,i)=cellfun(@(a) str2double(a),temp);
 end
 
 %Löschen der nicht-notwendigen Variablen
