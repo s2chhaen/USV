@@ -23,47 +23,24 @@ end
 
 rSample = sample(:,rCol);
 rSample = transpose(rSample);
-aSample = sample(:,aCol);
-tVal = transpose(aSample);
 
-rMax = max(rSample);
-rMin = min(rSample);
+%Anmerkung space = 32, new line = 10, CarriageReturn = 13
+%Erzeugt der "input.txt" Data in C-Daten-Ordner
+fileID = fopen('../FilterTesting/FilterTesting/input.txt','w+','l','UTF-8');
 
-%Filter param
-order = filterOrder(rMin,rMax);
-fs = filterSampleFreq(sample);
+%Umwandlung zur Fixpoint-Form mit 15 Bits für Nachkommateil
+%Fixed Point Format 17.15
+fractionLen = 15;
+fixedPoint = zeros(1,numel(rSample));
+for i=1:numel(rSample)
+    fixedPoint(i) = floor(rSample(i)*2^fractionLen);
+end
+%Schreiben der Daten in "input.txt"
+fprintf(fileID,'%d \n',fixedPoint);
+%Schließen der "input.txt" Datei
+status = fclose(fileID);
 
-clear lenRA rCol aCol i aSample;
-%FIR - Filter
-ffir = filterWindowKaiser_p0;%Eingetragen ist die Filter Parameter
-result0 = rSample;
 
-l = length(ffir.Numerator);
-%Dummy-Sample erzeugen um die Phasenverschiebung zu vermeiden
-rSample = [rSample,ones(1,fix(l/2))*rSample(end)];
-%FIR Filter
-result1 = filter(ffir.Numerator,1,rSample);
-%Wegwerfen vom Dummy-Sample
-result1 = result1(ceil(l/2):end-1);
-
-figure(1)
-ax(1) = subplot(2,1,1);
-plot(tVal,result0,'-o',tVal,result1,'-o');
-legend('Original Data','Filtered Data');
-grid on
-
-xlabel('Winkel/Grad');
-ylabel('Radius/cm');
-
-ax(2) = subplot(2,1,2);
-plot(tVal,20.*log10(result1./result0),'-o');
-legend('magnitude/dB');
-grid on
-
-xlabel('Winkel/Grad');
-ylabel('Radius/cm');
-
-linkaxes(ax,'x')
 
 
 
