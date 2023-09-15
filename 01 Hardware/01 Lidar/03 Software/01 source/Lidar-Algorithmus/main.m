@@ -34,8 +34,8 @@ order = filterOrder(rMin,rMax);
 fs = filterSampleFreq(sample);
 
 clear lenRA rCol aCol i aSample;
-%IIR - Filter
-ffir = filterWindowFlatTop_p4;
+%FIR - Filter
+ffir = filterWindowKaiser_p0;%Eingetragen ist die Filter Parameter
 result0 = rSample;
 
 l = length(ffir.Numerator);
