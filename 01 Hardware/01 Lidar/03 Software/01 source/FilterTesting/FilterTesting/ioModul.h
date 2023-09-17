@@ -4,13 +4,14 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <math.h>
 
 #define PTR_LEN_BYTES 9
 #define BUFFER_MAX_LENGTH (1<<PTR_LEN_BYTES)
 #define MAX_LEN_STRING 15
 
 //Zeichenfolge-Array (Max. Länge der Zeichenfolge = 10)
-typedef struct{
+typedef struct ringBuffer4Str{
     uint8_t data[BUFFER_MAX_LENGTH][MAX_LEN_STRING];
     uint8_t dataLen[BUFFER_MAX_LENGTH];
     uint16_t readIdxPtr:PTR_LEN_BYTES;
@@ -19,5 +20,5 @@ typedef struct{
 }ringBuffer4Str_t;
 
 extern void readFile();
-
+extern void getData(int32_t* data, uint16_t* dataLen);
 #endif // _IOMODUL_H_
