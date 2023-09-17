@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include "ioModul.h"
+
 
 #endif // MAIN_H_INCLUDED
