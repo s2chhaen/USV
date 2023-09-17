@@ -27,7 +27,7 @@
  *   Use the Filter Design & Analysis Tool to design accurate
  *   uint16 filter coefficients.
  */
-const int wk_NumeratorLen = 4;//here modified
-const uint16_t wk_Numerator[4] = {//here modified
+extern const int wk_NumeratorLen = 4;//here modified
+extern const uint16_t wk_Numerator[4] = {//here modified
      1662,  14722,  14722,   1662
 };

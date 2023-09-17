@@ -28,11 +28,11 @@
  *   Use the Filter Design & Analysis Tool to design accurate
  *   uint16 filter coefficients.
  */
-const int mf_NumeratorLen = 3;//here modified
-const uint16_t mf_Numerator[3] = {//here modified
+extern const int mf_NumeratorLen = 3;//here modified
+extern const uint16_t mf_Numerator[3] = {//here modified
      8192,  16384,   8192
 };
-const int mf_DenominatorLen = 3;//here modified
-const uint16_t mf_Denominator[3] = {//here modified
+extern const int mf_DenominatorLen = 3;//here modified
+extern const uint16_t mf_Denominator[3] = {//here modified
     32768,      0,      0
 };
