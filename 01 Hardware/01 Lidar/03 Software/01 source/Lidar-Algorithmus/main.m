@@ -33,17 +33,16 @@ order = filterOrder(rMin,rMax);
 fs = filterSampleFreq(sample);
 
 clear lenRA rCol aCol i aSample;
-%IIR - Filter
-fiir = filterMaximallyFlatFIR_p4;
-[b,a] = sos2tf(fiir.sosMatrix);%Faktoren von Übertragungsfunktion
+%FIR - Filter
+ffir = filterWindowKaiser_p10;
 
-l = length(a);
+l = length(ffir.Numerator);
 %Dummy-Sample erzeugen um die Phasenverschiebung zu vermeiden
 rSample = [rSample,ones(1,fix(l/2))*rSample(end)];
-%IIR - Filter
+%FIR - Filter
 rFiltered = filter(ffir.Numerator,1,rSample);
 %Wegwerfen vom Dummy-Sample
-rFiltered = rFiltered(ceil(l/2):end);
+rFiltered = rFiltered(ceil(l/2):end-1);
 rSample = rSample(1:end-fix(l/2));
 
 result0 = rSample;
