@@ -19,5 +19,6 @@ typedef struct ringBuffer4Str{
 }ringBuffer4Str_t;
 
 extern void readFile();
+extern void getData(int32_t* data, uint16_t* dataLen);
 
 #endif // _IOMODUL_H_

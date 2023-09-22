@@ -33,6 +33,8 @@ void readFile(){
     }
 }
 
+void getData(int32_t* data, uint16_t* dataLen){
+}
 
 
 
