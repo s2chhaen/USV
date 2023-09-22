@@ -26,7 +26,47 @@ rSample = transpose(rSample);
 aSample = sample(:,aCol);
 tVal = transpose(aSample);
 
+printInFile('fixed',rSample);
+printInFile('float',rSample);
+
+%IIR
+figureNo = 1;
+choosedIIR = 'mf';
+filterIIRScript;
+printOutFile('fixed',choosedIIR,result1);
+printOutFile('float',choosedIIR,result1);
+
+%FIR
+choosedFIR = 'wk';
 filterFIRScript;
+printOutFile('fixed',choosedFIR,result1);
+printOutFile('float',choosedFIR,result1);
+
+choosedFIR = 'lsq';
+filterFIRScript;
+printOutFile('fixed',choosedFIR,result1);
+printOutFile('float',choosedFIR,result1);
+
+choosedFIR = 'eq';
+filterFIRScript;
+printOutFile('fixed',choosedFIR,result1);
+printOutFile('float',choosedFIR,result1);
+
+choosedFIR = 'wb';
+filterFIRScript;
+printOutFile('fixed',choosedFIR,result1);
+printOutFile('float',choosedFIR,result1);
+
+choosedFIR = 'wr';
+filterFIRScript;
+printOutFile('fixed',choosedFIR,result1);
+printOutFile('float',choosedFIR,result1);
+
+choosedFIR = 'wt';
+filterFIRScript;
+printOutFile('fixed',choosedFIR,result1);
+printOutFile('float',choosedFIR,result1);
+
 
 
 
