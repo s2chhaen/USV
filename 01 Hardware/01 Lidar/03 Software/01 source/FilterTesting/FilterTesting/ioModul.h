@@ -18,4 +18,6 @@ typedef struct ringBuffer4Str{
     uint8_t fullFlag:1;
 }ringBuffer4Str_t;
 
+extern void readFile();
+
 #endif // _IOMODUL_H_
