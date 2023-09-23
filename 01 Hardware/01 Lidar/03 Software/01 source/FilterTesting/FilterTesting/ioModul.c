@@ -19,6 +19,10 @@ static inline int32_t min(int32_t a, int32_t b){
     return (a<b)?a:b;
 }
 
+static inline uint8_t char2Num(char input){
+    return input - 48;
+}
+
 void readFile(){
     FILE *input = fopen("input_fixed.txt","r");
     if(input!=NULL){
