@@ -27,6 +27,26 @@ static inline uint8_t char2Num(char input){
     return input - 48;
 }
 
+static int32_t string2Num(uint8_t* input, uint8_t strLen){
+    int32_t output = 0;
+    if(input!=NULL){
+        uint8_t sign = 0;
+        uint8_t beginIdx = 0;
+        uint8_t num = 0;
+        strLen--;//da die letzte Zeichen von String ist '\n' kein Nummer
+        if((input[0]=='-')||(input[0]=='+')){
+            sign = (input[0]=='-')?1:0;
+            beginIdx = 1;
+        }
+        for(unsigned int i = beginIdx; i< strLen; i++){
+            num = char2Num(input[i]);
+            output += (int32_t)num*pow(10,(uint8_t)(strLen-1-i));
+        }
+        output = (sign)?((-1)*output):output;
+    }
+    return output;
+}
+
 void readFile(){
     FILE *input = fopen("input_fixed.txt","r");
     if(input!=NULL){

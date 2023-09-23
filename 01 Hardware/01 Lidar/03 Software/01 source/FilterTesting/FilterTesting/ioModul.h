@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <math.h>
+#include <stddef.h>
 
 #define PTR_LEN_BYTES 9
 #define BUFFER_MAX_LENGTH (1<<PTR_LEN_BYTES)
