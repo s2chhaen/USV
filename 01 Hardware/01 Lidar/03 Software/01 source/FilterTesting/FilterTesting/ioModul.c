@@ -2,6 +2,19 @@
 
 static ringBuffer4Str_t buffer = {{{0}},{0},0,0,0};
 
+static uint16_t getAvaDataLen(){
+    uint16_t result = 0;
+    int32_t temp = 0;
+    if(buffer.fullFlag){
+        result = 512;
+    } else{
+        temp = (buffer.writeIdxPtr - buffer.readIdxPtr)%BUFFER_MAX_LENGTH;
+        temp = (temp>0)?temp:(temp+BUFFER_MAX_LENGTH);
+        result = (uint16_t) temp;
+    }
+    return result;
+}
+
 void readFile(){
     FILE *input = fopen("input_fixed.txt","r");
     if(input!=NULL){
@@ -34,6 +47,8 @@ void readFile(){
 }
 
 void getData(int32_t* data, uint16_t* dataLen){
+    uint8_t checkEmpty = (!buffer.fullFlag) && (buffer.writeIdxPtr==buffer.readIdxPtr);
+    uint16_t avaDataLen = getAvaDataLen();
 }
 
 
