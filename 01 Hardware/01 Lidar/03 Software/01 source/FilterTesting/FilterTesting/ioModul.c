@@ -15,6 +15,10 @@ static uint16_t getAvaDataLen(){
     return result;
 }
 
+static inline int32_t min(int32_t a, int32_t b){
+    return (a<b)?a:b;
+}
+
 void readFile(){
     FILE *input = fopen("input_fixed.txt","r");
     if(input!=NULL){
@@ -49,6 +53,9 @@ void readFile(){
 void getData(int32_t* data, uint16_t* dataLen){
     uint8_t checkEmpty = (!buffer.fullFlag) && (buffer.writeIdxPtr==buffer.readIdxPtr);
     uint16_t avaDataLen = getAvaDataLen();
+    if(!checkEmpty){
+        (*dataLen) = (uint16_t)min((*dataLen),avaDataLen);
+    }
 }
 
 
