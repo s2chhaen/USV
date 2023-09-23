@@ -35,7 +35,7 @@ if filtered == 1
     %FIR Filter
     result1 = filter(ffir.Numerator,1,tempR);
     %Wegwerfen vom Dummy-Sample
-    result1 = result1(ceil(l/2):end-1);
+    result1 = result1(fix(l/2)+1:end);
 end
 
 if draw == 1
