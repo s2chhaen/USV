@@ -81,8 +81,18 @@ void readFile(){
 void getData(int32_t* data, uint16_t* dataLen){
     uint8_t checkEmpty = (!buffer.fullFlag) && (buffer.writeIdxPtr==buffer.readIdxPtr);
     uint16_t avaDataLen = getAvaDataLen();
+    uint16_t temp = 0;
     if(!checkEmpty){
         (*dataLen) = (uint16_t)min((*dataLen),avaDataLen);
+        for(int i = 0; i < (*dataLen); i++){
+            temp = buffer.readIdxPtr;
+            buffer.readIdxPtr++;
+            data[i] = string2Num(buffer.data[temp],buffer.dataLen[temp]);
+            if(buffer.readIdxPtr==buffer.writeIdxPtr){
+                buffer.fullFlag = 0;
+                break;
+            }
+        }
     }
 }
 
