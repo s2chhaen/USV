@@ -28,6 +28,6 @@ enum fileFormat{
 
 extern void readFile();
 extern void getData(int32_t* data, uint16_t* dataLen);
-extern void writeFile(uint8_t* name, uint16_t len, uint8_t format);
+extern void writeFile(uint8_t* name, uint16_t len, uint8_t format, int32_t* value, uint16_t valLen);
 
 #endif // _IOMODUL_H_

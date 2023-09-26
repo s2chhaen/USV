@@ -96,7 +96,8 @@ void getData(int32_t* data, uint16_t* dataLen){
     }
 }
 
-void writeFile(uint8_t* name, uint16_t len, uint8_t format){
+void writeFile(uint8_t* name, uint16_t len, uint8_t format, int32_t* value, uint16_t valLen){
+    //TODO Fehlertrennung
     FILE *input;
     char path[BUFFER_MAX_LENGTH] = {0};
     uint16_t pathLen = 0;
@@ -117,6 +118,9 @@ void writeFile(uint8_t* name, uint16_t len, uint8_t format){
     }
     input = fopen(path,"w+");
     if(input!=NULL){
+        for(int i = 0; i<valLen ;i++){
+            fprintf(input,"%d\n",value[i]);
+        }
     } else{
         printf("Fehler beim Schreiben von Daten\n");
     }
