@@ -18,6 +18,12 @@ typedef struct{
     uint8_t endIdx   :OLD_VALUES_BUFFER_LEN_BITS;
 }ffOldBuffer_t;
 
+typedef struct{
+    double data[OLD_VALUES_BUFFER_LEN];
+    uint8_t beginIdx :OLD_VALUES_BUFFER_LEN_BITS;
+    uint8_t endIdx   :OLD_VALUES_BUFFER_LEN_BITS;
+}ffOldBufferFloat_t;
+
 enum iirType{
     IIR_MAXIMALLY_FLAT = 0x00
 };
