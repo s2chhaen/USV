@@ -16,4 +16,6 @@ enum iirType{
     IIR_MAXIMALLY_FLAT = 0x00
 };
 
+void iir_init(int16_t* inputFFCofs, uint16_t ffLen, int16_t* inputFBCofs, uint16_t fbLen);
+
 #endif // FILTER_IIR_H_INCLUDED
