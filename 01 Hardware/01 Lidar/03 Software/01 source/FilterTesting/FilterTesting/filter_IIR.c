@@ -28,7 +28,7 @@ void iir_init(int16_t* inputFFCofs, uint16_t ffLen, int16_t* inputFBCofs, uint16
     }
 }
 
-void iir_runFP(int32_t* data, int32_t* output, uint16_t len, uint8_t type){
+void iir_runFiP(int32_t* data, int32_t* output, uint16_t len, uint8_t type){
     int32_t ffValue = 0;
     uint8_t idxPtr = 0;
     uint8_t phaseShift_sample = 0;
