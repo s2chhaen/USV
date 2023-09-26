@@ -34,7 +34,11 @@ void iir_runFiP(int32_t* data, int32_t* output, uint16_t len, uint8_t type){
     uint8_t phaseShift_sample = 0;
     int32_t tempBuff[OUTPUT_MAX_LEN] = {0};
     int32_t temp = 0;
-    memcpy(tempBuff,data,len*sizeof(tempBuff[0])/sizeof(uint8_t));
+    //TODO zu testen
+    //memcpy(tempBuff,data,len*sizeof(tempBuff[0])/sizeof(uint8_t));
+    for(int i = 0; i<len; i++){
+        tempBuff[i] = data[i];
+    }
     const int32_t cFactor = (1<<FIXED_POINT_BITS) - 1;
     switch(type){
         case IIR_MAXIMALLY_FLAT:
@@ -64,7 +68,11 @@ void iir_runFiP(int32_t* data, int32_t* output, uint16_t len, uint8_t type){
                 old.data[old.beginIdx] = ffValue;
             }
             len -= phaseShift_sample;
-            memcpy(output,&tempBuff[phaseShift_sample],len*sizeof(tempBuff[0])/sizeof(uint8_t));
+            for(int i = 0;i<len;i++){
+                output[i] = tempBuff[i];
+            }
+            //TODO zu testen
+            //memcpy(output,&tempBuff[phaseShift_sample],len*sizeof(tempBuff[0])/sizeof(uint8_t));
             break;
         default:
             break;
