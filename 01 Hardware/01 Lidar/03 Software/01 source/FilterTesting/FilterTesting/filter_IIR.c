@@ -21,3 +21,6 @@ void iir_init(int16_t* inputFFCofs, uint16_t ffLen, int16_t* inputFBCofs, uint16
         old.endIdx = IIR_FILTER_ORDER;
     }
 }
+
+void iir_run(int32_t* data, int32_t* output, uint16_t len, uint8_t type){
+}
