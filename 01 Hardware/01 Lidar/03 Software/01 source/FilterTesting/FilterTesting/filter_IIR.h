@@ -1,6 +1,10 @@
 #ifndef FILTER_IIR_H_INCLUDED
 #define FILTER_IIR_H_INCLUDED
 
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+
 #define IIR_FILTER_ORDER 2
 #define OLD_VALUES_BUFFER_LEN_BITS (IIR_FILTER_ORDER/4 + 2)
 #define OLD_VALUES_BUFFER_LEN (1<<OLD_VALUES_BUFFER_LEN_BITS)
