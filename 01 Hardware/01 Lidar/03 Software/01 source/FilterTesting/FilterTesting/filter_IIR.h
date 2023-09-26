@@ -5,6 +5,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdint.h>
+#include "filterConfig.h"
 
 #define IIR_FILTER_ORDER 2
 #define OLD_VALUES_BUFFER_LEN_BITS (IIR_FILTER_ORDER/4 + 2)
