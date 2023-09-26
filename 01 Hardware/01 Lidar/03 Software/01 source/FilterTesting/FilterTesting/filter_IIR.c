@@ -18,9 +18,9 @@ void iir_init(int16_t* inputFFCofs, uint16_t ffLen, int16_t* inputFBCofs, uint16
         //TODO Implementiert es mit memcpy von string.h
         for(int i = 0; i< ffLen; i++){
             ffCofs[i] = (int32_t)inputFFCofs[i]&0xffff;//zu vermeiden von Missverstehen die erste Bit als Zeichenbit
-            ffCofsFloat[i] = inputFFCofs[i]/CONVERT_FACTOR_INT;
+            ffCofsFloat[i] = inputFFCofs[i]*1.0000/CONVERT_FACTOR_INT;
             fbCofs[i] = (int32_t)inputFBCofs[i]&0xffff;//zu vermeiden von Missverstehen die erste Bit als Zeichenbit
-            fbCofsFloat[i] = inputFBCofs[i]/CONVERT_FACTOR_INT;
+            fbCofsFloat[i] = inputFBCofs[i]*1.0000/CONVERT_FACTOR_INT;
         }
         init = 1;
         old.beginIdx = 0;
