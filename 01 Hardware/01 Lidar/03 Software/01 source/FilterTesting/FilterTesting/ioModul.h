@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <math.h>
 #include <stddef.h>
+#include <string.h>
 
 #define PTR_LEN_BYTES 9
 #define BUFFER_MAX_LENGTH (1<<PTR_LEN_BYTES)
@@ -19,6 +20,11 @@ typedef struct ringBuffer4Str{
     uint16_t writeIdxPtr:PTR_LEN_BYTES;
     uint8_t fullFlag:1;
 }ringBuffer4Str_t;
+
+enum fileFormat{
+    TEXT_FORM,
+    CSV_FORM
+};
 
 extern void readFile();
 extern void getData(int32_t* data, uint16_t* dataLen);
