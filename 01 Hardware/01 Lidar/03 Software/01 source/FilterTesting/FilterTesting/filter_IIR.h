@@ -2,6 +2,14 @@
 #define FILTER_IIR_H_INCLUDED
 
 #define IIR_FILTER_ORDER 2
+#define OLD_VALUES_BUFFER_LEN_BITS (IIR_FILTER_ORDER/4 + 2)
+#define OLD_VALUES_BUFFER_LEN (1<<OLD_VALUES_BUFFER_LEN_BITS)
+#define OUTPUT_MAX_LEN 512
 
+typedef struct{
+    int32_t data[OLD_VALUES_BUFFER_LEN];
+    uint8_t beginIdx :OLD_VALUES_BUFFER_LEN_BITS;
+    uint8_t endIdx   :OLD_VALUES_BUFFER_LEN_BITS;
+}ffOldBuffer_t;
 
 #endif // FILTER_IIR_H_INCLUDED
