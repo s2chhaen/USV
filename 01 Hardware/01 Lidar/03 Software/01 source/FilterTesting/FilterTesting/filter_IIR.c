@@ -42,7 +42,7 @@ void iir_runFiP(int32_t* data, int32_t* output, uint16_t len, uint8_t type){
     const int32_t cFactor = (1<<FIXED_POINT_BITS) - 1;
     switch(type){
         case IIR_MAXIMALLY_FLAT:
-            phaseShift_sample = 1;
+            phaseShift_sample = IIR_FILTER_ORDER/2;
             //kann nur Array mit max. (512 - shifted samples) Mitglieder bearbeiten
             len = ((OUTPUT_MAX_LEN-phaseShift_sample)>len)?len:(OUTPUT_MAX_LEN-phaseShift_sample);
             temp = tempBuff[len-1];
