@@ -23,4 +23,44 @@ void iir_init(int16_t* inputFFCofs, uint16_t ffLen, int16_t* inputFBCofs, uint16
 }
 
 void iir_run(int32_t* data, int32_t* output, uint16_t len, uint8_t type){
+    int32_t ffValue = 0;
+    uint8_t idxPtr = 0;
+    uint8_t phaseShift_sample = 0;
+    int32_t tempBuff[OUTPUT_MAX_LEN] = {0};
+    int32_t temp = 0;
+    memcpy(tempBuff,data,len*sizeof(tempBuff[0])/sizeof(uint8_t));
+    const int32_t cFactor = (1<<FIXED_POINT_BITS) - 1;
+    switch(type){
+        case IIR_MAXIMALLY_FLAT:
+            phaseShift_sample = 1;
+            //kann nur Array mit max. (512 - shifted samples) Mitglieder bearbeiten
+            len = ((OUTPUT_MAX_LEN-phaseShift_sample)>len)?len:(OUTPUT_MAX_LEN-phaseShift_sample);
+            temp = tempBuff[len-1];
+            for(int i = 0; i < phaseShift_sample; i++){
+                tempBuff[len+i] = temp;
+            }
+            len += phaseShift_sample;
+            for(int i = 0; i < len; i++){
+                idxPtr = old.endIdx;
+                //v(n) = x(n) - a1*v(n-1) - a2*v(n-2) - ... - au*v(n-u), u=Ordnung von Filter, a0 = 1
+                ffValue = ((int64_t)fbCofs[0])*((int64_t)data[i])/cFactor;//TODO später betrachtet
+                for(int j = 1; j <= IIR_FILTER_ORDER; j++){
+                    ffValue -= ((int64_t)fbCofs[j])*((int64_t)old.data[idxPtr-j])/cFactor;
+                }
+                //y(n) = b0*v(n) + b1*v(n-1) + b2*v(n-2) + ... + bu*v(n-u), u wie oben
+                tempBuff[i] = (int32_t)((int64_t)ffCofs[0])*((int64_t)ffValue)/cFactor;
+                for(int j = 1; j <= IIR_FILTER_ORDER; j++){
+                    tempBuff[i] += ((int64_t)ffCofs[j])*((int64_t)old.data[idxPtr-j])/cFactor;
+                }
+                //Aktualisieren der alten Werte
+                old.beginIdx--;
+                old.endIdx--;
+                old.data[old.beginIdx] = ffValue;
+            }
+            len -= phaseShift_sample;
+            memcpy(output,&tempBuff[phaseShift_sample],len*sizeof(tempBuff[0])/sizeof(uint8_t));
+            break;
+        default:
+            break;
+    }
 }
