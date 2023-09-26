@@ -25,6 +25,8 @@ void iir_init(int16_t* inputFFCofs, uint16_t ffLen, int16_t* inputFBCofs, uint16
         init = 1;
         old.beginIdx = 0;
         old.endIdx = IIR_FILTER_ORDER;
+        oldFLoat.beginIdx = 0;
+        oldFLoat.endIdx = IIR_FILTER_ORDER;
     }
 }
 
@@ -69,10 +71,62 @@ void iir_runFiP(int32_t* data, int32_t* output, uint16_t len, uint8_t type){
             }
             len -= phaseShift_sample;
             for(int i = 0;i<len;i++){
-                output[i] = tempBuff[i];
+                output[i] = tempBuff[i+1];
             }
             //TODO zu testen
             //memcpy(output,&tempBuff[phaseShift_sample],len*sizeof(tempBuff[0])/sizeof(uint8_t));
+            break;
+        default:
+            break;
+    }
+}
+
+void iir_runFlP(int32_t* data, double* output, uint16_t len, uint8_t type){
+    double ffValue = 0;
+    uint8_t idxPtr = 0;
+    double tempBuff[OUTPUT_MAX_LEN] = {0};
+    double dataFl[OUTPUT_MAX_LEN] = {0};
+    double temp = 0;
+    const int32_t cFactor = (1<<FIXED_POINT_BITS);
+    const uint8_t bufferLen = OLD_VALUES_BUFFER_LEN;
+    uint8_t phaseShift_sample = 0;
+    for(int i = 0; i<len; i++){
+        dataFl[i] = data[i]*1.0000/cFactor;
+        //printf("input[%d] = %lf \n",i,dataFl[i]);
+    }
+
+    switch(type){
+        case IIR_MAXIMALLY_FLAT:
+            phaseShift_sample = IIR_FILTER_ORDER/2;
+            len = ((OUTPUT_MAX_LEN-phaseShift_sample)>len)?len:(OUTPUT_MAX_LEN-phaseShift_sample);
+            temp = dataFl[len-1];
+            for(int i = 0; i < phaseShift_sample; i++){
+                dataFl[len+i] = temp;
+            }
+            len += phaseShift_sample;
+            for(int i = 0; i<len; i++){
+                printf("input[%d] = %lf \n",i,dataFl[i]);
+            }
+            for(int i = 0; i < len; i++){
+                idxPtr = oldFLoat.endIdx;
+                ffValue = fbCofsFloat[0]*dataFl[i];
+                for(int j = 1; j <= IIR_FILTER_ORDER; j++){
+                    ffValue -= fbCofsFloat[j]*oldFLoat.data[(idxPtr-j+1+bufferLen)%bufferLen];
+                }
+                tempBuff[i] = ffCofsFloat[0]*ffValue;
+                for(int j = 1; j <= IIR_FILTER_ORDER; j++){
+                    tempBuff[i] += ffCofsFloat[j]*oldFLoat.data[(idxPtr-j+1+bufferLen)%bufferLen];
+                }
+                //Aktualisieren der alten Werte
+                oldFLoat.beginIdx++;
+                oldFLoat.endIdx++;
+                oldFLoat.data[oldFLoat.endIdx] = ffValue;
+            }
+            for(int i = phaseShift_sample;i<len;i++){
+                output[i-phaseShift_sample] = tempBuff[i];
+                printf("input[%d] = %lf \n",i-1,tempBuff[i]);
+            }
+
             break;
         default:
             break;
