@@ -96,6 +96,9 @@ void getData(int32_t* data, uint16_t* dataLen){
     }
 }
 
+void writeFile(uint8_t* name, uint16_t len, uint8_t format){
+}
+
 
 
 
