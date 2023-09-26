@@ -12,4 +12,8 @@ typedef struct{
     uint8_t endIdx   :OLD_VALUES_BUFFER_LEN_BITS;
 }ffOldBuffer_t;
 
+enum iirType{
+    IIR_MAXIMALLY_FLAT = 0x00
+};
+
 #endif // FILTER_IIR_H_INCLUDED
