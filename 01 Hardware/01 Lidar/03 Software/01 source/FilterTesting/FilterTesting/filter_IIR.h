@@ -30,5 +30,6 @@ enum iirType{
 
 void iir_init(int16_t* inputFFCofs, uint16_t ffLen, int16_t* inputFBCofs, uint16_t fbLen);
 void iir_runFiP(int32_t* data, int32_t* output, uint16_t len, uint8_t type);
+void iir_runFlP(int32_t* data, double* output, uint16_t len, uint8_t type);
 
 #endif // FILTER_IIR_H_INCLUDED
