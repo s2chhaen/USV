@@ -26,7 +26,7 @@ void iir_init(int16_t* inputFFCofs, uint16_t ffLen, int16_t* inputFBCofs, uint16
         old.beginIdx = 0;
         old.endIdx = IIR_FILTER_ORDER-1;
         oldFLoat.beginIdx = 0;
-        oldFLoat.endIdx = IIR_FILTER_ORDER;
+        oldFLoat.endIdx = IIR_FILTER_ORDER-1;
     }
 }
 
@@ -80,7 +80,7 @@ void iir_runFiP(int32_t* data, int32_t* output, uint16_t len, uint8_t type){
 
             for(int i = phaseShift_sample;i<len;i++){///OK
                 output[i-phaseShift_sample] = tempOut[i];///OK
-                ///printf("output[%d] = %" PRIi32 "\n",i-phaseShift_sample,tempOut[i]);TODO löschen nach dem Testen
+                ///printf("output[%d] = %" PRIi32 "\n",i-phaseShift_sample,tempOut[i]);///TODO löschen nach dem Testen
             }
             //TODO zu testen
             //memcpy(output,&tempBuff[phaseShift_sample],len*sizeof(tempBuff[0])/sizeof(uint8_t));
