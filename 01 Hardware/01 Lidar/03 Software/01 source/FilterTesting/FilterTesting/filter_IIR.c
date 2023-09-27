@@ -12,14 +12,17 @@ static ffOldBufferFloat_t oldFLoat = {0};
 void iir_init(int16_t* inputFFCofs, uint16_t ffLen, int16_t* inputFBCofs, uint16_t fbLen){
     uint8_t checkFf = ffLen==(IIR_FILTER_ORDER+1);
     uint8_t checkFb = fbLen==(IIR_FILTER_ORDER+1);
+    int16_t temp = 0;
     if(!(checkFf&&checkFb)){
         printf("Die Ordnung von Filterpolynom nicht gleich der vom Filter");
     } else{
         //TODO Implementiert es mit memcpy von string.h
         for(int i = 0; i< ffLen; i++){
-            ffCofs[i] = (int32_t)inputFFCofs[i]&0xffff;//zu vermeiden von Missverstehen die erste Bit als Zeichenbit
+            temp = inputFFCofs[i];
+            ffCofs[i] = (int32_t)temp;
             ffCofsFloat[i] = inputFFCofs[i]*1.0000/CONVERT_FACTOR_INT;
-            fbCofs[i] = (int32_t)inputFBCofs[i]&0xffff;//zu vermeiden von Missverstehen die erste Bit als Zeichenbit
+            temp = inputFBCofs[i];
+            fbCofs[i] = (int32_t)temp;
             fbCofsFloat[i] = inputFBCofs[i]*1.0000/CONVERT_FACTOR_INT;
         }
         init = 1;
@@ -73,7 +76,6 @@ void iir_runFiP(int32_t* data, int32_t* output, uint16_t len)
         tempOut[i] = (int32_t)((int64_t)ffCofs[0])*((int64_t)ffValue)/cFactor;///OK
         for(int j = 1; j <= IIR_FILTER_ORDER; j++) ///OK
         {
-            ///TEST
             tempOut[i] += ((int64_t)ffCofs[j])*((int64_t)old.data[(idxPtr-j+1+bufferLen)%bufferLen])/cFactor;///OK
         }
         //Aktualisieren der alten Werte
@@ -87,7 +89,7 @@ void iir_runFiP(int32_t* data, int32_t* output, uint16_t len)
         output[i-phaseShift_sample] = tempOut[i];///OK
         ///printf("output[%d] = %" PRIi32 "\n",i-phaseShift_sample,tempOut[i]);///TODO löschen nach dem Testen
     }
-    //TODO zu testen
+    ///TODO zu testen
     //memcpy(output,&tempBuff[phaseShift_sample],len*sizeof(tempBuff[0])/sizeof(uint8_t));
 }
 
@@ -104,7 +106,7 @@ void iir_runFlP(int32_t* data, double* output, uint16_t len)
     for(int i = 0; i<len; i++)
     {
         dataFl[i] = data[i]*1.0000/cFactor;
-        //printf("input[%d] = %lf \n",i,dataFl[i]);
+        ///printf("input[%d] = %lf \n",i,dataFl[i]);///TODO löschen nach dem Testen
     }
     phaseShift_sample = IIR_FILTER_ORDER/2;
     len = ((OUTPUT_MAX_LEN-phaseShift_sample)>len)?len:(OUTPUT_MAX_LEN-phaseShift_sample);
@@ -116,7 +118,7 @@ void iir_runFlP(int32_t* data, double* output, uint16_t len)
     len += phaseShift_sample;
     for(int i = 0; i<len; i++)
     {
-        printf("input[%d] = %lf \n",i,dataFl[i]);
+        ///printf("input[%d] = %lf \n",i,dataFl[i]);///TODO löschen nach dem Testen
     }
     for(int i = 0; i < len; i++)
     {
@@ -139,6 +141,6 @@ void iir_runFlP(int32_t* data, double* output, uint16_t len)
     for(int i = phaseShift_sample; i<len; i++) ///OK
     {
         output[i-phaseShift_sample] = tempBuff[i];///OK
-        printf("input[%d] = %lf \n",i-1,tempBuff[i]);
+        ///printf("input[%d] = %lf \n",i-1,tempBuff[i]);///TODO löschen nach dem Testen
     }
 }
