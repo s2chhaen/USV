@@ -8,8 +8,8 @@
 #include <inttypes.h>
 #include "filterConfig.h"
 
-#define IIR_FILTER_ORDER 2
-#define OLD_VALUES_BUFFER_LEN_BITS (IIR_FILTER_ORDER/4 + 2)
+#define IIR_FILTER_ORDER 2U
+#define OLD_VALUES_BUFFER_LEN_BITS ((IIR_FILTER_ORDER-1U)/2U + 1U)
 #define OLD_VALUES_BUFFER_LEN (1<<OLD_VALUES_BUFFER_LEN_BITS)
 #define OUTPUT_MAX_LEN 512
 
