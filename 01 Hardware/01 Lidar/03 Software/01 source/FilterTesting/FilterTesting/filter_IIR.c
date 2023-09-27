@@ -50,7 +50,6 @@ void iir_runFiP(int32_t* data, int32_t* output, uint16_t len)
     int32_t tempOut[OUTPUT_MAX_LEN] = {0};
     int32_t temp = 0;
     const uint8_t bufferLen = OLD_VALUES_BUFFER_LEN;
-    const int32_t cFactor = (1<<FIXED_POINT_BITS) - 1;
     uint8_t testVar = 0;
     //TODO zu testen
     //memcpy(tempBuff,data,len*sizeof(tempBuff[0])/sizeof(uint8_t));
@@ -75,16 +74,16 @@ void iir_runFiP(int32_t* data, int32_t* output, uint16_t len)
             testVar = (testVar)?1:0;
         }
         idxPtr = old.endIdx;
-        ffValue = ((int64_t)fbCofs[0])*((int64_t)tempBuff[i])/cFactor;///OK
+        ffValue = ((int64_t)fbCofs[0])*((int64_t)tempBuff[i])>>FIXED_POINT_BITS;///OK
         for(int j = 1; j <= IIR_FILTER_ORDER; j++) ///OK
         {
-            ffValue -= ((int64_t)fbCofs[j])*((int64_t)old.data[(idxPtr-j+1+bufferLen)%bufferLen])/cFactor;///OK
+            ffValue -= ((int64_t)fbCofs[j])*((int64_t)old.data[(idxPtr-j+1+bufferLen)%bufferLen])>>FIXED_POINT_BITS;///OK
         }
 
-        tempOut[i] = (int32_t)((int64_t)ffCofs[0])*((int64_t)ffValue)/cFactor;///OK
+        tempOut[i] = (int32_t)((int64_t)ffCofs[0])*((int64_t)ffValue)>>FIXED_POINT_BITS;///OK
         for(int j = 1; j <= IIR_FILTER_ORDER; j++) ///OK
         {
-            tempOut[i] += ((int64_t)ffCofs[j])*((int64_t)old.data[(idxPtr-j+1+bufferLen)%bufferLen])/cFactor;///OK
+            tempOut[i] += ((int64_t)ffCofs[j])*((int64_t)old.data[(idxPtr-j+1+bufferLen)%bufferLen])>>FIXED_POINT_BITS;///OK
         }
         //Aktualisieren der alten Werte
         old.beginIdx++;///OK
