@@ -22,17 +22,15 @@ static int32_t qFormatARM2TI(int32_t input, uint16_t bits){
 void iir_init(int16_t* inputFFCofs, uint16_t ffLen, int16_t* inputFBCofs, uint16_t fbLen){
     uint8_t checkFf = ffLen==(IIR_FILTER_ORDER+1);
     uint8_t checkFb = fbLen==(IIR_FILTER_ORDER+1);
-    int16_t temp = 0;
+    //int16_t temp = 0;
     if(!(checkFf&&checkFb)){
         printf("Die Ordnung von Filterpolynom nicht gleich der vom Filter");
     } else{
         //TODO Implementiert es mit memcpy von string.h
         for(int i = 0; i< ffLen; i++){
-            temp = inputFFCofs[i];
-            ffCofs[i] = (int32_t)temp;
+            ffCofs[i] = qFormatARM2TI((int32_t)inputFFCofs[i],FIXED_POINT_BITS);
             ffCofsFloat[i] = inputFFCofs[i]*1.0000/CONVERT_FACTOR_INT;
-            temp = inputFBCofs[i];
-            fbCofs[i] = (int32_t)temp;
+            fbCofs[i] = qFormatARM2TI((int32_t)inputFBCofs[i],FIXED_POINT_BITS);
             fbCofsFloat[i] = inputFBCofs[i]*1.0000/CONVERT_FACTOR_INT;
         }
         init = 1;
