@@ -9,6 +9,16 @@ static double ffCofsFloat[IIR_FILTER_ORDER+1]={0};
 static double fbCofsFloat[IIR_FILTER_ORDER+1]={0};
 static ffOldBufferFloat_t oldFLoat = {0};
 
+static int32_t qFormatARM2TI(int32_t input, uint16_t bits){
+    int32_t result = 0;
+    static const uint16_t bitLenMax = 20;
+    const int32_t cFactorARM = (1<<bits) -1 ;
+    if(bits<bitLenMax){
+        result = (int32_t)((int64_t)input<<bits)/((int64_t)cFactorARM);
+    }
+    return result;
+}
+
 void iir_init(int16_t* inputFFCofs, uint16_t ffLen, int16_t* inputFBCofs, uint16_t fbLen){
     uint8_t checkFf = ffLen==(IIR_FILTER_ORDER+1);
     uint8_t checkFb = fbLen==(IIR_FILTER_ORDER+1);
