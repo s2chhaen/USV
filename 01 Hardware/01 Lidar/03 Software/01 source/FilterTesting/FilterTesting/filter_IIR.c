@@ -30,7 +30,8 @@ void iir_init(int16_t* inputFFCofs, uint16_t ffLen, int16_t* inputFBCofs, uint16
     }
 }
 
-void iir_runFiP(int32_t* data, int32_t* output, uint16_t len, uint8_t type){
+void iir_runFiP(int32_t* data, int32_t* output, uint16_t len)
+{
     int32_t ffValue = 0;
     uint8_t idxPtr = 0;
     uint8_t phaseShift_sample = 0;
@@ -42,52 +43,52 @@ void iir_runFiP(int32_t* data, int32_t* output, uint16_t len, uint8_t type){
     uint8_t testVar = 0;
     //TODO zu testen
     //memcpy(tempBuff,data,len*sizeof(tempBuff[0])/sizeof(uint8_t));
-    for(int i = 0; i<len; i++){
+    for(int i = 0; i<len; i++)
+    {
         tempBuff[i] = data[i];
     }
-
-    switch(type){
-        case IIR_MAXIMALLY_FLAT:
-            phaseShift_sample = IIR_FILTER_ORDER/2;
-            //kann nur Array mit max. (512 - shifted samples) Mitglieder bearbeiten
-            len = ((OUTPUT_MAX_LEN-phaseShift_sample)>len)?len:(OUTPUT_MAX_LEN-phaseShift_sample);
-            temp = tempBuff[len-1];
-            for(int i = 0; i < phaseShift_sample; i++){
-                tempBuff[len+i] = temp;
-            }
-            len += phaseShift_sample;
-            for(int i = 0; i < len; i++){
-                if(i==len-1){
-                    testVar++;
-                    testVar = (testVar)?1:0;
-                }
-                idxPtr = old.endIdx;
-                ffValue = ((int64_t)fbCofs[0])*((int64_t)tempBuff[i])/cFactor;///OK
-                for(int j = 1; j <= IIR_FILTER_ORDER; j++){///OK
-                    ffValue -= ((int64_t)fbCofs[j])*((int64_t)old.data[(idxPtr-j+1+bufferLen)%bufferLen])/cFactor;///OK
-                }
-
-                tempOut[i] = (int32_t)((int64_t)ffCofs[0])*((int64_t)ffValue)/cFactor;///OK
-                for(int j = 1; j <= IIR_FILTER_ORDER; j++){///OK
-                    ///TEST
-                    tempOut[i] += ((int64_t)ffCofs[j])*((int64_t)old.data[(idxPtr-j+1+bufferLen)%bufferLen])/cFactor;///OK
-                }
-                //Aktualisieren der alten Werte
-                old.beginIdx++;///OK
-                old.endIdx++;///OK
-                old.data[old.endIdx] = ffValue;///OK
-            }
-
-            for(int i = phaseShift_sample;i<len;i++){///OK
-                output[i-phaseShift_sample] = tempOut[i];///OK
-                ///printf("output[%d] = %" PRIi32 "\n",i-phaseShift_sample,tempOut[i]);///TODO löschen nach dem Testen
-            }
-            //TODO zu testen
-            //memcpy(output,&tempBuff[phaseShift_sample],len*sizeof(tempBuff[0])/sizeof(uint8_t));
-            break;
-        default:
-            break;
+    phaseShift_sample = IIR_FILTER_ORDER/2;
+    //kann nur Array mit max. (512 - shifted samples) Mitglieder bearbeiten
+    len = ((OUTPUT_MAX_LEN-phaseShift_sample)>len)?len:(OUTPUT_MAX_LEN-phaseShift_sample);
+    temp = tempBuff[len-1];
+    for(int i = 0; i < phaseShift_sample; i++)
+    {
+        tempBuff[len+i] = temp;
     }
+    len += phaseShift_sample;
+    for(int i = 0; i < len; i++)
+    {
+        if(i==len-1)
+        {
+            testVar++;
+            testVar = (testVar)?1:0;
+        }
+        idxPtr = old.endIdx;
+        ffValue = ((int64_t)fbCofs[0])*((int64_t)tempBuff[i])/cFactor;///OK
+        for(int j = 1; j <= IIR_FILTER_ORDER; j++) ///OK
+        {
+            ffValue -= ((int64_t)fbCofs[j])*((int64_t)old.data[(idxPtr-j+1+bufferLen)%bufferLen])/cFactor;///OK
+        }
+
+        tempOut[i] = (int32_t)((int64_t)ffCofs[0])*((int64_t)ffValue)/cFactor;///OK
+        for(int j = 1; j <= IIR_FILTER_ORDER; j++) ///OK
+        {
+            ///TEST
+            tempOut[i] += ((int64_t)ffCofs[j])*((int64_t)old.data[(idxPtr-j+1+bufferLen)%bufferLen])/cFactor;///OK
+        }
+        //Aktualisieren der alten Werte
+        old.beginIdx++;///OK
+        old.endIdx++;///OK
+        old.data[old.endIdx] = ffValue;///OK
+    }
+
+    for(int i = phaseShift_sample; i<len; i++) ///OK
+    {
+        output[i-phaseShift_sample] = tempOut[i];///OK
+        printf("output[%d] = %" PRIi32 "\n",i-phaseShift_sample,tempOut[i]);///TODO löschen nach dem Testen
+    }
+    //TODO zu testen
+    //memcpy(output,&tempBuff[phaseShift_sample],len*sizeof(tempBuff[0])/sizeof(uint8_t));
 }
 
 void iir_runFlP(int32_t* data, double* output, uint16_t len, uint8_t type){
