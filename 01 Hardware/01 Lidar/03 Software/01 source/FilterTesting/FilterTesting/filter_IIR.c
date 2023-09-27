@@ -3,11 +3,11 @@
 static uint8_t init = 0;
 static int32_t ffCofs[IIR_FILTER_ORDER+1]={0};
 static int32_t fbCofs[IIR_FILTER_ORDER+1]={0};
-static ffOldBuffer_t old = {0};
+static ffOldBufferIIR_t old = {0};
 
 static double ffCofsFloat[IIR_FILTER_ORDER+1]={0};
 static double fbCofsFloat[IIR_FILTER_ORDER+1]={0};
-static ffOldBufferFloat_t oldFLoat = {0};
+static ffOldBufferIIRFloat_t oldFLoat = {0};
 
 static int32_t qFormatARM2TI(int32_t input, uint16_t bits){
     int32_t result = 0;
