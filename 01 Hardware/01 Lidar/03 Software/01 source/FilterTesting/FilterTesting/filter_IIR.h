@@ -5,6 +5,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include "filterConfig.h"
 
 #define IIR_FILTER_ORDER 2
