@@ -18,5 +18,10 @@ typedef struct{
     uint8_t endIdx   :FIR_OLD_VALUES_BUFFER_LEN_BITS;
 }ffOldBufferFIR_t;
 
+typedef struct{
+    double data[FIR_OLD_VALUES_BUFFER_LEN];
+    uint8_t beginIdx :FIR_OLD_VALUES_BUFFER_LEN_BITS;
+    uint8_t endIdx   :FIR_OLD_VALUES_BUFFER_LEN_BITS;
+}ffOldBufferFIRFloat_t;
 
 #endif // FILTER_FIR_H_INCLUDED
