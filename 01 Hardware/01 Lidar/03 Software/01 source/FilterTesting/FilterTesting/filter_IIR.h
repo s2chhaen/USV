@@ -9,20 +9,20 @@
 #include "filterConfig.h"
 
 #define IIR_FILTER_ORDER 2U
-#define OLD_VALUES_BUFFER_LEN_BITS ((IIR_FILTER_ORDER-1U)/2U + 1U)
-#define OLD_VALUES_BUFFER_LEN (1<<OLD_VALUES_BUFFER_LEN_BITS)
+#define IIR_OLD_VALUES_BUFFER_LEN_BITS ((IIR_FILTER_ORDER-1U)/2U + 1U)
+#define IIR_OLD_VALUES_BUFFER_LEN (1<<IIR_OLD_VALUES_BUFFER_LEN_BITS)
 
 
 typedef struct{
-    int32_t data[OLD_VALUES_BUFFER_LEN];
-    uint8_t beginIdx :OLD_VALUES_BUFFER_LEN_BITS;
-    uint8_t endIdx   :OLD_VALUES_BUFFER_LEN_BITS;
+    int32_t data[IIR_OLD_VALUES_BUFFER_LEN];
+    uint8_t beginIdx :IIR_OLD_VALUES_BUFFER_LEN_BITS;
+    uint8_t endIdx   :IIR_OLD_VALUES_BUFFER_LEN_BITS;
 }ffOldBufferIIR_t;
 
 typedef struct{
-    double data[OLD_VALUES_BUFFER_LEN];
-    uint8_t beginIdx :OLD_VALUES_BUFFER_LEN_BITS;
-    uint8_t endIdx   :OLD_VALUES_BUFFER_LEN_BITS;
+    double data[IIR_OLD_VALUES_BUFFER_LEN];
+    uint8_t beginIdx :IIR_OLD_VALUES_BUFFER_LEN_BITS;
+    uint8_t endIdx   :IIR_OLD_VALUES_BUFFER_LEN_BITS;
 }ffOldBufferIIRFloat_t;
 
 enum iirType{

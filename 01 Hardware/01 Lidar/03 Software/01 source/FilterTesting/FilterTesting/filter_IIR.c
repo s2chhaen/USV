@@ -49,7 +49,7 @@ void iir_runFiP(int32_t* data, int32_t* output, uint16_t len)
     int32_t tempBuff[OUTPUT_MAX_LEN] = {0};
     int32_t tempOut[OUTPUT_MAX_LEN] = {0};
     int32_t temp = 0;
-    const uint8_t bufferLen = OLD_VALUES_BUFFER_LEN;
+    const uint8_t bufferLen = IIR_OLD_VALUES_BUFFER_LEN;
     uint8_t testVar = 0;
     //TODO zu testen
     //memcpy(tempBuff,data,len*sizeof(tempBuff[0])/sizeof(uint8_t));
@@ -108,7 +108,7 @@ void iir_runFlP(int32_t* data, double* output, uint16_t len)
     double dataFl[OUTPUT_MAX_LEN] = {0};
     double temp = 0;
     const int32_t cFactor = (1<<FIXED_POINT_BITS);
-    const uint8_t bufferLen = OLD_VALUES_BUFFER_LEN;
+    const uint8_t bufferLen = IIR_OLD_VALUES_BUFFER_LEN;
     uint8_t phaseShift_sample = 0;
     for(int i = 0; i<len; i++)
     {
