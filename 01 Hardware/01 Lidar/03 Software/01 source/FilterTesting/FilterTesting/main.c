@@ -5,8 +5,6 @@
 #include "ioModul.h"
 #include "filterCoefs/mf_qFormFilterCof.h"
 
-double a = 1*1.00000;
-
 int main()
 {
     int32_t temp[BUFFER_MAX_LENGTH]={0};
@@ -33,5 +31,6 @@ int main()
 #ifdef SEG_2_MAIN
     iir_runFlP(temp,dFilterd,len);
 #endif // SEG_2_MAIN
+
     return 0;
 }
