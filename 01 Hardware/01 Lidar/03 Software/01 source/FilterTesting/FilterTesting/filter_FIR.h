@@ -24,4 +24,6 @@ typedef struct{
     uint8_t endIdx   :FIR_OLD_VALUES_BUFFER_LEN_BITS;
 }ffOldBufferFIRFloat_t;
 
+void fir_init(int16_t* inputFFCofs, uint16_t ffLen);
+
 #endif // FILTER_FIR_H_INCLUDED
