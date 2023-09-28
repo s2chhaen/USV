@@ -25,5 +25,6 @@ typedef struct{
 }ffOldBufferFIRFloat_t;
 
 void fir_init(int16_t* inputFFCofs, uint16_t ffLen);
+void iir_runFiP(int32_t* data, int32_t* output, uint16_t len);
 
 #endif // FILTER_FIR_H_INCLUDED
