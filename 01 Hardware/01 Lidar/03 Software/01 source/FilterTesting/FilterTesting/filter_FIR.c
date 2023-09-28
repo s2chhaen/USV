@@ -4,6 +4,9 @@ static uint8_t init = 0;
 static int32_t ffCofs[FIR_FILTER_ORDER+1]={0};
 static ffOldBufferFIR_t old = {0};
 
+static double ffCofsFloat[FIR_FILTER_ORDER+1]={0};
+static ffOldBufferFIRFloat_t oldFLoat = {0};
+
 static int32_t qFormatARM2TI(int32_t input, uint16_t bits){
     int32_t result = 0;
     static const uint16_t bitLenMax = 20;
@@ -15,4 +18,5 @@ static int32_t qFormatARM2TI(int32_t input, uint16_t bits){
 }
 
 void fir_init(int16_t* inputFFCofs, uint16_t ffLen){
+
 }
