@@ -37,5 +37,46 @@ void fir_init(int16_t* inputFFCofs, uint16_t ffLen){
 }
 
 void fir_runFiP(int32_t* data, int32_t* output, uint16_t len){
+    uint8_t idxPtr = 0;
+    uint8_t phaseShift_sample = 0;
+    int32_t tempBuff[OUTPUT_MAX_LEN] = {0};
+    int32_t tempOut[OUTPUT_MAX_LEN] = {0};
+    int32_t temp = 0;
+    const uint8_t bufferLen = FIR_OLD_VALUES_BUFFER_LEN;
+    //TODO zu testen
+    //memcpy(tempBuff,data,len*sizeof(tempBuff[0])/sizeof(uint8_t));
+    for(int i = 0; i<len; i++)
+    {
+        tempBuff[i] = data[i];
+    }
+    phaseShift_sample = FIR_FILTER_ORDER/2 + 1;
+    //kann nur Array mit max. (512 - shifted samples) Mitglieder bearbeiten
+    len = ((OUTPUT_MAX_LEN-phaseShift_sample)>len)?len:(OUTPUT_MAX_LEN-phaseShift_sample);
+    temp = tempBuff[len-1];
+    for(int i = 0; i < phaseShift_sample; i++)
+    {
+        tempBuff[len+i] = temp;
+    }
+    len += phaseShift_sample;
+    for(int i = 0; i < len; i++)
+    {
+        idxPtr = old.endIdx;
+        tempOut[i] = ((int64_t)ffCofs[0])*((int64_t)tempBuff[i])>>FIXED_POINT_BITS;
+        for(int j = 1; j <= FIR_FILTER_ORDER; j++) ///OK
+        {
+            tempOut[i] += ((int64_t)ffCofs[j])*((int64_t)old.data[(idxPtr-j+1+bufferLen)%bufferLen])>>FIXED_POINT_BITS;///OK
+        }
+        //Aktualisieren der alten Werte
+        old.beginIdx++;///OK
+        old.endIdx++;///OK
+        old.data[old.endIdx] = tempBuff[i];///OK
+    }
 
+    for(int i = phaseShift_sample; i<len; i++) ///OK
+    {
+        output[i-phaseShift_sample] = tempOut[i];///OK
+        printf("output[%d] = %" PRIi32 "\n",i-phaseShift_sample,tempOut[i]);///TODO löschen nach dem Testen
+    }
+    ///TODO zu testen
+    //memcpy(output,&tempBuff[phaseShift_sample],len*sizeof(tempBuff[0])/sizeof(uint8_t));
 }
