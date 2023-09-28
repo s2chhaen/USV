@@ -36,5 +36,6 @@ void fir_init(int16_t* inputFFCofs, uint16_t ffLen){
     }
 }
 
-void iir_runFiP(int32_t* data, int32_t* output, uint16_t len){
+void fir_runFiP(int32_t* data, int32_t* output, uint16_t len){
+
 }
