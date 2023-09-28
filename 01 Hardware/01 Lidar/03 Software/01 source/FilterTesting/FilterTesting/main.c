@@ -2,8 +2,10 @@
 
 #include <stdint.h>
 #include "filter_IIR.h"
+#include "filter_FIR.h"
 #include "ioModul.h"
 #include "filterCoefs/mf_qFormFilterCof.h"
+#include "filterCoefs/wk_qFormFilterCof.h"
 
 int main()
 {
@@ -32,5 +34,12 @@ int main()
     iir_runFlP(temp,dFilterd,len);
 #endif // SEG_2_MAIN
 
+#define SEG_3_MAIN
+#ifdef SEG_3_MAIN
+    fir_init((int16_t*)wk_num,wk_numLen);
+    fir_runFiP(temp,filtered,len);
+    writeFile((uint8_t*)"output_wk_fixed_c",sizeof("output_wk_fixed_c"),TEXT_FORM,filtered,len);
+    writeFile((uint8_t*)"output_wk_fixed_c",sizeof("output_wk_fixed_c"),CSV_FORM,filtered,len);
+#endif // SEG_3_MAIN
     return 0;
 }
