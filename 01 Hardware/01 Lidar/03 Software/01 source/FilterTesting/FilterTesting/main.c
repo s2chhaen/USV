@@ -7,6 +7,7 @@
 #include "filterCoefs/mf_qFormFilterCof.h"
 #include "filterCoefs/wk_qFormFilterCof.h"
 #include "filterCoefs/lsq_qFormFilterCof.h"
+#include "filterCoefs/eq_qFormFilterCof.h"
 
 int main()
 {
@@ -45,5 +46,13 @@ int main()
     writeFile((uint8_t*)"output_lsq_fixed_c",sizeof("output_lsq_fixed_c"),TEXT_FORM,filtered,len);
     writeFile((uint8_t*)"output_lsq_fixed_c",sizeof("output_lsq_fixed_c"),CSV_FORM,filtered,len);
 #endif // SEG_4_MAIN
+
+//#define SEG_5_MAIN
+#ifdef SEG_5_MAIN
+    fir_init((int16_t*)eq_num,eq_numLen);
+    fir_runFiP(temp,filtered,len);
+    writeFile((uint8_t*)"output_eq_fixed_c",sizeof("output_eq_fixed_c"),TEXT_FORM,filtered,len);
+    writeFile((uint8_t*)"output_eq_fixed_c",sizeof("output_eq_fixed_c"),CSV_FORM,filtered,len);
+#endif // SEG_5_MAIN
     return 0;
 }
