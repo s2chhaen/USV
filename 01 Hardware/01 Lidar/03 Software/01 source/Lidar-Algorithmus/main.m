@@ -9,7 +9,7 @@ clc;
 format shortG
 
 % 1. Versuch: zum Erreichen des Überblick und groben Auswahl der Filter-Methode
-test1_active = 1;
+test1_active = 0;
 % 2. Versuch: Zur Untersuchung des Effektes von Filtern 
 test2_active = 1;
 % 3. Versuch: Zur Untersuchung des Effektes von Filtern im flachen Bereich
@@ -97,6 +97,18 @@ if test1_active==1
     figureNo = figureNo + 1;
     printOutFile('fixed','wt',output);
     printOutFile('float','wt',output);
+end
+
+if test2_active == 1
+    % Der Bereich A, deren Werte gleicheinander und ungleich 
+    % 0 sind: Wiederholungsmal immer gerade
+    repeatedTimeValMid = 50;
+    midVal = 5000;
+    %Bereich von 0° zum 180° mit Auflösung von 0.5°
+    tVal = 0:0.5:180;
+    tComp = 90;
+    x = midVal*rectpuls(tVal-tComp,repeatedTimeValMid);
+    plot(tVal,x,'-o');
 end
 
 
