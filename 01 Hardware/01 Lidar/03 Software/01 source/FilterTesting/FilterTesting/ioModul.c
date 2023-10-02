@@ -48,7 +48,7 @@ static int32_t string2Num(uint8_t* input, uint8_t strLen){
 }
 
 void readFile(){
-    FILE *input = fopen("input_fixed.txt","r");
+    FILE *input = fopen("input_fixed_matlab.txt","r");
     if(input!=NULL){
         uint8_t stringPtr = 0;
         int32_t character = 0;
