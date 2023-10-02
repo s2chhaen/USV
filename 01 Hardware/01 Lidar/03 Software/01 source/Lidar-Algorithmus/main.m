@@ -8,8 +8,15 @@
 clc;
 format shortG
 
+% 1. Versuch: zum Erreichen des Überblick und groben Auswahl der Filter-Methode
 test1_active = 1;
+% 2. Versuch: Zur Untersuchung des Effektes von Filtern 
 test2_active = 1;
+% 3. Versuch: Zur Untersuchung des Effektes von Filtern im flachen Bereich
+test3_active = 1;
+% 4. Versuch: Zur Untersuchung des Effektes vo Filtern im Bereich mit der 
+% schwächen Wirkung der Störgrößen
+test4_active = 1;
 
 if test1_active==1
     LidarDataExtract; %Ausführung der LidarDataExtract.m Skript
