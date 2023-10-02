@@ -50,7 +50,6 @@ void iir_runFiP(int32_t* data, int32_t* output, uint16_t len)
     int32_t tempOut[OUTPUT_MAX_LEN] = {0};
     int32_t temp = 0;
     const uint8_t bufferLen = IIR_OLD_VALUES_BUFFER_LEN;
-    uint8_t testVar = 0;
     //TODO zu testen
     //memcpy(tempBuff,data,len*sizeof(tempBuff[0])/sizeof(uint8_t));
     for(int i = 0; i<len; i++)
@@ -68,11 +67,6 @@ void iir_runFiP(int32_t* data, int32_t* output, uint16_t len)
     len += phaseShift_sample;
     for(int i = 0; i < len; i++)
     {
-        if(i==len-1)
-        {
-            testVar++;
-            testVar = (testVar)?1:0;
-        }
         idxPtr = old.endIdx;
         ffValue = ((int64_t)fbCofs[0])*((int64_t)tempBuff[i])>>FIXED_POINT_BITS;///OK
         for(int j = 1; j <= IIR_FILTER_ORDER; j++) ///OK
