@@ -245,7 +245,29 @@ if test2_active == 1
     slopeF = rms(slopeF);
     diff_wb = 20.*log10(slopeF./slopeO);
 
-    
+    % Mit dem Window-Rectangular-Methode-entworfenen Filter
+    draw = 0;
+    phase = 2;
+    filterObj = filterWindowRectangular_p3;
+    output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+    if draw == 1
+        figureNo = figureNo + 1;
+    end
+    slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
+                        tVal(onIntervalBegin:onIntervalEnd));
+    slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
+                        tVal(onIntervalBegin:onIntervalEnd));
+    draw = 0;
+    if draw == 1
+        figure(figureNo);
+        hVal = [1:numel(slopeF)];
+        plot(hVal,slopeO,'-',hVal,slopeF,'-');
+        legend('Original','gefilterten-Signal','Location','northeastoutside');
+        figureNo = figureNo + 1;
+    end
+    slopeO = rms(slopeO);
+    slopeF = rms(slopeF);
+    diff_wr = 20.*log10(slopeF./slopeO);
 end
 
 if test3_active == 1
