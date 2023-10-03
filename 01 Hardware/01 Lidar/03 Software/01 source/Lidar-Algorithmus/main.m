@@ -353,7 +353,8 @@ if test3_active == 1
     figureNo = figureNo + 1;
 end
 
-
+if test4_active == 1
+end
 
 
 
