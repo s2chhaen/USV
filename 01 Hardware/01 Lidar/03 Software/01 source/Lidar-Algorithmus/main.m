@@ -220,6 +220,32 @@ if test2_active == 1
     slopeO = rms(slopeO);
     slopeF = rms(slopeF);
     diff_eq = 20.*log10(slopeF./slopeO);
+
+    % Mit dem Window-Bartlett-Methode-entworfenen Filter
+    draw = 0;
+    phase = 2;
+    filterObj = filterWindowBarlett_p2;
+    output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+    if draw == 1
+        figureNo = figureNo + 1;
+    end
+    slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
+                        tVal(onIntervalBegin:onIntervalEnd));
+    slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
+                        tVal(onIntervalBegin:onIntervalEnd));
+    draw = 0;
+    if draw == 1
+        figure(figureNo);
+        hVal = [1:numel(slopeF)];
+        plot(hVal,slopeO,'-',hVal,slopeF,'-');
+        legend('Original','gefilterten-Signal','Location','northeastoutside');
+        figureNo = figureNo + 1;
+    end
+    slopeO = rms(slopeO);
+    slopeF = rms(slopeF);
+    diff_wb = 20.*log10(slopeF./slopeO);
+
+    
 end
 
 if test3_active == 1
@@ -255,19 +281,19 @@ if test3_active == 1
     filterObj = filterLeastSquares_p11;
     filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
     figureNo = figureNo + 1;
-    %Mit dem Equiripple-Methode-entworfenen Filter
+    % Mit dem Equiripple-Methode-entworfenen Filter
     draw = 1;
     phase = 2;
     filterObj = filterEquiripple_p3;
     filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
     figureNo = figureNo + 1;
-    %Mit dem Window-Bartlett-Methode-entworfenen Filter
+    % Mit dem Window-Bartlett-Methode-entworfenen Filter
     draw = 1;
     phase = 2;
     filterObj = filterWindowBarlett_p2;
     filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
     figureNo = figureNo + 1;
-    %Mit dem Window-Rectangular-Methode-entworfenen Filter
+    % Mit dem Window-Rectangular-Methode-entworfenen Filter
     draw = 1;
     phase = 2;
     filterObj = filterWindowRectangular_p3;
