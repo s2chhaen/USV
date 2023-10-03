@@ -124,6 +124,7 @@ if test2_active == 1
         figureNo = figureNo + 1;
         legend('Original','mit Geräusch','Location','northeastoutside');
     end
+
     % Mit dem Maximally-Flat-Methode-entworfenen Filter
     draw = 0;
     phase = 1;
@@ -146,7 +147,7 @@ if test2_active == 1
     end
     slopeO = rms(slopeO);
     slopeF = rms(slopeF);
-    diff_mf = slopeO/slopeF;
+    diff_mf = 20.*log10(slopeF./slopeO);
 
     %Mit dem Window-Kaiser-Methode-entworfenen Filter
     draw = 0;
@@ -170,7 +171,7 @@ if test2_active == 1
     end
     slopeO = rms(slopeO);
     slopeF = rms(slopeF);
-    diff_wk = slopeO/slopeF;
+    diff_wk = 20.*log10(slopeF./slopeO);
 
     % Mit dem Least-Squares-Methode-entworfenen Filter
     draw = 0;
@@ -194,7 +195,7 @@ if test2_active == 1
     end
     slopeO = rms(slopeO);
     slopeF = rms(slopeF);
-    diff_lsq = slopeO/slopeF;
+    diff_lsq = 20.*log10(slopeF./slopeO);
 
     % Mit dem Equiripple-Methode-entworfenen Filter
     draw = 0;
@@ -218,7 +219,7 @@ if test2_active == 1
     end
     slopeO = rms(slopeO);
     slopeF = rms(slopeF);
-    diff_eq = slopeO/slopeF;
+    diff_eq = 20.*log10(slopeF./slopeO);
 end
 
 if test3_active == 1
