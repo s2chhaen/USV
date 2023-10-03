@@ -14,7 +14,7 @@ test1_active = 0;
 test2_active = 1;
 % 3. Versuch: Zur Untersuchung des Effektes von Filtern im flachen Bereich
 test3_active = 0;
-% 4. Versuch: Zur Untersuchung des Effektes vo Filtern im Bereich mit der 
+% 4. Versuch: Zur Untersuchung des Effektes von Filtern im Bereich mit der 
 % schwächen Wirkung der Störgrößen
 test4_active = 1;
 
@@ -268,6 +268,30 @@ if test2_active == 1
     slopeO = rms(slopeO);
     slopeF = rms(slopeF);
     diff_wr = 20.*log10(slopeF./slopeO);
+
+    % Mit dem Window-Triangular-Methode-entworfenen Filter
+    draw = 0;
+    phase = 2;
+    filterObj = filterWindowTriangular_p1;
+    output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+    if draw == 1
+        figureNo = figureNo + 1;
+    end
+    slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
+                        tVal(onIntervalBegin:onIntervalEnd));
+    slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
+                        tVal(onIntervalBegin:onIntervalEnd));
+    draw = 0;
+    if draw == 1
+        figure(figureNo);
+        hVal = [1:numel(slopeF)];
+        plot(hVal,slopeO,'-',hVal,slopeF,'-');
+        legend('Original','gefilterten-Signal','Location','northeastoutside');
+        figureNo = figureNo + 1;
+    end
+    slopeO = rms(slopeO);
+    slopeF = rms(slopeF);
+    diff_wt = 20.*log10(slopeF./slopeO);
 end
 
 if test3_active == 1
@@ -321,7 +345,7 @@ if test3_active == 1
     filterObj = filterWindowRectangular_p3;
     filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
     figureNo = figureNo + 1;
-    %Mit dem Window-Triangular-Methode-entworfenen Filter
+    % Mit dem Window-Triangular-Methode-entworfenen Filter
     draw = 1;
     phase = 2;
     filterObj = filterWindowTriangular_p1;
