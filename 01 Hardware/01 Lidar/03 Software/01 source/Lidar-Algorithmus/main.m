@@ -112,7 +112,7 @@ if test2_active == 1
     onIntervalBegin = (180*2-repeatedTimeValMid/0.5)/2 + 1;
     onIntervalEnd = onIntervalBegin + repeatedTimeValMid/0.5 -1;
     noise = abs(awgn(xVal(onIntervalBegin:onIntervalEnd),snr_dB,signalPowerConfig));
-    ampCoef = 1;
+    ampCoef = 0.2;
     noise = mod(noise,midVal*ampCoef);
     xnVal = [xVal(1:onIntervalBegin-1) noise xVal(onIntervalEnd+1:end)];
     xnVal = xnVal + xVal;
