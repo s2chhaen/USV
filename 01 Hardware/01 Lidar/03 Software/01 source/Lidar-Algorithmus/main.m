@@ -103,7 +103,7 @@ if test3_active == 1
     % Original Signal
     % Der Bereich A, deren Werte gleicheinander und ungleich 
     % 0 sind: Wiederholungsmal immer gerade
-    repeatedTimeValMid = 100;
+    repeatedTimeValMid = 70;
     midVal = 5000;
     %Bereich von 0° zum 180° mit Auflösung von 0.5°
     tVal = 0:0.5:180;
