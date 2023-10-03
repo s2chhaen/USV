@@ -172,7 +172,29 @@ if test2_active == 1
     slopeF = rms(slopeF);
     diff_wk = slopeO/slopeF;
 
-    
+    %Mit dem Least-Squares-Methode-entworfenen Filter
+    draw = 0;
+    phase = 2;
+    filterObj = filterLeastSquares_p11;
+    output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+    if draw == 1
+        figureNo = figureNo + 1;
+    end
+    slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
+                        tVal(onIntervalBegin:onIntervalEnd));
+    slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
+                        tVal(onIntervalBegin:onIntervalEnd));
+    draw = 0;
+    if draw == 1
+        figure(figureNo);
+        hVal = [1:numel(slopeF)];
+        plot(hVal,slopeO,'-',hVal,slopeF,'-');
+        legend('Original','gefilterten-Signal','Location','northeastoutside');
+        figureNo = figureNo + 1;
+    end
+    slopeO = rms(slopeO);
+    slopeF = rms(slopeF);
+    diff_lsq = slopeO/slopeF;
 end
 
 if test3_active == 1
