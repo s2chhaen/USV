@@ -4,7 +4,7 @@
 % Version: 1.01
 % Revision: 1.00
 
-%clear;
+clear;
 clc;
 format shortG
 
@@ -112,7 +112,7 @@ if test2_active == 1
     onIntervalBegin = (180*2-repeatedTimeValMid/0.5)/2 + 1;
     onIntervalEnd = onIntervalBegin + repeatedTimeValMid/0.5 -1;
     noise = abs(awgn(xVal(onIntervalBegin:onIntervalEnd),snr_dB,signalPowerConfig));
-    ampCoef = 1.1;
+    ampCoef = 1;
     noise = mod(noise,midVal*ampCoef);
     xnVal = [xVal(1:onIntervalBegin-1) noise xVal(onIntervalEnd+1:end)];
     xnVal = xnVal + xVal;
@@ -124,7 +124,29 @@ if test2_active == 1
         figureNo = figureNo + 1;
         legend('Original','mit Geräusch','Location','northeastoutside');
     end
-    
+    %Mit dem Maximally-Flat-Methode-entworfenen Filter
+    draw = 0;
+    phase = 1;
+    filterObj = filterMaximallyFlatFIR_p4;
+    slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
+                        tVal(onIntervalBegin:onIntervalEnd));
+    output = filterIIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+    if draw == 1
+        figureNo = figureNo + 1;
+    end
+    slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
+                        tVal(onIntervalBegin:onIntervalEnd));
+    draw = 0;
+    if draw == 1
+        figure(figureNo);
+        hVal = [1:numel(slopeF)];
+        plot(hVal,slopeO,'-',hVal,slopeF,'-');
+        legend('Original','gefilterten-Signal','Location','northeastoutside');
+        figureNo = figureNo + 1;
+    end
+    slopeO = rms(slopeO);
+    slopeF = rms(slopeF);
+    diff_mf = slopeO/slopeF;
 end
 
 if test3_active == 1
