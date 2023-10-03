@@ -99,6 +99,9 @@ if test1_active==1
     printOutFile('float','wt',output);
 end
 
+if test2_active == 1
+end
+
 if test3_active == 1
     % Original Signal
     % Der Bereich A, deren Werte gleicheinander und ungleich 
