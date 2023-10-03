@@ -13,7 +13,7 @@ test1_active = 0;
 % 2. Versuch: Zur Untersuchung des Effektes von Filtern 
 test2_active = 1;
 % 3. Versuch: Zur Untersuchung des Effektes von Filtern im flachen Bereich
-test3_active = 1;
+test3_active = 0;
 % 4. Versuch: Zur Untersuchung des Effektes vo Filtern im Bereich mit der 
 % schwächen Wirkung der Störgrößen
 test4_active = 1;
@@ -100,6 +100,31 @@ if test1_active==1
 end
 
 if test2_active == 1
+    % Erzeugen des Signals mit Geräusch, Nebenbedingung: alle Werte von
+    % Geräusch ist großer als 0
+    snr_dB = 7;
+    signalPowerConfig = 'measured';
+    midVal = 400;
+    repeatedTimeValMid = 150;%Ton = 2*repeatedTimeValMid
+    tVal = 0:0.5:180;
+    tComp = 90;
+    xVal = midVal*rectpuls(tVal-tComp,repeatedTimeValMid)+1;
+    onIntervalBegin = (180*2-repeatedTimeValMid/0.5)/2 + 1;
+    onIntervalEnd = onIntervalBegin + repeatedTimeValMid/0.5 -1;
+    noise = abs(awgn(xVal(onIntervalBegin:onIntervalEnd),snr_dB,signalPowerConfig));
+    ampCoef = 1.1;
+    noise = mod(noise,midVal*ampCoef);
+    xnVal = [xVal(1:onIntervalBegin-1) noise xVal(onIntervalEnd+1:end)];
+    xnVal = xnVal + xVal;
+    draw = 0;
+    figureNo = 1;
+    if draw == 1
+        figure(figureNo);
+        plot(tVal,xVal,'-o',tVal,xnVal,'-o');
+        figureNo = figureNo + 1;
+        legend('Original','mit Geräusch','Location','northeastoutside');
+    end
+    
 end
 
 if test3_active == 1
