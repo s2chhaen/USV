@@ -11,14 +11,14 @@ if draw == 1
 
     ax(1) = subplot(2,1,1);
     plot(inputTi,inputVal,'-o',inputTi,outputVal,'-o');
-    legend('Original Data','Filtered Data');
+    legend('Original Data','Filtered Data','Location','northeastoutside');
     grid on
     xlabel('Winkel/Grad');
     ylabel('Radius/cm');
 
     ax(2) = subplot(2,1,2);
     plot(inputTi,20.*log10(outputVal./inputVal),'-o');
-    legend('magnitude/dB');
+    legend('magnitude/dB','Location','northeastoutside');
     grid on
     xlabel('Winkel/Grad');
     ylabel('Radius/dB');
