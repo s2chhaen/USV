@@ -124,16 +124,16 @@ if test2_active == 1
         figureNo = figureNo + 1;
         legend('Original','mit Geräusch','Location','northeastoutside');
     end
-    %Mit dem Maximally-Flat-Methode-entworfenen Filter
+    % Mit dem Maximally-Flat-Methode-entworfenen Filter
     draw = 0;
     phase = 1;
     filterObj = filterMaximallyFlatFIR_p4;
-    slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
-                        tVal(onIntervalBegin:onIntervalEnd));
     output = filterIIR(xnVal, tVal, filterObj, draw, phase, figureNo);
     if draw == 1
         figureNo = figureNo + 1;
     end
+    slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
+                        tVal(onIntervalBegin:onIntervalEnd));
     slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
                         tVal(onIntervalBegin:onIntervalEnd));
     draw = 0;
@@ -147,6 +147,32 @@ if test2_active == 1
     slopeO = rms(slopeO);
     slopeF = rms(slopeF);
     diff_mf = slopeO/slopeF;
+
+    %Mit dem Window-Kaiser-Methode-entworfenen Filter
+    draw = 0;
+    phase = 2;
+    filterObj = filterWindowKaiser_p10;
+    output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+    if draw == 1
+        figureNo = figureNo + 1;
+    end
+    slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
+                        tVal(onIntervalBegin:onIntervalEnd));
+    slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
+                        tVal(onIntervalBegin:onIntervalEnd));
+    draw = 0;
+    if draw == 1
+        figure(figureNo);
+        hVal = [1:numel(slopeF)];
+        plot(hVal,slopeO,'-',hVal,slopeF,'-');
+        legend('Original','gefilterten-Signal','Location','northeastoutside');
+        figureNo = figureNo + 1;
+    end
+    slopeO = rms(slopeO);
+    slopeF = rms(slopeF);
+    diff_wk = slopeO/slopeF;
+
+    
 end
 
 if test3_active == 1
