@@ -11,7 +11,7 @@ format shortG
 % 1. Versuch: zum Erreichen des Überblick und groben Auswahl der Filter-Methode
 test1_active = 0;
 % 2. Versuch: Zur Untersuchung des Effektes von Filtern 
-test2_active = 1;
+test2_active = 0;
 % 3. Versuch: Zur Untersuchung des Effektes von Filtern im flachen Bereich
 test3_active = 0;
 % 4. Versuch: Zur Untersuchung des Effektes von Filtern im Bereich mit der 
