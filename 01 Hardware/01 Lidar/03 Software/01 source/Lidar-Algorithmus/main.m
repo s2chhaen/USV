@@ -86,6 +86,28 @@ if test3_active == 1
 end
 
 if test4_active == 1
+    midVal = 400;
+    repeatedTimeValMid = 150;%Ton = 2*repeatedTimeValMid
+    tVal = 0:0.5:180;
+    tComp = 90;
+    xVal = midVal*rectpuls(tVal-tComp,repeatedTimeValMid)+1;
+    onIntervalBegin = (180*2-repeatedTimeValMid/0.5)/2 + 1;
+    onIntervalEnd = onIntervalBegin + repeatedTimeValMid/0.5 -1;
+    minRange = -1;
+    maxRange = 1;
+    noise = minRange + (maxRange - minRange).*rand(1,repeatedTimeValMid/0.5);
+    ah = 4;% erlaubte Höhenabweichung
+    noise = ah*noise;
+    xnVal = [xVal(1:onIntervalBegin-1) noise xVal(onIntervalEnd+1:end)];
+    xnVal = xnVal + xVal;
+    draw = 0;
+    figureNo = 1;
+    if draw == 1
+        figure(figureNo);
+        plot(tVal,xVal,'-',tVal,xnVal,'-');
+        figureNo = figureNo + 1;
+        legend('Original','mit Geräusch','Location','northeastoutside');
+    end
 end
 
 
