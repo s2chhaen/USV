@@ -54,8 +54,23 @@ if test4_active == 1
         legend('Original','mit Geräusch','Location','northeastoutside');
     end
 
+    % Mit dem Maximally-Flat-Methode-entworfenen Filter
+    draw = 0;
     phase = 1;
     filterObj = filterMaximallyFlatFIR_p4;
+    output = filterIIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+    if draw == 1
+        figureNo = figureNo + 1;
+    end
+    % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
+    % neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
+    lostedPointBegin = 1;
+    lostedPointEnd = 1;
+    onIntervalBegin = onIntervalBegin + lostedPointBegin;
+    onIntervalEnd = onIntervalEnd - lostedPointEnd;
+    diff_mf = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onIntervalEnd);
+    diff_mf = 20.*log(diff_mf);
+    diff_mf = rms(diff_mf);
     phase = 2;
     filterObj = filterWindowKaiser_p10;
     phase = 2;
