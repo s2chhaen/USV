@@ -71,8 +71,24 @@ if test4_active == 1
     diff_mf = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onIntervalEnd);
     diff_mf = 20.*log(diff_mf);
     diff_mf = rms(diff_mf);
+
+    % Mit dem Window-Kaiser-Methode-entworfenen Filter
+    draw = 0;
     phase = 2;
     filterObj = filterWindowKaiser_p10;
+    output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+    if draw == 1
+        figureNo = figureNo + 1;
+    end
+    % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
+    % neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
+    lostedPointBegin = 1;
+    lostedPointEnd = 2;
+    onIntervalBegin = onIntervalBegin + lostedPointBegin;
+    onIntervalEnd = onIntervalEnd - lostedPointEnd;
+    diff_wk = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onIntervalEnd);
+    diff_wk = 20.*log(diff_wk);
+    diff_wk = rms(diff_wk);
     phase = 2;
     filterObj = filterLeastSquares_p11;
     % Mit dem Equiripple-Methode-entworfenen Filter
