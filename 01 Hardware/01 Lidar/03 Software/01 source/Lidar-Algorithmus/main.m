@@ -125,9 +125,24 @@ if test4_active == 1
     diff_eq = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onIntervalEnd);
     diff_eq = 20.*log(diff_eq);
     diff_eq = rms(diff_eq);
+
     % Mit dem Window-Bartlett-Methode-entworfenen Filter
+    draw = 0;
     phase = 2;
     filterObj = filterWindowBarlett_p2;
+    output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+    if draw == 1
+        figureNo = figureNo + 1;
+    end
+    % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
+    % neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
+    lostedPointBegin = 0;
+    lostedPointEnd = 1;
+    onIntervalBegin = onIntervalBegin + lostedPointBegin;
+    onIntervalEnd = onIntervalEnd - lostedPointEnd;
+    diff_wb = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onIntervalEnd);
+    diff_wb = 20.*log(diff_wb);
+    diff_wb = rms(diff_wb);
     % Mit dem Window-Rectangular-Methode-entworfenen Filter
     phase = 2;
     filterObj = filterWindowRectangular_p3;
