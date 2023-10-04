@@ -19,7 +19,6 @@ test3_active = 0;
 test4_active = 1;
 
 if test1_active == 1
-if test1_active==1
     test1
 end
 
