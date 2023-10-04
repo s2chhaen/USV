@@ -107,9 +107,24 @@ if test4_active == 1
     diff_lsq = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onIntervalEnd);
     diff_lsq = 20.*log(diff_lsq);
     diff_lsq = rms(diff_lsq);
+
     % Mit dem Equiripple-Methode-entworfenen Filter
+    draw = 0;
     phase = 2;
     filterObj = filterEquiripple_p3;
+    output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+    if draw == 1
+        figureNo = figureNo + 1;
+    end
+    % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
+    % neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
+    lostedPointBegin = 1;
+    lostedPointEnd = 2;
+    onIntervalBegin = onIntervalBegin + lostedPointBegin;
+    onIntervalEnd = onIntervalEnd - lostedPointEnd;
+    diff_eq = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onIntervalEnd);
+    diff_eq = 20.*log(diff_eq);
+    diff_eq = rms(diff_eq);
     % Mit dem Window-Bartlett-Methode-entworfenen Filter
     phase = 2;
     filterObj = filterWindowBarlett_p2;
