@@ -161,12 +161,24 @@ if test4_active == 1
     diff_wr = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onIntervalEnd);
     diff_wr = 20.*log(diff_wr);
     diff_wr = rms(diff_wr);
+
     % Mit dem Window-Triangular-Methode-entworfenen Filter
+    draw = 0;
     phase = 2;
     filterObj = filterWindowTriangular_p1;
+    output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
     if draw == 1
         figureNo = figureNo + 1;
     end
+    % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
+    % neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
+    lostedPointBegin = 1;
+    lostedPointEnd = 2;
+    onIntervalBegin = onIntervalBegin + lostedPointBegin;
+    onIntervalEnd = onIntervalEnd - lostedPointEnd;
+    diff_wt = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onIntervalEnd);
+    diff_wt = 20.*log(diff_wt);
+    diff_wt = rms(diff_wt);
 end
 
 
