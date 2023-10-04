@@ -27,29 +27,8 @@ if test2_active == 1
 end
 
 if test3_active == 1
-    repeatedTimeValMid = 150;%Ton = 2*repeatedTimeValMid
-    tVal = 0:0.5:180;
-    tComp = 90;
-    xVal = midVal*rectpuls(tVal-tComp,repeatedTimeValMid)+1;
-    figureNo = 1;
-    phase = 1;
-    filterObj = filterMaximallyFlatFIR_p4;
-    phase = 2;
-    filterObj = filterWindowKaiser_p10;
-    phase = 2;
-    filterObj = filterLeastSquares_p11;
-    % Mit dem Equiripple-Methode-entworfenen Filter
-    phase = 2;
-    filterObj = filterEquiripple_p3;
-    % Mit dem Window-Bartlett-Methode-entworfenen Filter
-    phase = 2;
-    filterObj = filterWindowBarlett_p2;
-    % Mit dem Window-Rectangular-Methode-entworfenen Filter
-    phase = 2;
-    filterObj = filterWindowRectangular_p3;
-    % Mit dem Window-Triangular-Methode-entworfenen Filter
-    phase = 2;
-    filterObj = filterWindowTriangular_p1;
+    test3
+end
 
 if test4_active == 1
     midVal = 400;
@@ -73,6 +52,28 @@ if test4_active == 1
         plot(tVal,xVal,'-',tVal,xnVal,'-');
         figureNo = figureNo + 1;
         legend('Original','mit Geräusch','Location','northeastoutside');
+    end
+
+    phase = 1;
+    filterObj = filterMaximallyFlatFIR_p4;
+    phase = 2;
+    filterObj = filterWindowKaiser_p10;
+    phase = 2;
+    filterObj = filterLeastSquares_p11;
+    % Mit dem Equiripple-Methode-entworfenen Filter
+    phase = 2;
+    filterObj = filterEquiripple_p3;
+    % Mit dem Window-Bartlett-Methode-entworfenen Filter
+    phase = 2;
+    filterObj = filterWindowBarlett_p2;
+    % Mit dem Window-Rectangular-Methode-entworfenen Filter
+    phase = 2;
+    filterObj = filterWindowRectangular_p3;
+    % Mit dem Window-Triangular-Methode-entworfenen Filter
+    phase = 2;
+    filterObj = filterWindowTriangular_p1;
+    if draw == 1
+        figureNo = figureNo + 1;
     end
 end
 
