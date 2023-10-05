@@ -16,7 +16,7 @@ test2_active = 0;
 test3_active = 0;
 % 4. Versuch: Zur Untersuchung des Effektes von Filtern im Bereich mit der 
 % schwächen Wirkung der Störgrößen
-test4_active = 1;
+test4_active = 0;
 
 if test1_active == 1
     test1

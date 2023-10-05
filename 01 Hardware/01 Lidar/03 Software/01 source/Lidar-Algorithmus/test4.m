@@ -30,7 +30,7 @@ if draw == 1
     figureNo = figureNo + 1;
 end
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
 lostedPointEnd = 1;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
@@ -48,7 +48,7 @@ if draw == 1
     figureNo = figureNo + 1;
 end
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
 lostedPointEnd = 2;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
@@ -66,7 +66,7 @@ if draw == 1
     figureNo = figureNo + 1;
 end
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
 lostedPointEnd = 2;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
@@ -84,7 +84,7 @@ if draw == 1
     figureNo = figureNo + 1;
 end
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
 lostedPointEnd = 2;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
@@ -102,7 +102,7 @@ if draw == 1
     figureNo = figureNo + 1;
 end
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
 lostedPointBegin = 0;
 lostedPointEnd = 1;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
@@ -120,7 +120,7 @@ if draw == 1
     figureNo = figureNo + 1;
 end
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
 lostedPointEnd = 2;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
@@ -138,7 +138,7 @@ if draw == 1
     figureNo = figureNo + 1;
 end
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
 lostedPointEnd = 2;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
