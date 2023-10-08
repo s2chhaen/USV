@@ -13,8 +13,8 @@
 #define LIDAR_DEFAULT_ADDR 0x00
 #define ETX_SYMBOL 0x03
 
-//siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30"-S36-37 für mehrere Informationen
-enum lidarCommando{
+//siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30"-S36-37
+enum lidarCmd{
 	INIT_AND_RESET = 0x10,
 	OP_MODE_SEL = 0x20,
 	MEASURED_DATA_REQ = 0x30,
@@ -43,6 +43,5 @@ enum lidarCommando{
 	LIDAR_CONFIG_P2_REQ = 0x7B,//Nur für LMS2xx möglich
 	LIDAR_CONFIG_P2 = 0x7C//Nur für LMS2xx möglich
 };
-
 
 #endif /* LIDARCOMPROTOCOL_H_ */
