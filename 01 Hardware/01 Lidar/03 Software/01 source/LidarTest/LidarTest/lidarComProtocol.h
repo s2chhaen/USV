@@ -12,6 +12,7 @@
 #define STX_SYMBOL 0x02
 #define LIDAR_DEFAULT_ADDR 0x00
 #define ETX_SYMBOL 0x03
+#define REQ_2_ANS_CMD_CONVERT_COEF 0x80
 
 //siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30"-S36-37
 enum lidarCmd{
@@ -44,4 +45,9 @@ enum lidarCmd{
 	LIDAR_CONFIG_P2 = 0x7C//Nur für LMS2xx möglich
 };
 
+//siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30"-S38-39
+enum lidarAns{
+	RESET_ACK = 0x91,
+	NACK_FALSE_CMD = 0x92
+};
 #endif /* LIDARCOMPROTOCOL_H_ */
