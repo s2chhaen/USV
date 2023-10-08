@@ -85,7 +85,7 @@ enum opModeSelAns{
 };
 
 //Datenteil von Antwortprotokoll von MEASURED_DATA_REQ siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30" - S49
-enum measuredDataReqAns{
+enum measuredDataReqAnsBlockA{
 	MEASURED_DATA_REQ_UNIT_CM = (0x00 << 14),
 	MEASURED_DATA_REQ_UNIT_MM = (0x01 << 14),
 	MEASURED_DATA_REQ_ALL = (0x00 << 13),
