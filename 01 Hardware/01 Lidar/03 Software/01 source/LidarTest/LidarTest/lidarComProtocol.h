@@ -77,4 +77,11 @@ enum opModeSelSubcmd{
 	OP_MODE_SEL_GRP_D_DTR_CONF_4 = 0x48,//Gruppe D: DTR = 500kBd
 };
 
+//Datenteil von Antwortprotokoll von OP_MODE_SEL siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30" - S45
+enum opModeSelAns{
+	OP_MODE_SEL_SUCCESS = 0x00,//Moduswechsel erfolgreich
+	OP_MODE_SEL_FALSE_PWD = 0x01,//nicht möglich, da falsches Passwort
+	OP_MODE_SEL_ERROR = 0x02//nicht möglich, da Fehler im Lidar
+};
+
 #endif /* LIDARCOMPROTOCOL_H_ */
