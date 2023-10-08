@@ -9,7 +9,9 @@
 #ifndef LIDARCOMPROTOCOL_H_
 #define LIDARCOMPROTOCOL_H_
 
-
+#define STX_SYMBOL 0x02
+#define LIDAR_DEFAULT_ADDR 0x00
+#define ETX_SYMBOL 0x03
 
 
 
