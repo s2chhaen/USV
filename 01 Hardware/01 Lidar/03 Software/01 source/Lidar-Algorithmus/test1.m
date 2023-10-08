@@ -15,11 +15,23 @@ rSample = transpose(rSample);
 aSample = sample(:,aCol);
 tVal = transpose(aSample);
 
+figureNo = 1;
+draw = 1;
+
+if draw == 1
+    figure(figureNo)
+    plot(tVal,rSample,'-o');
+    legend('Original Daten','Location','northeastoutside');
+    grid on
+    xlabel('Winkel/Grad');
+    ylabel('Radius/cm');
+    figureNo = figureNo + 1;
+end
+
 printInFile('fixed',rSample);
 printInFile('float',rSample);
 
 %IIR mit Maximally Flat Entwurfsmethode
-figureNo = 1;
 draw = 1;
 phase = 1;
 filterObj = filterMaximallyFlatFIR_p4;
