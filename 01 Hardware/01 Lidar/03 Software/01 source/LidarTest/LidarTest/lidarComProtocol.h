@@ -50,4 +50,31 @@ enum lidarAns{
 	RESET_ACK = 0x91,
 	NACK_FALSE_CMD = 0x92
 };
+
+//Subkommandos von OP_MODE_SEL siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30"-S40-44
+enum opModeSelSubcmd{
+	OP_MODE_SEL_GRP_A_SETUP_MODE = 0x00,//Gruppe A: Einrichtmodus
+	OP_MODE_SEL_GRP_A_DIAG_MODE = 0x10,//Gruppe A: Diagnosemodus
+	OP_MODE_SEL_GRP_B_WRKG_MODE_0 = 0x20,//Gruppe B: Arbeitsmodus
+	OP_MODE_SEL_GRP_B_WRKG_MODE_1 = 0x21,
+	OP_MODE_SEL_GRP_B_WRKG_MODE_2 = 0x22,
+	OP_MODE_SEL_GRP_B_WRKG_MODE_3 = 0x23,
+	OP_MODE_SEL_GRP_B_WRKG_MODE_4 = 0x24,
+	OP_MODE_SEL_GRP_B_WRKG_MODE_5 = 0x25,
+	OP_MODE_SEL_GRP_B_WRKG_MODE_6 = 0x26,
+	OP_MODE_SEL_GRP_B_WRKG_MODE_7 = 0x27,
+	OP_MODE_SEL_GRP_B_WRKG_MODE_8 = 0x28,
+	OP_MODE_SEL_GRP_B_WRKG_MODE_9 = 0x29,
+	OP_MODE_SEL_GRP_B_WRKG_MODE_10 = 0x2A,
+	OP_MODE_SEL_GRP_B_WRKG_MODE_11 = 0x2B,
+	OP_MODE_SEL_GRP_B_WRKG_MODE_12 = 0x2C,
+	OP_MODE_SEL_GRP_B_WRKG_MODE_13 = 0x2E,
+	OP_MODE_SEL_GRP_B_WRKG_MODE_14 = 0x50,
+	OP_MODE_SEL_GRP_C_PWD = 0x30,//Gruppe C: Test-Passwort
+	OP_MODE_SEL_GRP_D_DTR_CONF_1 = 0x40,//Gruppe D: Data-Transfer-Rate(DTR)/Datenübertragungsrate = 38,4kBd
+	OP_MODE_SEL_GRP_D_DTR_CONF_2 = 0x41,//Gruppe D: DTR = 19,2kBd
+	OP_MODE_SEL_GRP_D_DTR_CONF_3 = 0x42,//Gruppe D: DTR = 9,6kBd
+	OP_MODE_SEL_GRP_D_DTR_CONF_4 = 0x48,//Gruppe D: DTR = 500kBd
+};
+
 #endif /* LIDARCOMPROTOCOL_H_ */
