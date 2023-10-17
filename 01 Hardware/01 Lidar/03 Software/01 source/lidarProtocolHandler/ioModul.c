@@ -115,6 +115,9 @@ void writeFileInt32(uint8_t* name, uint16_t len, uint8_t format, int32_t* value,
     }
 }
 
+void writeFileInt64(uint8_t* name, uint16_t len, uint8_t format, int64_t* value, uint16_t valLen)
+{
+}
 
 
 
