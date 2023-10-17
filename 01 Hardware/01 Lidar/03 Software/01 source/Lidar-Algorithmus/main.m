@@ -17,6 +17,8 @@ test3_active = 0;
 % 4. Versuch: Zur Untersuchung des Effektes von Filtern im Bereich mit der 
 % schwächen Wirkung der Störgrößen
 test4_active = 0;
+% checken das Program von C
+test5_active = 1;
 
 if test1_active == 1
     test1
@@ -32,6 +34,10 @@ end
 
 if test4_active == 1
     test4
+end
+
+if test5_active == 1
+    test5
 end
 
 
