@@ -117,6 +117,42 @@ void writeFileInt32(uint8_t* name, uint16_t len, uint8_t format, int32_t* value,
 
 void writeFileInt64(uint8_t* name, uint16_t len, uint8_t format, int64_t* value, uint16_t valLen)
 {
+    //TODO Fehlertrennung
+    FILE *input;
+    char path[BUFFER_MAX_LENGTH] = {0};
+    uint16_t pathLen = 0;
+    memcpy(path,name,len-1);
+    pathLen = len-1;
+    //TODO Fehlertrennung
+    switch(format)
+    {
+    case TEXT_FORM:
+        memcpy(&path[pathLen],".txt",sizeof(".txt"));
+        pathLen += sizeof(".txt");
+        break;
+    case CSV_FORM:
+        memcpy(&path[pathLen],".csv",sizeof(".txt"));
+        pathLen += sizeof(".txt");
+        break;
+    default:
+        break;
+    }
+    input = fopen(path,"w+");
+    if(input!=NULL)
+    {
+        for(int i = 0; i<valLen ; i++)
+        {
+            fprintf(input,"%I64d\n",value[i]);
+        }
+    }
+    else
+    {
+        printf("Fehler beim Schreiben von Daten\n");
+    }
+    if(fclose(input))
+    {
+        printf("Fehler beim Schliessen von Daten\n");
+    }
 }
 
 
