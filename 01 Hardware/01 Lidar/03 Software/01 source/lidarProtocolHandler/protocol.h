@@ -5,7 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <string.h>
 #include "lib/crcCalculator.h"
+#include "lib/asciiTable.h"
 
 #define ADDR_DEFAULT 0
 #define MAX_DATA_LIDAR 361
