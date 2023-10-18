@@ -11,4 +11,11 @@
 #define MAX_DATA_LIDAR 361
 #define DEFAULT_CRC16_POLYNOM 0x8005
 
+enum reqProtocolHeader{
+    REQ_START_BYTE,
+    REQ_ADDR_BYTE,
+    REQ_LENGTH_L_BYTE,
+    REQ_LENGTH_H_BYTE,
+    REQ_CMD_BYTE
+};
 #endif // PROTOCOL_H_INCLUDED
