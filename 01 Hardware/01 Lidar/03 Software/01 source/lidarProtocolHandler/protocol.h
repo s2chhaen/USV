@@ -27,4 +27,8 @@ enum rspProtocolHeader{
     RSP_LENGTH_H_BYTE,
     RSP_CMD_BYTE
 };
+#define WORD 2U
+#define DWORD 4U
+#define BYTE 1U
+#define CHAR 1U
 #endif // PROTOCOL_H_INCLUDED
