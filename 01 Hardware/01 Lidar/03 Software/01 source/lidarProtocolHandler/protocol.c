@@ -2,6 +2,106 @@
 static uint16_t buffer[MAX_DATA_LIDAR] = {0};
 //Kommando 0x30-0x01 und 0x36
 uint8_t checkData(uint8_t* data, uint16_t dataLen){
+    uint16_t idx = 0;
+
+    uint16_t data2buffer = 0;
+    printf("Daten vom Lidar ohne Filterung \n");
+    printf("------------------------------------------------------------------\n");
+    printf("Byte %d = 0x%02X\n",idx,data[idx]);
+    uint8_t checkACK = data[idx] == ASCII_ACK_CHAR; //OK
+    printf("ACK = %s\n", checkACK?"true":"false");
+    printf("-----\n");
+    idx++;
+    //Start
+    uint8_t checkSTX = data[idx] == ASCII_STX_CHAR; //OK
+    printf("Byte %d = 0x%02X\n",idx,data[idx]);
+    printf("Start bit = %s\n", checkSTX?"true":"false");
+    printf("-----\n");
+    idx++;
+    //Addr
+    printf("Byte %d = 0x%02X\n",idx,data[idx]);
+    uint8_t checkAddr = data[idx] == (ADDR_DEFAULT+0x80); //OK
+    printf("Addr = %s\n", checkAddr?"true":"false");
+    printf("-----\n");
+    idx++;
+    //Protocol Length
+    printf("Byte %d and %d = 0x%02X 0x%02X\n",idx,idx+1,data[idx],data[idx+1]);
+    uint16_t cmdAndDataLen = (data[idx]<<0)|(data[idx+1]<<8);
+    printf("Length of Command + Data = %d\n", cmdAndDataLen);
+    printf("-----\n");
+    idx += 2;
+    //command
+    printf("Byte %d = 0x%02X\n",idx,data[idx]);
+    uint8_t cmd = data[idx] - 0x80;
+    printf("Command = 0x%02X\n", cmd);
+    printf("-----\n");
+    idx++;
+    //data-informations
+    //Block A
+#define PROTOCOL_C_SEG_1
+#ifdef PROTOCOL_C_SEG_1
+    printf("Byte %d and %d = 0x%02X 0x%02X\n",idx,idx+1,data[idx],data[idx+1]);
+    printf("Datenkonfiguration: \n\n");
+    uint16_t blockA = (data[idx])|(data[idx+1]<<8);
+    uint8_t dataUnit = (uint8_t)((blockA & (UNIT_BIT_BM))>>14);
+    printf("Einheit = %s \n",(!dataUnit)?"cm":"mm");
+    uint8_t scanType = (uint8_t)((blockA & (SCAN_TYPE_BM))>>13);
+    printf("Scan-Typ = %s \n",(!scanType)?"komplett":"Teilscan");
+    uint8_t scanRes = (uint8_t)((blockA & (PARTIAL_SCAN_RES_BM))>>11);
+    uint8_t str[10] ={0};
+    if(scanRes==0b00){
+        memcpy(str,"x.00Grad",sizeof("x.00Grad")/sizeof(uint8_t));
+    } else if(scanRes==0b01){
+        memcpy(str,"x.25Grad",sizeof("x.25Grad")/sizeof(uint8_t));
+    } else if(scanRes==0b10){
+        memcpy(str,"x.50Grad",sizeof("x.50Grad")/sizeof(uint8_t));
+    } else if(scanRes==0b11){
+        memcpy(str,"x.75Grad",sizeof("x.75Grad")/sizeof(uint8_t));
+    } else{
+        memcpy(str,"Error",sizeof("x.75Grad")/sizeof(uint8_t));
+    }
+    printf("Messwerte gehoert zum Teilscan = %s \n",str);
+    uint16_t mValLen = blockA & VAL_NO_BM;
+    printf("Laenge von Daten = %d \n",mValLen);
+    printf("-----\n");
+    idx += 2;
+#endif // PROTOCOL_C_SEG_1
+
+#ifdef PROTOCOL_C_SEG_2
+    uint16_t mValLen = 722/2;
+    printf("Anzahl der Mittelungen = %d\n",data[idx]);
+    idx++;
+    uint16_t config = data[idx] & (data[idx+1]<<8);
+    printf("Einheit = %s\n",(config & (0x03<<14))?"mm":"cm");
+    idx += 2;
+#endif // PROTOCOL_C_SEG_1
+    //Data
+    printf("Byte %d\n",idx);
+    printf("Datenbereich: \n\n");
+    //const float incrStep = 0.50f;
+    for(int i = 0; i < mValLen; i++){
+        //printf("Byte %d and %d = 0x%02X 0x%02X\n",idx,idx+1,data[idx],data[idx+1]);
+        data2buffer = (data[idx+1]<<8) | (data[idx]);
+        data2buffer &= 0x1FFF;
+        //printf("Wert[%.2lf] = %d cm \n",0.50f*i,data2buffer);
+        idx+=2;
+    }
+    printf("-----\n");
+
+    printf("Byte %d = 0x%02X\n",idx,data[idx]);
+    printf("LMS Status = 0x%02X \n",data[idx]);
+    printf("-----\n");
+    idx++;
+    //checksum-16-Bits
+    printf("Byte %d and %d = 0x%02X 0x%02X\n",idx,idx+1,data[idx],data[idx+1]);
+    uint16_t crcCal = crc16(&(data[1]),dataLen-3,DEFAULT_CRC16_POLYNOM);
+    uint16_t crcProtocol = (data[idx]) | (data[idx+1]<<8);
+    printf("checksum = %s\n", (crcCal == crcProtocol)?"true":"false");
+    printf("-----\n");
+    idx+=2;
+    printf("dataLen = %d \n",idx);
+    printf("------------------------------------------------------------------\n");
+    return checkACK && checkSTX && checkAddr && (crcCal == crcProtocol);
 }
 
 
