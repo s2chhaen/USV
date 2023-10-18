@@ -8,6 +8,8 @@
 
 int main()
 {
+    uint8_t data[1024] = {0};
+    uint16_t dataLen = sizeof(data)/sizeof(uint8_t);
     printf("Hello world!\n");
     return 0;
 }
