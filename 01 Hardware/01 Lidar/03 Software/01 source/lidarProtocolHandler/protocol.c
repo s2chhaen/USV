@@ -18,6 +18,19 @@ void getExtractedData(int32_t* data, uint16_t* dataLen){
 
  //Kommando-10h-Req - OK
 void hwdInitAndResetReq(uint8_t* protocol, uint16_t* len){
+    const uint16_t kernelLen = 0x01;
+    uint16_t crc16Part = 0;
+    if((*len) >= 7){
+        *len = 7;
+        protocol[REQ_START_BYTE] = ASCII_STX_CHAR;
+        protocol[REQ_ADDR_BYTE] = ADDR_DEFAULT;
+        protocol[REQ_LENGTH_L_BYTE] = kernelLen & 0xff;
+        protocol[REQ_LENGTH_H_BYTE] = kernelLen >> 8;
+        protocol[REQ_CMD_BYTE] = 0x10;
+        crc16Part = crc16(protocol,5,DEFAULT_CRC16_POLYNOM);
+        protocol[REQ_CMD_BYTE+1] = crc16Part & 0xff;//CRC16-Low
+        protocol[REQ_CMD_BYTE+2] = crc16Part >> 8;//CRC16-High
+    }
 }
 
 //Kommando 0x30-0x01 und 0x36
