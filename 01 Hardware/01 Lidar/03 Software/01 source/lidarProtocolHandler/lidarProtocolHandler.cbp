@@ -30,10 +30,34 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add directory="../../../../../../../Program Files/MATLAB/R2023a/extern/include" />
 		</Compiler>
+		<Linker>
+			<Add directory="../../../../../../../Program Files/MATLAB/R2023a/extern/include" />
+		</Linker>
+		<Unit filename="FilterCoefs/wr_dFormFilterCof.h" />
+		<Unit filename="FilterCoefs/wr_qFormFilterCof.h" />
+		<Unit filename="filterConfig.h" />
+		<Unit filename="filter_FIR.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="filter_FIR.h" />
+		<Unit filename="ioModul.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ioModul.h" />
+		<Unit filename="lib/asciiTable.h" />
+		<Unit filename="lib/crcCalculator.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/crcCalculator.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="protocol.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="protocol.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
