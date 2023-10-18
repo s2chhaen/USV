@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <string.h>
 
+
 #define PTR_LEN_BYTES 10
 #define BUFFER_MAX_LENGTH (1<<PTR_LEN_BYTES)
 
