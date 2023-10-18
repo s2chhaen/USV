@@ -93,4 +93,5 @@ enum rspProtocolHeader{
 #define CONFIG_BLK_C7 WORD
 #define CONFIG_STATUS_LMS 1U
 
+extern void checkConfig(uint8_t* data, uint16_t dataLen);
 #endif // PROTOCOL_H_INCLUDED
