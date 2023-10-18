@@ -97,4 +97,6 @@ extern uint8_t checkData(uint8_t* data, uint16_t dataLen);
 extern void getExtractedData(int32_t* data, uint16_t* dataLen);
 extern void checkConfig(uint8_t* data, uint16_t dataLen);
 extern void hwdInitAndResetReq(uint8_t* protocol, uint16_t* len);
+extern void hwdInitAndResetRsp(uint8_t* data, uint16_t dataLen);
+
 #endif // PROTOCOL_H_INCLUDED

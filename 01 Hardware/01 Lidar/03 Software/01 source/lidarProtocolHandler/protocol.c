@@ -33,6 +33,10 @@ void hwdInitAndResetReq(uint8_t* protocol, uint16_t* len){
     }
 }
 
+ //Komando-10h-Rsp - OK
+void hwdInitAndResetRsp(uint8_t* data, uint16_t dataLen){
+}
+
 //Kommando 0x30-0x01 und 0x36
 uint8_t checkData(uint8_t* data, uint16_t dataLen){
     uint16_t idx = 0;
