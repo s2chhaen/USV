@@ -1,5 +1,7 @@
 #include "protocol.h"
+
 static uint16_t buffer[MAX_DATA_LIDAR] = {0};
+
 static inline void dataExtract(uint16_t data, uint16_t idx){
     buffer[idx%MAX_DATA_LIDAR] = data;
 }
@@ -16,6 +18,9 @@ void getExtractedData(int32_t* data, uint16_t* dataLen){
     }
 }
 
+/**
+ * Anforderungsprotokoll-Generator
+ */
  //Kommando-10h-Req - OK
 void hwdInitAndResetReq(uint8_t* protocol, uint16_t* len){
     const uint16_t kernelLen = 0x01;
@@ -33,6 +38,9 @@ void hwdInitAndResetReq(uint8_t* protocol, uint16_t* len){
     }
 }
 
+/**
+ * Datenverarbeitung aus Antwortprotokoll
+ */
  //Komando-10h-Rsp - OK
 void hwdInitAndResetRsp(uint8_t* data, uint16_t dataLen){
     const uint16_t kernelLen = 0x17;
