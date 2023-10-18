@@ -18,4 +18,13 @@ enum reqProtocolHeader{
     REQ_LENGTH_H_BYTE,
     REQ_CMD_BYTE
 };
+
+enum rspProtocolHeader{
+    RSP_TX_RSL_BYTE,
+    RSP_START_BYTE,
+    RSP_ADDR_BYTE,
+    RSP_LENGTH_L_BYTE,
+    RSP_LENGTH_H_BYTE,
+    RSP_CMD_BYTE
+};
 #endif // PROTOCOL_H_INCLUDED
