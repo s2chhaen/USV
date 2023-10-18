@@ -94,5 +94,6 @@ enum rspProtocolHeader{
 #define CONFIG_STATUS_LMS 1U
 
 extern uint8_t checkData(uint8_t* data, uint16_t dataLen);
+extern void getExtractedData(int32_t* data, uint16_t* dataLen);
 extern void checkConfig(uint8_t* data, uint16_t dataLen);
 #endif // PROTOCOL_H_INCLUDED
