@@ -1,5 +1,8 @@
 #include "protocol.h"
 static uint16_t buffer[MAX_DATA_LIDAR] = {0};
+static inline void dataExtract(uint16_t data, uint16_t idx){
+    buffer[idx%MAX_DATA_LIDAR] = data;
+}
 //Kommando 0x30-0x01 und 0x36
 uint8_t checkData(uint8_t* data, uint16_t dataLen){
     uint16_t idx = 0;
