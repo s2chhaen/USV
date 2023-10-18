@@ -35,6 +35,32 @@ void hwdInitAndResetReq(uint8_t* protocol, uint16_t* len){
 
  //Komando-10h-Rsp - OK
 void hwdInitAndResetRsp(uint8_t* data, uint16_t dataLen){
+    const uint16_t kernelLen = 0x17;
+    uint8_t idx = RSP_CMD_BYTE;
+    uint8_t dataCheck = 0;
+    uint8_t crc16Check = crc16(&data[RSP_CMD_BYTE],kernelLen,DEFAULT_CRC16_POLYNOM);
+    //Header checken
+    printf("ACK-BYTE-checken = %s \n",(data[RSP_TX_RSL_BYTE]==ASCII_ACK_CHAR)?"true":"false");
+    printf("START-BYTE-checken = %s \n",(data[RSP_START_BYTE]==ASCII_STX_CHAR)?"true":"false");
+    printf("ADDR-BYTE-checken = %s \n",(data[RSP_ADDR_BYTE]==ASCII_STX_CHAR)?"true":"false");
+    printf("LENGTH-LOW-BYTE-checken = %s \n",(data[RSP_LENGTH_L_BYTE]==(kernelLen&0xff))?"true":"false");
+    printf("LENGTH-HIGH-BYTE-checken = %s \n",(data[RSP_LENGTH_H_BYTE]==(kernelLen>>8))?"true":"false");
+    printf("CMD-BYTE-checken = %s \n",(data[RSP_CMD_BYTE]==(0x10+0x80))?"true":"false");
+    idx++;
+    //Data checken
+    dataCheck = (data[idx++] == 0x4C) && (data[idx++] == 0x4D) && \
+                (data[idx++] == 0x53) && (data[idx++] == 0x32) && \
+                (data[idx++] == 0x30) && (data[idx++] == 0x30) && \
+                (data[idx++] == 0x3B) && (data[idx++] == 0x33) && \
+                (data[idx++] == 0x30) && (data[idx++] == 0x31) && \
+                (data[idx++] == 0x30) && (data[idx++] == 0x36) && \
+                (data[idx++] == 0x33) && (data[idx++] == 0x3B) && \
+                (data[idx++] == 0x56) && (data[idx++] == 0x30) && \
+                (data[idx++] == 0x32) && (data[idx++] == 0x2E) && \
+                (data[idx++] == 0x31) && (data[idx++] == 0x30) && \
+                (data[idx++] == 0x20) && (data[idx++] == 0x10);
+    printf("Daten-Check = %s",dataCheck?"true":"false");
+    printf("Checksum-Check = %s",crc16Check?"true":"false");
 }
 
 //Kommando 0x30-0x01 und 0x36
