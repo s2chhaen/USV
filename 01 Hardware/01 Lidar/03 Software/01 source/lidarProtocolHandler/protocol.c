@@ -1,5 +1,10 @@
 #include "protocol.h"
 static uint16_t buffer[MAX_DATA_LIDAR] = {0};
+//Kommando 0x30-0x01 und 0x36
+uint8_t checkData(uint8_t* data, uint16_t dataLen){
+}
+
+
 //Vom Beginn zu Ende
 //Kommando 02 00 01 00 31 15 12 => 31h
 void checkConfig(uint8_t* data, uint16_t dataLen){
