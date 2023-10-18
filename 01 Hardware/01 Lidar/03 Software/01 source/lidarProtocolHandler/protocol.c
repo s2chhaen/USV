@@ -86,6 +86,7 @@ uint8_t checkData(uint8_t* data, uint16_t dataLen){
         //printf("Byte %d and %d = 0x%02X 0x%02X\n",idx,idx+1,data[idx],data[idx+1]);
         data2buffer = (data[idx+1]<<8) | (data[idx]);
         data2buffer &= 0x1FFF;
+        dataExtract(data2buffer,i);
         //printf("Wert[%.2lf] = %d cm \n",0.50f*i,data2buffer);
         idx+=2;
     }
