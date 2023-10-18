@@ -31,4 +31,5 @@ enum rspProtocolHeader{
 #define DWORD 4U
 #define BYTE 1U
 #define CHAR 1U
+#define OFFSET_BYTES 6
 #endif // PROTOCOL_H_INCLUDED
