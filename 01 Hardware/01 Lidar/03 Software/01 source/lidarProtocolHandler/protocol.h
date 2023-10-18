@@ -11,6 +11,13 @@
 #define MAX_DATA_LIDAR 361
 #define DEFAULT_CRC16_POLYNOM 0x8005
 
+enum cmd30hBlockAComp_bm{
+    UNIT_BIT_BM = (0x03<<14),
+    SCAN_TYPE_BM = (0x01<<13),//Standard or Interlace
+    PARTIAL_SCAN_RES_BM = (0x03<<11),
+    VAL_NO_BM = (0x3FF<<0)
+};
+
 enum reqProtocolHeader{
     REQ_START_BYTE,
     REQ_ADDR_BYTE,
