@@ -3,6 +3,19 @@ static uint16_t buffer[MAX_DATA_LIDAR] = {0};
 static inline void dataExtract(uint16_t data, uint16_t idx){
     buffer[idx%MAX_DATA_LIDAR] = data;
 }
+
+void getExtractedData(int32_t* data, uint16_t* dataLen){
+    if((*dataLen)>=MAX_DATA_LIDAR){
+        *dataLen = MAX_DATA_LIDAR;
+        //memcpy((uint16_t*)data,buffer,MAX_DATA_LIDAR*sizeof(uint16_t));
+        for(int i = 0; i< MAX_DATA_LIDAR; i++){
+            data[i] = (int32_t)buffer[i];
+            //printf("Bereich = %.2f Grad \n",0.50*i);
+            //printf("Wert[%.2lf] = %d cm \n",0.50*i,data[i]);
+        }
+    }
+}
+
 //Kommando 0x30-0x01 und 0x36
 uint8_t checkData(uint8_t* data, uint16_t dataLen){
     uint16_t idx = 0;
