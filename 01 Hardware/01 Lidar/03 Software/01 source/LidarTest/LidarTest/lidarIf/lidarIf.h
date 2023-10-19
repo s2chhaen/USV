@@ -9,7 +9,10 @@
 #ifndef LIDARIF_H_
 #define LIDARIF_H_
 
-
+#include <stdint.h>
+#include <string.h>
+#include "asciiTable.h"
+#include "../Math/checksum.h"
 
 
 
