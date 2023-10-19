@@ -14,6 +14,8 @@
 #include "asciiTable.h"
 #include "../Math/checksum.h"
 
+#define LMS2XX 6
+#define DEFAULT_VERSION ((1<<8)|(10<<0));
 
 
 #endif /* LIDARIF_H_ */
