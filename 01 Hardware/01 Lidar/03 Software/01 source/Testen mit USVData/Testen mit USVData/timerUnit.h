@@ -13,12 +13,15 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <util/atomic.h>
 #include "./ATMegaXX09/ATMegaXX09Clock.h"
 #include "ATMegaXX09/USART/USART.h"
 #include "Math/MinMax.h"
 #include "errorList.h"
 
 #define NO_OF_SUBTIMER 10
+
+//TODO Refaktorisierung im Prozess
 
 typedef struct  
 {
