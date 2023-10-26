@@ -1,13 +1,13 @@
 /*
- * userUnit.c
+ * comUnit.c
  *
  * Created: 7/10/2023 4:59:46 AM
  * Author: Thach
- * Version: 1.1
- * Revision: 1.0
+ * Version: 1.0
+ * Revision: 1.1
  */ 
 
-#include "userUnit.h"
+#include "comUnit.h"
 
 //Objektivierung der User-Unit-Gerät
 userUnit_t uu = {
