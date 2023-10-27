@@ -91,6 +91,11 @@ uint8_t timerInit(uint8_t rezConfig){
 }
 
 void timer_setState(uint8_t state){
+	if (state){
+		TCA0.SINGLE.CTRLA |= TCA_SINGLE_ENABLE_bm;
+		} else{
+		TCA0.SINGLE.CTRLA &= ~TCA_SINGLE_ENABLE_bm;
+	}
 }
 /**
  * \brief Verzögerung der Programmausführung in einem bestimmten Zeitraum
