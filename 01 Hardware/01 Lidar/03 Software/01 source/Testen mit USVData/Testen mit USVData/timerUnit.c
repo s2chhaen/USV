@@ -9,11 +9,7 @@
 
 #include "timerUnit.h"
 
-//Zuweisung der Zähler/Timer Typ A von Mikrocontroller zur Verwaltungsobjekt des Moduls
-volatile timer_t objTCA ={
-	.adr=&(TCA0),
-	.resolutionUs=1
-};
+volatile timerStatus_t timer_status = { .init = 0, .rez = REZ_MS};
 
 volatile tickGenerator counter[NO_OF_SUBTIMER];
 
