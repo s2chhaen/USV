@@ -12,48 +12,6 @@
 volatile timerStatus_t timer_status = { .init = 0, .rez = REZ_MS};
 volatile uint16_t timer_counter[REZ_MODE_NO] = {0};
 
-/**
- * \brief Wiederherstellung aller Zähler
- * 
- * 
- * \return void
- */
-static void resetAllGenerator(){
-	for (uint8_t i = 0; i<NO_OF_SUBTIMER;i++)
-	{
-		counter[i].value = 0;
-		counter[i].lock = 0;
-	}
-}
-
-/**
- * \brief Suche eines freien Zähler im Array
- * 
- * 
- * \return int8_t der erste freie Zähler im Array, -1: keine gefunden
- */
-static int8_t searchFreeGenerator(){
-	int result = -1;
-	for (uint8_t i = 0;i<NO_OF_SUBTIMER;i++){
-		if(!counter[i].lock){
-			result = i;
-			break;
-		}
-	}
-	return result;
-}
-
-/**
- * \brief Befreiung eines gesperrten Zählers
- * 
- * \param i die Position des Zählers im Array
- * 
- * \return void
- */
-static inline void unlockGenerator(uint8_t i){
-	counter[i].lock = 0;
-}
-
 uint8_t timerInit(uint8_t rezConfig){
 	uint8_t result = NO_ERROR;
 	uint8_t config = 0x00;
