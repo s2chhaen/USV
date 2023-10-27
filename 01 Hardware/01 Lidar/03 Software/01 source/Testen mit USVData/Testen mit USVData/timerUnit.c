@@ -104,6 +104,11 @@ void timer_setCounter(uint16_t value){
 		TCA0.SINGLE.CNT = 0;
 	}
 }
+
+const uint16_t* timer_getCounter(){
+	return (const uint16_t*)&(timer_counter[timer_status.rez]);
+}
+
 /**
  * \brief Verzögerung der Programmausführung in einem bestimmten Zeitraum
  * 
