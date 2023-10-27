@@ -10,8 +10,7 @@
 #include "timerUnit.h"
 
 volatile timerStatus_t timer_status = { .init = 0, .rez = REZ_MS};
-
-volatile tickGenerator counter[NO_OF_SUBTIMER];
+volatile uint16_t timer_counter[REZ_MODE_NO] = {0};
 
 /**
  * \brief Wiederherstellung aller Zähler
