@@ -20,6 +20,7 @@
 #include "errorList.h"
 
 #define NO_OF_SUBTIMER 10
+#define REZ_MODE_NO 3
 
 //TODO Refaktorisierung im Prozess
 
