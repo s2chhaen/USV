@@ -29,6 +29,12 @@ enum timerResolution{
 	REZ_S
 };
 
+typedef struct{
+	uint8_t init:1;
+	uint8_t rez:2;
+	uint8_t state:1;
+}timerStatus_t;
+
 typedef struct  
 {
 	uint32_t value:31;
