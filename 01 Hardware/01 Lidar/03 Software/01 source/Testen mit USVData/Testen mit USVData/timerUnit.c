@@ -133,17 +133,14 @@ uint8_t timerInit(uint8_t rezConfig){
  * 
  * \return void
  */
-void waitUs(uint32_t us){
-	int8_t i = 0;
-	i = searchFreeGenerator();//suchen die freie Stopuhr
-	//Falls gefunden, macht weiter sonst gibt Fehler zurueck
-	if (i!=-1){
-		objTCA.adr->SINGLE.INTCTRL &= ~(1<<0);//Vorlaeufig deaktiviert wird Overflow-Interrupt
-		counter[i].lock = 1;
-		counter[i].value = us/objTCA.resolutionUs + (us%objTCA.resolutionUs)?1:0;
-		objTCA.adr->SINGLE.INTCTRL |= (1<<0);//Overflow-Interrupt wird wieder aktiviert 
-		while (counter[i].value);
+extern void timer_stopWatch(uint16_t val){
+	uint8_t mode = timer_status.rez;
+	ATOMIC_BLOCK(ATOMIC_FORCEON){
+		timer_status.state = 1;
+		timer_counter[mode] = val;
+		TCA0.SINGLE.CNT = 0;
 	}
+	while (timer_counter[mode]);
 }
 
 /**
