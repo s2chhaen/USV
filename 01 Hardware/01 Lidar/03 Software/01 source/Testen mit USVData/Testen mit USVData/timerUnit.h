@@ -21,6 +21,8 @@
 
 #define NO_OF_SUBTIMER 10
 #define REZ_MODE_NO 3
+#define CONVERT_FACTOR_S_2_MS 1000UL
+#define CONVERT_FACTOR_S_2_US 1000000UL
 
 //TODO Refaktorisierung im Prozess
 
