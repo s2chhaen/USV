@@ -144,15 +144,13 @@ void waitCycle(uint32_t cycle){
  *  bis zum 0.
  */
 ISR(TCA0_OVF_vect){
-	uint8_t loopMax = NO_OF_SUBTIMER;
-	for (int i = 0; i<loopMax;i++){
-		if (counter[i].lock){
-				counter[i].value--;
-		}
-		if (!counter[i].value){
-			unlockGenerator(i);
+	if (timer_status.state){
+		uint8_t temp = timer_status.rez;
+		timer_counter[temp]--;
+		if (timer_counter[temp]){
+			timer_status.state = 0;
 		}
 	}
-	objTCA.adr->SINGLE.INTFLAGS |=  TCA_SINGLE_OVF_bm;//Loeschen von Interrupt-Flag
+	TCA0.SINGLE.INTFLAGS |=  TCA_SINGLE_OVF_bm;//Loeschen von Interrupt-Flag
 }
 
