@@ -56,73 +56,37 @@ static inline void unlockGenerator(uint8_t i){
 
 uint8_t timerInit(uint8_t rezConfig){
 	uint8_t result = NO_ERROR;
-	objTCA.adr->SINGLE.INTCTRL &= ~(1<<0);//Vorlaeufig deaktiviert wird Overflow-Interrupt
-	resetAllGenerator();
-	if (prescaler==0)
-	{
-		prescaler = 1;
-	} else if ((prescaler>2)&&(prescaler<4))
-	{
-		prescaler = 4;
-	} else if ((prescaler>4)&&(prescaler<8))
-	{
-		prescaler = 8;
-	} else if ((prescaler>8)&&(prescaler<16))
-	{
-		prescaler = 16;
-	} else if ((prescaler>16)&&(prescaler<64))
-	{
-		prescaler = 64;
-	} else if ((prescaler>64)&&(prescaler<256))
-	{
-		prescaler = 256;
-	} else if ((prescaler>256)&&(prescaler<1024))
-	{
-		prescaler = 1024;
-	} else{
-		prescaler = 1024;
-	}
-	TCA0_CTRLA_t configCTRLA;
-	switch(prescaler){
-		case 1:
-			configCTRLA.valueBitField.CLKSEL = DIV1;
+	uint8_t config = 0x00;
+	uint32_t prescalerWConvertFactor = 1;
+	TCA0.SINGLE.INTCTRL &= ~TCA_SINGLE_OVF_bm;//Vorlaeufig deaktiviert wird Overflow-Interrupt
+	TCA0.SINGLE.CTRLA &= ~TCA_SINGLE_ENABLE_bm;//Ausschalten vor der Einstellung
+	switch(rezConfig){
+		case REZ_S:
+			config |= TCA_SINGLE_CLKSEL_DIV1024_gc;
+			prescalerWConvertFactor = 1024;
 			break;
-		case 2:
-			configCTRLA.valueBitField.CLKSEL = DIV2;
+		case REZ_MS:
+			config |= TCA_SINGLE_CLKSEL_DIV1_gc;
+			prescalerWConvertFactor = CONVERT_FACTOR_S_2_MS;
 			break;
-		case 4:
-			configCTRLA.valueBitField.CLKSEL = DIV4;
-			break;
-		case 8:
-			configCTRLA.valueBitField.CLKSEL = DIV8;
-			break;
-		case 16:
-			configCTRLA.valueBitField.CLKSEL = DIV16;
-			break;
-		case 64:
-			configCTRLA.valueBitField.CLKSEL = DIV64;
-			break;
-		case 256:
-			configCTRLA.valueBitField.CLKSEL = DIV256;
-			break;
-		case 1024:
-			configCTRLA.valueBitField.CLKSEL = DIV1024;
+		case REZ_US:
+			config |= TCA_SINGLE_CLKSEL_DIV1_gc;
+			prescalerWConvertFactor = CONVERT_FACTOR_S_2_US;
 			break;
 		default:
-			configCTRLA.valueBitField.CLKSEL = DIV1;
+			result = PROCESS_FAIL;
 			break;
 	}
-	configCTRLA.valueBitField.ENABLE = 1;
-	TCA0_INTCTRL_t configINTCTRL = {.valueBitField.OVF=1};
-	objTCA.resolutionUs = resolutionUs;
-	//Berechnung des Wertes fuer PER
-	uint16_t value = (uint16_t)((CLK_CPU/prescaler)*(resolutionUs));
-	uint16_t compensation = (CLK_CPU%prescaler)?1:0;
-	objTCA.adr->SINGLE.PER = (value+compensation);
-	objTCA.initStatus = 1;
-	//immer am Ende
-	objTCA.adr->SINGLE.CTRLA = configCTRLA.value;
-	objTCA.adr->SINGLE.INTCTRL = configINTCTRL.value;//Overflow-Interrupt wird wieder aktiviert 
+	
+	if (result==NO_ERROR){
+		timer_status.rez = rezConfig;
+		timer_status.init = 1;
+		TCA0.SINGLE.PER = (uint16_t)(CLK_CPU/prescalerWConvertFactor);
+		TCA0.SINGLE.INTCTRL |= TCA_SINGLE_OVF_bm;//Aktivieren des OVF - Interrupt
+		TCA0.SINGLE.CTRLA = config;//Einschalten des TCA0 immer am Ende
+	} else{
+		timer_status.init = 0;
+	}
 	return result;
 }
 
