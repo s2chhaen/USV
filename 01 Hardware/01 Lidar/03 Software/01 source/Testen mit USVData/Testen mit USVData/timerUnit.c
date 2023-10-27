@@ -98,6 +98,11 @@ void timer_setState(uint8_t state){
 	}
 }
 void timer_setCounter(uint16_t value){
+	ATOMIC_BLOCK(ATOMIC_FORCEON){
+		timer_status.state = 1;
+		timer_counter[timer_status.rez] = value;
+		TCA0.SINGLE.CNT = 0;
+	}
 }
 /**
  * \brief Verzögerung der Programmausführung in einem bestimmten Zeitraum
