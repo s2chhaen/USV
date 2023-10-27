@@ -113,6 +113,7 @@ enum prescaler{
 
 extern uint8_t timerInit(uint8_t rezConfig);
 extern void timer_setState(uint8_t state);
+extern void timer_setCounter(uint16_t value);
 extern void timer_stopWatch(uint16_t val);
 extern void waitCycle(uint32_t cycle);
 

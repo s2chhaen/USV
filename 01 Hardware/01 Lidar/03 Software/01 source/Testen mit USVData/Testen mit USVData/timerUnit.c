@@ -97,6 +97,8 @@ void timer_setState(uint8_t state){
 		TCA0.SINGLE.CTRLA &= ~TCA_SINGLE_ENABLE_bm;
 	}
 }
+void timer_setCounter(uint16_t value){
+}
 /**
  * \brief Verzögerung der Programmausführung in einem bestimmten Zeitraum
  * 
