@@ -41,11 +41,6 @@ typedef struct
 	uint8_t lock:1;
 }tickGenerator;
 
-typedef struct{
-	TCA_t *adr;
-	uint8_t initStatus:1;
-	uint8_t resolutionUs;
-}timer_t;
 
 typedef union{
 	uint8_t value;
