@@ -90,6 +90,8 @@ uint8_t timerInit(uint8_t rezConfig){
 	return result;
 }
 
+void timer_setState(uint8_t state){
+}
 /**
  * \brief Verzögerung der Programmausführung in einem bestimmten Zeitraum
  * 
