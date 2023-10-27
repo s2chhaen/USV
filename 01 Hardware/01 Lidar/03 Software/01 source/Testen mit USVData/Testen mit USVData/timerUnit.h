@@ -23,6 +23,12 @@
 
 //TODO Refaktorisierung im Prozess
 
+enum timerResolution{
+	REZ_US,
+	REZ_MS,
+	REZ_S
+};
+
 typedef struct  
 {
 	uint32_t value:31;
@@ -101,7 +107,7 @@ enum prescaler{
 	DIV1024 = 0x07
 };
 
-extern void timerInit(uint8_t resolutionUs, uint16_t prescaler);
+extern uint8_t timerInit(uint8_t rezConfig);
 extern void waitUs(uint32_t us);
 extern void waitCycle(uint32_t cycle);
 

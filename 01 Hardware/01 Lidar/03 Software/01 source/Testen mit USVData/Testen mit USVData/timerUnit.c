@@ -59,15 +59,8 @@ static inline void unlockGenerator(uint8_t i){
 	counter[i].lock = 0;
 }
 
-/**
- * \brief Initalization des Moduls
- * 
- * \param resolutionUs die erwünschte Auflösung
- * \param prescaler der Prescacler zur Bestimmung der Taktfrequenz vom Timer
- * 
- * \return void
- */
-void timerInit(uint8_t resolutionUs, uint16_t prescaler){
+uint8_t timerInit(uint8_t rezConfig){
+	uint8_t result = NO_ERROR;
 	objTCA.adr->SINGLE.INTCTRL &= ~(1<<0);//Vorlaeufig deaktiviert wird Overflow-Interrupt
 	resetAllGenerator();
 	if (prescaler==0)
@@ -135,6 +128,7 @@ void timerInit(uint8_t resolutionUs, uint16_t prescaler){
 	//immer am Ende
 	objTCA.adr->SINGLE.CTRLA = configCTRLA.value;
 	objTCA.adr->SINGLE.INTCTRL = configINTCTRL.value;//Overflow-Interrupt wird wieder aktiviert 
+	return result;
 }
 
 /**
