@@ -135,19 +135,19 @@ uint8_t usartDataRx(uint8_t* data, uint16_t length){
 	uint8_t result = NO_ERROR;
 	if (data==NULL){
 		result = NULL_POINTER;
-	} else if ((length>(uu.rxObj.rxLenMax))||(length==0)){
+	} else if ((length>BUFFER_LEN) || (length==0)){
 		result = DATA_INVALID;
 	} else{
-		uint8_t usartNo = uu.statusObj.usart;
-		uu.rxObj.toRxByte = length;
+		uint8_t usartNo = comUnit_control.usart4USVData;
+		comUnit_rx.toHandleBytes = length;
 		USART_set_Bytes_to_receive(usartNo,length);
-		uint8_t checkTimeout = waitWithBreak(BYTE_RECEIVE_TIME_US*length*5000,(uint8_t*)&(uu.rxObj.toRxByte),0);//magic number:Anzahl der Zyklen pro sekunden
+		uint8_t checkTimeout = waitWithBreak(BYTE_RECEIVE_TIME_US*length*5000,(uint8_t*)&(comUnit_rx.toHandleBytes),0);//magic number:Anzahl der Zyklen pro sekunden
 		if (!checkTimeout){
-			memcpy((uint8_t*)data,(uint8_t*)uu.rxObj.rxBuffer,length);
+			memcpy((uint8_t*)data,(uint8_t*)comUnit_rx.data,length);
 		} else{
 			result = checkTimeout;
 		}
-		uu.rxObj.strPtr = 0;
+		comUnit_rx.strPtr = 0;
 	}
 	return result;
 }
