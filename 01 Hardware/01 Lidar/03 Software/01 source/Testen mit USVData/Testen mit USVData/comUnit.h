@@ -24,6 +24,7 @@
 #define RX_BUFFER_LEN 360
 #define TX_BUFFER_LEN 360
 #define BYTE_RECEIVE_TIME_US 100
+#define BUFFER_LEN 360
 
 //Struktur für Konfiguration der USART-Einheit
 typedef struct{
