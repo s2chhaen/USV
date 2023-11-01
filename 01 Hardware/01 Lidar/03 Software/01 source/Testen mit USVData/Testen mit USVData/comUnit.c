@@ -26,20 +26,19 @@ volatile comHandlerStatusNConfig_t comUnit_control = {0};
  * \return bool immer true, da es bisher nicht weiter betrachtet wird
  */
 static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, uint8_t max_length){
-	if (uu.txObj.toTxByte == 0){//Wenn keine Daten mehr zu senden
-		uu.statusObj.send = 0;
-		uu.txObj.strPtr = 0;//Reset des Zeigers vom Buffer
+	if (comUnit_tx.toHandleBytes == 0){//Wenn keine Daten mehr zu senden
+		comUnit_tx.strPtr = 0;//Reset des Zeigers vom Buffer
 	} else{ //sonst weiter ausfüllen die Daten in USART-FIFO
-		*data = (uint8_t*)(&(uu.txObj.txBuffer[uu.txObj.strPtr]));
+		*data = (uint8_t*)(&(comUnit_tx.data[comUnit_tx.strPtr]));
 		//max. Bytes gleich die leere Stelle in FIFO
-		if (uu.txObj.toTxByte<max_length){
-			*length = (uu.txObj.toTxByte);
-			uu.txObj.toTxByte = 0;
-			uu.txObj.strPtr = 0;
+		if (comUnit_tx.toHandleBytes < max_length){
+			*length = (comUnit_tx.toHandleBytes);
+			comUnit_tx.toHandleBytes = 0;
+			comUnit_tx.strPtr = 0;
 		} else{
 			*length = max_length;
-			uu.txObj.toTxByte -= max_length;
-			uu.txObj.strPtr += max_length;
+			comUnit_tx.toHandleBytes -= max_length;
+			comUnit_tx.strPtr += max_length;
 		}
 	}
 	return true;
