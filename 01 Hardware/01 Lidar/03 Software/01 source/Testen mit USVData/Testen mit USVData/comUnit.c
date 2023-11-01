@@ -9,24 +9,10 @@
 
 #include "comUnit.h"
 
-//Objektivierung der User-Unit-Gerät
-userUnit_t uu = {
-	//rxObj
-	.rxObj.toRxByte = 0,
-	.rxObj.strPtr = 0,
-	.rxObj.rxLenMax = RX_BUFFER_LEN,
-	.rxObj.usartFIFOMax = _FIFO_max_def - 1,
-	//txObj
-	.txObj.toTxByte = 0,
-	.txObj.strPtr = 0,
-	.txObj.txLenMax = TX_BUFFER_LEN,
-	.txObj.usartFIFOMax = _FIFO_max_def - 1,
-	//statusObj
-	.statusObj.usart = 0,
-	.statusObj.initState = 0,
-	.statusObj.send = 0,
-	.statusObj.receive = 0
-};
+const uint16_t usartFIFOMaxLen = _FIFO_max_def - 1;
+volatile comUnitBuffer_t comUnit_rx = {0};
+volatile comUnitBuffer_t comUnit_tx = {0};
+volatile comHandlerStatusNConfig_t comUnit_control = {0};
 
 /**
  * \brief die Funktion, die bei ISR() von USART-Transmit zurückgeruft wird
