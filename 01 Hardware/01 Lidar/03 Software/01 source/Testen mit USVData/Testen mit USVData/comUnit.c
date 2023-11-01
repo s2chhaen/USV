@@ -99,27 +99,26 @@ static uint8_t waitWithBreak(uint64_t cycles, uint8_t* obj, uint8_t desiredValue
  */
 uint8_t usartDataTx(uint8_t* data, uint16_t length){
 	uint8_t result = NO_ERROR;
-	if(length>uu.txObj.txLenMax){
+	if(length > BUFFER_LEN){
 		result = DATA_INVALID;
 	} else if (data==NULL){
 		result = NULL_POINTER;
-	} else if (!uu.statusObj.initState){
+	} else if (!comUnit_control.init){
 		result = NO_INIT;
 	} else{
-		while(uu.txObj.toTxByte!=0);
-		uu.statusObj.send = 1;
-		uu.txObj.toTxByte = length;
-		memcpy((uint8_t*)uu.txObj.txBuffer,data,length);
-		if (length<=uu.txObj.usartFIFOMax){
-			uu.txObj.toTxByte = 0;
-			uu.txObj.strPtr += length;
-			USART_send_Array(uu.statusObj.usart, 0, (uint8_t*)(uu.txObj.txBuffer), length);
+		while(comUnit_tx.toHandleBytes!=0);
+		comUnit_tx.toHandleBytes = length;
+		memcpy((uint8_t*)comUnit_tx.data,data,length);
+		if (length <= usartFIFOMaxLen){
+			comUnit_tx.toHandleBytes = 0;
+			comUnit_tx.strPtr += length;
+			USART_send_Array(comUnit_control.usart4USVData, 0, (uint8_t*)(comUnit_tx.data), length);
 		} else{
-			uu.txObj.toTxByte -= uu.txObj.usartFIFOMax;
-			uu.txObj.strPtr += uu.txObj.usartFIFOMax;
-			USART_send_Array(uu.statusObj.usart, 0, (uint8_t*)(uu.txObj.txBuffer), uu.txObj.usartFIFOMax);
+			comUnit_tx.toHandleBytes -= usartFIFOMaxLen;
+			comUnit_tx.strPtr += usartFIFOMaxLen;
+			USART_send_Array(comUnit_control.usart4USVData, 0, (uint8_t*)(comUnit_tx.data), usartFIFOMaxLen);
 		}
-		result = waitWithBreak(BYTE_RECEIVE_TIME_US*length*5000,(uint8_t*)&(uu.txObj.toTxByte),0);
+		result = waitWithBreak(BYTE_RECEIVE_TIME_US*length*5000,(uint8_t*)&(comUnit_tx.toHandleBytes),0);
 	}
 	return result;
 }
