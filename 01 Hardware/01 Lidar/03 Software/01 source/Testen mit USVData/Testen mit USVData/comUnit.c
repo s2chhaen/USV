@@ -55,9 +55,9 @@ static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, u
  */
 static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	//Empfangen der Daten in USART-FIFO und Kopieren in das Zwischenbuffer
-	uu.rxObj.toRxByte -= length;
-	memcpy((uint8_t*)&(uu.rxObj.rxBuffer[uu.rxObj.strPtr]),data,length);
-	uu.rxObj.strPtr += length;
+	comUnit_rx.toHandleBytes -= length;
+	memcpy((uint8_t*)&(comUnit_rx.data[comUnit_rx.strPtr]),data,length);
+	comUnit_rx.strPtr += length;
 	return true;
 }
 
