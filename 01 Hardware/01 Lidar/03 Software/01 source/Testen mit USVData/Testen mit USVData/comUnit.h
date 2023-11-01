@@ -46,6 +46,12 @@ typedef struct {
 	volatile uint8_t lock:1;
 }comUnitBuffer_t;
 
+typedef struct{
+	uint8_t usart4USVData:2;
+	uint8_t init:1;
+}comHandlerStatusNConfig_t;
+
+
 //Struktur für User-Unit
 typedef struct{
 	struct rxUnit{
