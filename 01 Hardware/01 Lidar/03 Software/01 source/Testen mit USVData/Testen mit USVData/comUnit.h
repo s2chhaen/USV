@@ -23,8 +23,6 @@
 
 #define RX_BUFFER_LEN 360
 #define TX_BUFFER_LEN 360
-#define NO_OF_RX_BUFFER 1
-#define NO_OF_TX_BUFFER 1
 #define BYTE_RECEIVE_TIME_US 100
 
 //Struktur für Konfiguration der USART-Einheit
