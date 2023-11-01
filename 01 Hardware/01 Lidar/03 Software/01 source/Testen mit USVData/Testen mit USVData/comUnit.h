@@ -39,6 +39,13 @@ typedef struct{
 	uint8_t portMux:2;
 }usartConfig_t;
 
+typedef struct {
+	volatile uint8_t data[BUFFER_LEN];
+	volatile uint16_t strPtr;
+	volatile uint16_t toHandleBytes;
+	volatile uint8_t lock:1;
+}comUnitBuffer_t;
+
 //Struktur für User-Unit
 typedef struct{
 	struct rxUnit{
