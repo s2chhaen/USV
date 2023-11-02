@@ -162,16 +162,36 @@ uint8_t usartDataRx(uint8_t* data, uint16_t length){
 	} else if ((length>BUFFER_LEN) || (length==0)){
 		result = DATA_INVALID;
 	} else{
-		uint8_t usartNo = comUnit_control.usart4USVData;
-		comUnit_rx.toHandleBytes = length;
-		USART_set_Bytes_to_receive(usartNo,length);
-		uint8_t checkTimeout = waitWithBreak(BYTE_RECEIVE_TIME_US*length*5000,(uint8_t*)&(comUnit_rx.toHandleBytes),0);//magic number:Anzahl der Zyklen pro sekunden
-		if (!checkTimeout){
-			memcpy((uint8_t*)data,(uint8_t*)comUnit_rx.data,length);
-		} else{
-			result = checkTimeout;
+		const uint16_t* temp = timer_getCounter();
+		timer_setCounter((4*length*3)/2);//magic number: 4 = Zeitsdauer/Zeichen (us), 3/2 = Sicherheit
+		timer_setState(1);
+		while(comUnit_rx.toHandleBytes){
+			if (!(*temp)){
+				result = TIME_OUT;
+				break;
+			}	
+		};
+		if (result==NO_ERROR){
+			comUnit_rx.toHandleBytes = length;
+			if (length < usartFIFOMaxLen){
+				USART_set_Bytes_to_receive(comUnit_control.usart4USVData,length);
+			} else{
+				USART_set_Bytes_to_receive(comUnit_control.usart4USVData,usartFIFOMaxLen);
+			}
+			timer_setState(1);
+			while(comUnit_rx.toHandleBytes){
+				if (!(*temp)){
+					result = TIME_OUT;
+					break;
+				}
+			};
+			if (result==NO_ERROR){
+				memcpy((uint8_t*)data,(uint8_t*)comUnit_rx.data,length);
+			} else{
+				memcpy((uint8_t*)data,(uint8_t*)comUnit_rx.data,comUnit_rx.strPtr);
+			}
+			comUnit_rx.strPtr = 0;
 		}
-		comUnit_rx.strPtr = 0;
 	}
 	return result;
 }
