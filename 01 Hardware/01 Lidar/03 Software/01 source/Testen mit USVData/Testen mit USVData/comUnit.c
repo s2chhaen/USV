@@ -106,19 +106,35 @@ uint8_t usartDataTx(uint8_t* data, uint16_t length){
 	} else if (!comUnit_control.init){
 		result = NO_INIT;
 	} else{
-		while(comUnit_tx.toHandleBytes!=0);
-		comUnit_tx.toHandleBytes = length;
-		memcpy((uint8_t*)comUnit_tx.data,data,length);
-		if (length <= usartFIFOMaxLen){
-			comUnit_tx.toHandleBytes = 0;
-			comUnit_tx.strPtr += length;
-			USART_send_Array(comUnit_control.usart4USVData, 0, (uint8_t*)(comUnit_tx.data), length);
-		} else{
-			comUnit_tx.toHandleBytes -= usartFIFOMaxLen;
-			comUnit_tx.strPtr += usartFIFOMaxLen;
-			USART_send_Array(comUnit_control.usart4USVData, 0, (uint8_t*)(comUnit_tx.data), usartFIFOMaxLen);
+		const uint16_t* temp = timer_getCounter();
+		timer_setCounter((4*length*3)/2);//magic number: 4 = Zeitsdauer/Zeichen (us), 3/2 = Sicherheit
+		timer_setState(1);
+		while(comUnit_tx.toHandleBytes){
+			if (!(*temp)){
+				result = TIME_OUT;
+				break;
+			}
+		};
+		timer_setState(0);
+		if (result==NO_ERROR){
+			memcpy((uint8_t*)comUnit_tx.data, data, length);
+			if (length <= usartFIFOMaxLen){
+				comUnit_tx.toHandleBytes = 0;
+				USART_send_Array(comUnit_control.usart4USVData, 0, (uint8_t*)(comUnit_tx.data), length);
+			} else{
+				comUnit_tx.toHandleBytes = length - usartFIFOMaxLen;
+				comUnit_tx.strPtr += usartFIFOMaxLen;
+				USART_send_Array(comUnit_control.usart4USVData, 0, (uint8_t*)(comUnit_tx.data), usartFIFOMaxLen);
+			}
+			timer_setState(1);
+			while(comUnit_tx.toHandleBytes){
+				if (!(*temp)){
+					result = TIME_OUT;
+					break;
+				}
+			};
+			timer_setState(0);
 		}
-		result = waitWithBreak(BYTE_RECEIVE_TIME_US*length*5000,(uint8_t*)&(comUnit_tx.toHandleBytes),0);
 	}
 	return result;
 }
