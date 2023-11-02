@@ -21,8 +21,6 @@
 #include "Math/MinMax.h"
 #include "timerUnit.h"
 
-#define RX_BUFFER_LEN 360
-#define TX_BUFFER_LEN 360
 #define BYTE_RECEIVE_TIME_US 100
 #define BUFFER_LEN 360
 
