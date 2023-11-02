@@ -4,7 +4,7 @@
  * Created: 7/10/2023 4:48:20 AM
  * Author: Thach
  * Version: 1.0
- * Revision: 1.3
+ * Revision: 1.4
  */ 
 
 
@@ -50,31 +50,6 @@ typedef struct{
 	uint8_t usart4USVData:2;
 	uint8_t init:1;
 }comHandlerStatusNConfig_t;
-
-
-//Struktur für User-Unit
-typedef struct{
-	struct rxUnit{
-		volatile uint8_t rxBuffer[RX_BUFFER_LEN];
-		volatile uint8_t toRxByte;//die schon empfangenen Bytes
-		volatile uint16_t strPtr;//der Zeiger zum aktuell empfangenen Byte
-		const uint16_t rxLenMax;//Max. Länge des Buffers
-		const uint16_t usartFIFOMax;//Max. Anzahl der Buffers in einem FIFO, bisher nur 1
-	}rxObj;
-	struct txUnit{
-		volatile uint8_t txBuffer[TX_BUFFER_LEN];
-		volatile uint8_t toTxByte;//die noch zu sendenen Byte in Buffer
-		volatile uint16_t strPtr;//der Zeiger zum aktuell zu sendenden Byte
-		const uint16_t txLenMax;//Max. Länge des Buffers
-		const uint16_t usartFIFOMax;//Max. Anzahl der Buffers in einem FIFO, bisher nur 1
-	}txObj;
-	struct status{
-		volatile uint8_t usart:2;//Die angewendeten USART
-		uint8_t initState:1;//Bezeichnet, ob dieses Objekt initialisiert oder nicht
-		volatile uint8_t send:1;//Bezeichnet, ob die Sendungsvorgang noch im Prozess ist oder nicht
-		volatile uint8_t receive:1;//Bezeichnet, ob die Empfangsvorgang noch im Prozess ist oder nicht
-	}statusObj;
-}userUnit_t;
 
 extern uint8_t initUserUnit(usartConfig_t config);
 extern uint8_t usartDataTx(uint8_t* data, uint16_t length);
