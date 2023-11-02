@@ -4,7 +4,7 @@
  * Created: 7/10/2023 4:59:46 AM
  * Author: Thach
  * Version: 1.0
- * Revision: 1.1
+ * Revision: 1.2
  */ 
 
 #include "comUnit.h"
@@ -26,6 +26,7 @@ volatile comHandlerStatusNConfig_t comUnit_control = {0};
  * \return bool immer true, da es bisher nicht weiter betrachtet wird
  */
 static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, uint8_t max_length){
+	//TODO make one temp Variable and copy the value of comUnit_tx.toHandleBytes into this 
 	if (comUnit_tx.toHandleBytes == 0){//Wenn keine Daten mehr zu senden
 		comUnit_tx.strPtr = 0;//Reset des Zeigers vom Buffer
 	} else{ //sonst weiter ausfüllen die Daten in USART-FIFO
