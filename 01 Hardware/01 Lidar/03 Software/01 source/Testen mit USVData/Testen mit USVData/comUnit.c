@@ -55,8 +55,16 @@ static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, u
  */
 static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	//Empfangen der Daten in USART-FIFO und Kopieren in das Zwischenbuffer
+	uint16_t temp = comUnit_rx.toHandleBytes;
 	comUnit_rx.toHandleBytes -= length;
 	memcpy((uint8_t*)&(comUnit_rx.data[comUnit_rx.strPtr]),data,length);
+	if (temp){
+		if (temp < usartFIFOMaxLen){
+			USART_set_Bytes_to_receive(comUnit_control.usart4USVData,temp);
+		} else{
+			USART_set_Bytes_to_receive(comUnit_control.usart4USVData,usartFIFOMaxLen);
+		}
+	}
 	comUnit_rx.strPtr += length;
 	return true;
 }
