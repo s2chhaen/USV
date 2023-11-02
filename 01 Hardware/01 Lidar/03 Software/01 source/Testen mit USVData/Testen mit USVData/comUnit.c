@@ -21,19 +21,16 @@ volatile comHandlerStatusNConfig_t comUnit_control = {0};
  * \param adress die Adresse von Empfanger
  * \param data Zeiger zur Adresse des nach Ende dieser Funktion weiter in USART-FIFO kopierten Datenblockes
  * \param length die Länge des obergenannten Datenblockes
- * \param max_length die max. frei Plätze in USART-FIFO
+ * \param max_length die die leere Stelle in USART-FIFO
  * 
  * \return bool immer true, da es bisher nicht weiter betrachtet wird
  */
 static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, uint8_t max_length){
-	//TODO make one temp Variable and copy the value of comUnit_tx.toHandleBytes into this 
-	if (comUnit_tx.toHandleBytes == 0){//Wenn keine Daten mehr zu senden
-		comUnit_tx.strPtr = 0;//Reset des Zeigers vom Buffer
-	} else{ //sonst weiter ausfüllen die Daten in USART-FIFO
+	uint8_t temp = comUnit_tx.toHandleBytes;
+	if(temp){
 		*data = (uint8_t*)(&(comUnit_tx.data[comUnit_tx.strPtr]));
-		//max. Bytes gleich die leere Stelle in FIFO
-		if (comUnit_tx.toHandleBytes < max_length){
-			*length = (comUnit_tx.toHandleBytes);
+		if (temp < max_length){
+			*length = temp;
 			comUnit_tx.toHandleBytes = 0;
 			comUnit_tx.strPtr = 0;
 		} else{
@@ -41,6 +38,8 @@ static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, u
 			comUnit_tx.toHandleBytes -= max_length;
 			comUnit_tx.strPtr += max_length;
 		}
+	}else{
+		comUnit_tx.strPtr = 0;//Reset des Zeigers vom Buffer
 	}
 	return true;
 }
