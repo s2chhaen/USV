@@ -67,6 +67,17 @@
       </ToolNumber>
       <ToolName xmlns="">Simulator</ToolName>
     </com_atmel_avrdbg_tool_simulator>
+    <custom>
+      <ToolOptions xmlns="">
+        <InterfaceProperties>
+        </InterfaceProperties>
+        <InterfaceName>UPDI</InterfaceName>
+      </ToolOptions>
+      <ToolType xmlns="">custom</ToolType>
+      <ToolNumber xmlns="">
+      </ToolNumber>
+      <ToolName xmlns="">Custom Programming Tool</ToolName>
+    </custom>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -204,10 +215,10 @@
     <Compile Include="timerUnit.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="userUnit.c">
+    <Compile Include="comUnit.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="userUnit.h">
+    <Compile Include="comUnit.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="usvMonitorHandlerAPI.c">
