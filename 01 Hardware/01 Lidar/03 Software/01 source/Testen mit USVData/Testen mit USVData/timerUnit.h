@@ -111,7 +111,7 @@ enum prescaler{
 	DIV1024 = 0x07
 };
 
-extern uint8_t timerInit(uint8_t rezConfig);
+extern uint8_t timerInit(uint8_t rezConfig, uint8_t resolution);
 extern void timer_setState(uint8_t state);
 extern void timer_setCounter(uint16_t value);
 extern const uint16_t* timer_getCounter();

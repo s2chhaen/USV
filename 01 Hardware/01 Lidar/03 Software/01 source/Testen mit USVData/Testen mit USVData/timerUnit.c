@@ -12,12 +12,12 @@
 volatile timerStatus_t timer_status = { .init = 0, .rez = REZ_MS};
 volatile uint16_t timer_counter[REZ_MODE_NO] = {0};
 
-uint8_t timerInit(uint8_t rezConfig){
+uint8_t timerInit(uint8_t rezConfig, uint8_t resolution){
 	uint8_t result = NO_ERROR;
-	uint8_t config = 0x00;
+	volatile uint8_t config = 0x00;//No optimized
 	uint32_t prescalerWConvertFactor = 1;
-	TCA0.SINGLE.INTCTRL &= ~TCA_SINGLE_OVF_bm;//Vorlaeufig deaktiviert wird Overflow-Interrupt
 	TCA0.SINGLE.CTRLA &= ~TCA_SINGLE_ENABLE_bm;//Ausschalten vor der Einstellung
+	TCA0.SINGLE.CTRLESET = TCA_SINGLE_CMD_RESET_gc;//Reset
 	switch(rezConfig){
 		case REZ_S:
 			config |= TCA_SINGLE_CLKSEL_DIV1024_gc;
@@ -39,9 +39,9 @@ uint8_t timerInit(uint8_t rezConfig){
 	if (result==NO_ERROR){
 		timer_status.rez = rezConfig;
 		timer_status.init = 1;
-		TCA0.SINGLE.PER = (uint16_t)(CLK_CPU/prescalerWConvertFactor);
+		TCA0.SINGLE.PER = (uint16_t)(CLK_CPU/prescalerWConvertFactor*resolution);//Res = resolution
 		TCA0.SINGLE.INTCTRL |= TCA_SINGLE_OVF_bm;//Aktivieren des OVF - Interrupt
-		TCA0.SINGLE.CTRLA = config;//Einschalten des TCA0 immer am Ende
+		TCA0.SINGLE.CTRLA = config|TCA_SINGLE_ENABLE_bm;
 	} else{
 		timer_status.init = 0;
 	}
