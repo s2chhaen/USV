@@ -84,12 +84,8 @@ extern void timer_stopWatch(uint16_t val){
  */
 ISR(TCA0_OVF_vect){
 	if (timer_status.state){
-		uint8_t temp = timer_status.rez;
-		timer_counter[temp]--;
-		if (timer_counter[temp]){
-			timer_status.state = 0;
-		}
+		timer_counter[timer_status.rez]--;
 	}
-	TCA0.SINGLE.INTFLAGS |=  TCA_SINGLE_OVF_bm;//Loeschen von Interrupt-Flag
+	TCA0.SINGLE.INTFLAGS = TCA_SINGLE_OVF_bm;//Loeschen von Interrupt-Flag
 }
 
