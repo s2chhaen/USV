@@ -38,13 +38,6 @@ typedef struct{
 	uint8_t state:1;
 }timerStatus_t;
 
-typedef struct  
-{
-	uint32_t value:31;
-	uint8_t lock:1;
-}tickGenerator;
-
-
 typedef union{
 	uint8_t value;
 	struct{
