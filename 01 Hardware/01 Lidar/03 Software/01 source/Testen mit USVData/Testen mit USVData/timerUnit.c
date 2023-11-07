@@ -58,8 +58,8 @@ void timer_setCounter(int32_t value){
 	timer_status.state = 1;
 }
 
-const uint16_t* timer_getCounter(){
-	return (const uint16_t*)&(timer_counter[timer_status.rez]);
+const int32_t timer_getCounter(){
+	return timer_counter[timer_status.rez];
 }
 
 /**

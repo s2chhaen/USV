@@ -114,7 +114,7 @@ enum prescaler{
 extern uint8_t timerInit(uint8_t rezConfig, uint8_t resolution);
 extern void timer_setState(uint8_t state);
 extern void timer_setCounter(int32_t value);
-extern const uint16_t* timer_getCounter();
+extern const int32_t timer_getCounter();
 extern void timer_stopWatch(uint16_t val);
 
 #endif /* TIMERUNIT_H_ */
