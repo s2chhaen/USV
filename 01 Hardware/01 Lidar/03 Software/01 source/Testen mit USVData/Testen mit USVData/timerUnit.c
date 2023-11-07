@@ -9,8 +9,8 @@
 
 #include "timerUnit.h"
 
-volatile timerStatus_t timer_status = { .init = 0, .rez = REZ_MS};
-volatile uint16_t timer_counter[REZ_MODE_NO] = {0};
+volatile timerStatus_t timer_status = { .init = 0, .rez = REZ_MS, .state = 0};
+volatile int32_t timer_counter[REZ_MODE_NO] = {0};
 
 uint8_t timerInit(uint8_t rezConfig, uint8_t resolution){
 	uint8_t result = NO_ERROR;
