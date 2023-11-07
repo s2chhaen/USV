@@ -71,14 +71,10 @@ const int32_t timer_getCounter(){
  */
 extern void timer_stopWatch(uint16_t val){
 	uint8_t mode = timer_status.rez;
-	ATOMIC_BLOCK(ATOMIC_FORCEON){
-		timer_status.state = 1;
-		timer_counter[mode] = val;
-		TCA0.SINGLE.CNT = 0;
-	}
+	timer_status.state = 1;
+	timer_counter[mode] = val;
+	timer_status.state = 1;
 	while (timer_counter[mode]);
-}
-
 }
 
 /**
