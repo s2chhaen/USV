@@ -79,16 +79,6 @@ extern void timer_stopWatch(uint16_t val){
 	while (timer_counter[mode]);
 }
 
-/**
- * \brief Verzögerung der Programmausführung in einem bestimmten Zyklen
- * \warning noch zu verbessern, weil die Zyklen nicht echtzeitig
- *
- * \param cycle die erwünschte Verzögerungszeit in Zyklen
- * 
- * \return void
- */
-void waitCycle(uint32_t cycle){
-	for (uint32_t i = 0; i<cycle*5;i++);
 }
 
 /**

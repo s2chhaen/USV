@@ -116,6 +116,5 @@ extern void timer_setState(uint8_t state);
 extern void timer_setCounter(int32_t value);
 extern const uint16_t* timer_getCounter();
 extern void timer_stopWatch(uint16_t val);
-extern void waitCycle(uint32_t cycle);
 
 #endif /* TIMERUNIT_H_ */
