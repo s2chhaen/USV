@@ -52,12 +52,10 @@ void timer_setState(uint8_t state){
 	timer_status.state = state;
 }
 
-void timer_setCounter(uint16_t value){
-	ATOMIC_BLOCK(ATOMIC_FORCEON){
-		timer_status.state = 1;
-		timer_counter[timer_status.rez] = value;
-		TCA0.SINGLE.CNT = 0;
-	}
+void timer_setCounter(int32_t value){
+	timer_status.state = 0;
+	timer_counter[timer_status.rez] = value;
+	timer_status.state = 1;
 }
 
 const uint16_t* timer_getCounter(){
