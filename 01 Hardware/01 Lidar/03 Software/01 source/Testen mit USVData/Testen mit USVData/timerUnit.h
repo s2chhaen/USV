@@ -38,18 +38,6 @@ typedef struct{
 	uint8_t state:1;
 }timerStatus_t;
 
-
-enum prescaler{
-	DIV1 = 0x00,
-	DIV2 = 0x01,
-	DIV4 = 0x02,
-	DIV8 = 0x03,
-	DIV16 = 0x04,
-	DIV64 = 0x05,
-	DIV256 = 0x06,
-	DIV1024 = 0x07
-};
-
 extern uint8_t timerInit(uint8_t rezConfig, uint8_t resolution);
 extern void timer_setState(uint8_t state);
 extern void timer_setCounter(int32_t value);
