@@ -49,11 +49,7 @@ uint8_t timerInit(uint8_t rezConfig, uint8_t resolution){
 }
 
 void timer_setState(uint8_t state){
-	if (state){
-		TCA0.SINGLE.CTRLA |= TCA_SINGLE_ENABLE_bm;
-	} else{
-		TCA0.SINGLE.CTRLA &= ~TCA_SINGLE_ENABLE_bm;
-	}
+	timer_status.state = state;
 }
 
 void timer_setCounter(uint16_t value){
