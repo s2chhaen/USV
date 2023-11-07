@@ -11,6 +11,7 @@ https://github.com/Joe-Grabow/USV
 __version__ = '1.0'
 __author__ = 'Joe Grabow'
 
+import ujson
 from machine import Timer, Pin
 from picozero import Button
 from time import sleep
@@ -37,25 +38,41 @@ def wait_for_press():
 
 # sub-programme for calibration
 def calibration():
-        print("state 1: Calibration Step 1")
+        print("state 1: device horizontal")
         flash(1)
         sleep(1)
         wait_for_press()
         
-        print("state 2: Calibration Step 2")
+        print("state 2: device horizontal and rotate z axis 180 degrees")
         flash(2)
         sleep(1)
         wait_for_press()
         
-        print("state 3: Calibration Step 3")
+        print("state 3: flip device and keep it horizontal")
         flash(3)
 
 # sub-programme for measurement
 def measurement():
         print("Measurement")
 
+def save_cal_data(c_data):
+    with open('cal_data.json', 'w') as data:
+        ujson.dump(c_data, data)
+    
+def load_cal_data():
+    with open('cal_data.json', 'r') as data:
+        c_data = ujson.load(data)
+    return(c_data)
+
+
 blink = Timer(period=500, mode=Timer.PERIODIC, callback=lambda t:led.value(not led.value()))
 flash(0)
+
+cal_flag = 0
+cal_data = [cal_flag, 0, 0, 0]
+save_cal_data(cal_data)
+cal_data = load_cal_data()
+print(cal_data)
 
 while True:
     sleep(0.2)
