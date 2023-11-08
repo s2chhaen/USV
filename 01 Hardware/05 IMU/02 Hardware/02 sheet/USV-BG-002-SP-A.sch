@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="2" name="Route2" color="16" fill="1" visible="no" active="no"/>
@@ -5974,7 +5974,7 @@ Source: http://eshop.phoenixcontact.com .. 1729131.pdf</description>
 <part name="P+9" library="supply1" deviceset="+5V" device=""/>
 <part name="GND26" library="supply1" deviceset="GND" device=""/>
 <part name="+3V1" library="supply1" deviceset="+3V3" device=""/>
-<part name="U1" library="RpiPico" deviceset="RASPBERRY_PICO" device="TH"/>
+<part name="RPI-PICO" library="RpiPico" deviceset="RASPBERRY_PICO" device="TH"/>
 <part name="+3V2" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
 <part name="GND2" library="supply1" deviceset="GND" device=""/>
@@ -6046,8 +6046,8 @@ Source: http://eshop.phoenixcontact.com .. 1729131.pdf</description>
 <instance part="+3V1" gate="G$1" x="167.005" y="84.455" smashed="yes" rot="R270">
 <attribute name="VALUE" x="168.275" y="83.185" size="1.778" layer="96"/>
 </instance>
-<instance part="U1" gate="U$1" x="72.39" y="101.6" smashed="yes">
-<attribute name="NAME" x="69.8345" y="141.0146" size="1.778" layer="95"/>
+<instance part="RPI-PICO" gate="U$1" x="72.39" y="101.6" smashed="yes">
+<attribute name="NAME" x="67.2945" y="141.0146" size="1.778" layer="95"/>
 <attribute name="VALUE" x="59.6831" y="58.3986" size="1.778" layer="96"/>
 </instance>
 <instance part="+3V2" gate="G$1" x="97.79" y="132.08" smashed="yes" rot="R270">
@@ -6087,13 +6087,13 @@ Source: http://eshop.phoenixcontact.com .. 1729131.pdf</description>
 <junction x="145.415" y="86.995"/>
 </segment>
 <segment>
-<pinref part="U1" gate="U$1" pin="3V3_EN"/>
+<pinref part="RPI-PICO" gate="U$1" pin="3V3_EN"/>
 <pinref part="GND1" gate="1" pin="GND"/>
 <wire x1="92.71" y1="127" x2="90.17" y2="127" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND2" gate="1" pin="GND"/>
-<pinref part="U1" gate="U$1" pin="GND"/>
+<pinref part="RPI-PICO" gate="U$1" pin="GND"/>
 <wire x1="92.71" y1="66.04" x2="90.17" y2="66.04" width="0.1524" layer="91"/>
 </segment>
 <segment>
@@ -6118,7 +6118,7 @@ Source: http://eshop.phoenixcontact.com .. 1729131.pdf</description>
 </segment>
 <segment>
 <label x="43.18" y="86.36" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U1" gate="U$1" pin="GP13"/>
+<pinref part="RPI-PICO" gate="U$1" pin="GP13"/>
 <wire x1="54.61" y1="86.36" x2="43.18" y2="86.36" width="0.1524" layer="91"/>
 </segment>
 </net>
@@ -6130,7 +6130,7 @@ Source: http://eshop.phoenixcontact.com .. 1729131.pdf</description>
 </segment>
 <segment>
 <label x="43.18" y="81.28" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U1" gate="U$1" pin="GP14"/>
+<pinref part="RPI-PICO" gate="U$1" pin="GP14"/>
 <wire x1="54.61" y1="81.28" x2="43.18" y2="81.28" width="0.1524" layer="91"/>
 </segment>
 </net>
@@ -6142,7 +6142,7 @@ Source: http://eshop.phoenixcontact.com .. 1729131.pdf</description>
 </segment>
 <segment>
 <label x="43.18" y="78.74" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U1" gate="U$1" pin="GP15"/>
+<pinref part="RPI-PICO" gate="U$1" pin="GP15"/>
 <wire x1="54.61" y1="78.74" x2="43.18" y2="78.74" width="0.1524" layer="91"/>
 </segment>
 </net>
@@ -6160,7 +6160,7 @@ Source: http://eshop.phoenixcontact.com .. 1729131.pdf</description>
 <wire x1="160.02" y1="79.375" x2="160.02" y2="80.01" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="U1" gate="U$1" pin="3V3(OUT)"/>
+<pinref part="RPI-PICO" gate="U$1" pin="3V3(OUT)"/>
 <pinref part="+3V2" gate="G$1" pin="+3V3"/>
 <wire x1="90.17" y1="132.08" x2="95.25" y2="132.08" width="0.1524" layer="91"/>
 </segment>
@@ -6171,7 +6171,7 @@ Source: http://eshop.phoenixcontact.com .. 1729131.pdf</description>
 </net>
 <net name="UART0_TX" class="0">
 <segment>
-<pinref part="U1" gate="U$1" pin="GP0"/>
+<pinref part="RPI-PICO" gate="U$1" pin="GP0"/>
 <wire x1="54.61" y1="127" x2="43.18" y2="127" width="0.1524" layer="91"/>
 <label x="43.18" y="127" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
@@ -6183,7 +6183,7 @@ Source: http://eshop.phoenixcontact.com .. 1729131.pdf</description>
 </net>
 <net name="UART0_RX" class="0">
 <segment>
-<pinref part="U1" gate="U$1" pin="GP1"/>
+<pinref part="RPI-PICO" gate="U$1" pin="GP1"/>
 <wire x1="54.61" y1="124.46" x2="43.18" y2="124.46" width="0.1524" layer="91"/>
 <label x="43.18" y="124.46" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
@@ -6195,7 +6195,7 @@ Source: http://eshop.phoenixcontact.com .. 1729131.pdf</description>
 </net>
 <net name="LED/IO2" class="0">
 <segment>
-<pinref part="U1" gate="U$1" pin="GP2"/>
+<pinref part="RPI-PICO" gate="U$1" pin="GP2"/>
 <wire x1="54.61" y1="119.38" x2="43.18" y2="119.38" width="0.1524" layer="91"/>
 <label x="43.18" y="119.38" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
@@ -6208,7 +6208,7 @@ Source: http://eshop.phoenixcontact.com .. 1729131.pdf</description>
 </net>
 <net name="TA/IO3" class="0">
 <segment>
-<pinref part="U1" gate="U$1" pin="GP3"/>
+<pinref part="RPI-PICO" gate="U$1" pin="GP3"/>
 <wire x1="54.61" y1="116.84" x2="43.18" y2="116.84" width="0.1524" layer="91"/>
 <label x="43.18" y="116.84" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
