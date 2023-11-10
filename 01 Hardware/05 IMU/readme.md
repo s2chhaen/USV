@@ -1,4 +1,4 @@
-## Save für die inertiale Messeinheit (IMU).
+## Slave für die inertiale Messeinheit (IMU).
 Messung und räumliche Kombination mehrerer Inertialsensoren.
 
 Messgrößen sind:
