@@ -20,6 +20,7 @@ typedef enum {
 	HANDLER_NOT_INIT
 }processResult_t;
 
+volatile uint8_t protocol[PROTOCOL_MAX_LEN] = {0};
 
 /**
  * \brief Bildung der checksum-Code für Programm
