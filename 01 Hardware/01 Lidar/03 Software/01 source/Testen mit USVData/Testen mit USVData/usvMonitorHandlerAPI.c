@@ -392,8 +392,9 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
  * 
  * \return uint8_t 0: kein Fehler, sonst: Fehler
  */
+#pragma GCC push_options
+#pragma GCC optimize ("O3")
 uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
-	//TODO zu testen
 	uint8_t result = NO_ERROR;
 	if((dev_p==NULL)||(output_p==NULL)){
 		result = NULL_POINTER;
@@ -401,72 +402,20 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 	{
 		result = HANDLER_NOT_INIT;
 	} else{
-		int8_t begin = searchReg(reg);
-		int8_t end = searchEnd(begin, outputLen);
-		if ((begin!=-1)&&(end!=-1)){
-			uint8_t buffer[MAX_SIZE_FRAME] = {0};//Zwischenspeicherbuffer
-			uint16_t positionPtr = 0;//der Zeiger zur nächsten freien Position, die Länge der nutzbaren Bytes
-			outputLen = getTotalLen(begin,end);
+		const uint16_t maxLen = getRegLen(USV_LAST_DATA_BLOCK_ADDR) + USV_LAST_DATA_BLOCK_ADDR;
+		uint16_t tempLen = (reg+outputLen);
+		int8_t checkReg = (getRegLen(reg) != -1) && (tempLen <= maxLen);
+		if (checkReg){
 			uint8_t processTime = outputLen/PAYLOAD_PER_FRAME + ((outputLen%PAYLOAD_PER_FRAME)?1:0);
-			for (uint8_t i = 0; i<processTime; i++){
-				positionPtr = 0;
-				begin = begin + PAYLOAD_PER_FRAME*i;
-				uuaslProtocolHeader_t header = protocolHeaderPrint(add,begin,UUASL_R_REQ);
-				header.length = 8;//magic number: Bytes vom gesamten Protokoll: 1 für Datenlängenanfrage, 7 für übrigen
-				positionPtr += sizeof(header)/sizeof(uint8_t);
-				memcpy((&buffer[0]),(uint8_t*)&header,positionPtr);
-				uint8_t dataSegLen = (outputLen<PAYLOAD_PER_FRAME)?outputLen:PAYLOAD_PER_FRAME;
-				memcpy(&(buffer[positionPtr]),&dataSegLen,1);//magic number: Die Länge von den zu empfangenen Nutzdaten in Byte
-				positionPtr += sizeof(dataSegLen)/sizeof(uint8_t);
-				buffer[positionPtr++] = crc8Checksum(&dataSegLen,1,dev_p->crc8Polynom);
-				buffer[positionPtr++] = 0xA6;
-				//Datensenden
-				(*(dev_p->transmitFunc_p))(buffer,positionPtr);
-#if WAIT_FUNCTION_ACTIVE
-				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
-#endif
-				positionPtr=1;//hier dient als die zu empfangenen Daten
-				(*(dev_p->receiveFunc_p))(buffer, positionPtr);
-#if WAIT_FUNCTION_ACTIVE
-				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
-#endif
-				if (buffer[0]==0xA2){
-					result = DATA_INVALID;
-				} else if (buffer[0]==0xA5){
-					positionPtr=4;//hier dient als die zu empfangenen Daten
-					(*(dev_p->receiveFunc_p))(buffer, positionPtr);
-#if WAIT_FUNCTION_ACTIVE
-					(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
-#endif
-					//Checken Protokollrelevante Informationen
-					bool checkRxDataInfo = (buffer[0]==add) && \
-											(buffer[1]==header.rwaBytes.value[0]) && \
-											((buffer[2]^header.rwaBytes.value[1])==0x40);
-					if (checkRxDataInfo){
-						positionPtr=buffer[3]-5;//Die Länge vom Header = 5
-						(*(dev_p->receiveFunc_p))(buffer, positionPtr);
-#if WAIT_FUNCTION_ACTIVE
-						(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
-#endif
-						bool checkDataBlock = checkRxData(buffer,positionPtr-2,buffer[positionPtr-2],dev_p->crc8Polynom);
-						bool checkEndByte = buffer[positionPtr-1]==0xA6;
-						if (checkDataBlock&&checkEndByte){
-							memcpy(&(output_p[i*PAYLOAD_PER_FRAME]),buffer,positionPtr-2);
-						} else {
-							result = PROCESS_FAIL;
-							break;
-						}
-					} else {
-						result = PROCESS_FAIL;
-						break;
-					}
+			uint16_t temp4;
+			for (volatile uint8_t i = 0; i < processTime; i++){
+				temp4 = (outputLen > PAYLOAD_PER_FRAME)?PAYLOAD_PER_FRAME:outputLen;
+				result = getAndCheckData(add, reg, (uint16_t) temp4, dev_p, &(output_p[i*PAYLOAD_PER_FRAME]), temp4);
+				if (result==NO_ERROR){
+					outputLen -= PAYLOAD_PER_FRAME;
 				} else{
-					result = PROCESS_FAIL;
 					break;
 				}
-				
-				//Immer am Ende der Schleife
-				outputLen -= PAYLOAD_PER_FRAME;
 			}
 		} else{
 			result = DATA_INVALID;
@@ -474,6 +423,7 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 	}
 	return result;
 }
+#pragma GCC pop_options
 
 /**
  * \brief zum Schreiben in vielen Registern nur mit einem Protokoll (bis zum 255 Bytes unterstützt)
