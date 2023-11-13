@@ -273,42 +273,29 @@ uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRxFunc_p, dataTx_t inp
 uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t length){
 	//TODO zu optimieren
 	uint8_t result = NO_ERROR;
-	int8_t index = searchReg(reg);
 	if ((dev_p==NULL)|(input_p==NULL)){
 		result = NULL_POINTER;
 	} else{
-		if (index != -1){
-			if (regSet[index].len != length){
-				result = DATA_INVALID;
-			} else{
-				uint8_t buffer[MAX_SIZE_FRAME] = {0};//Zwischenspeicherbuffer
-				uint16_t positionPtr = 0;//der Zeiger zur nächsten freien Position, die Länge der genutzten Bytes
-				//Header im Gesamtarray kopieren
-				uuaslProtocolHeader_t head = protocolHeaderPrint(add,index,UUASL_W_REQ);
-				head.length+=7;
-				memcpy((&buffer[positionPtr]),(uint8_t*)&head,sizeof(head)/sizeof(uint8_t));
-				positionPtr+= sizeof(head)/sizeof(uint8_t);
-				//Inhalt im Gesamtarray kopieren
-				memcpy((&buffer[positionPtr]),input_p,length);
-				positionPtr+=length;
-				//Tail im Gesamtarray kopieren
-				uint8_t crc8 = crc8Checksum(input_p,length,dev_p->crc8Polynom);
-				uuaslProtocolTail_t tail = writeProtocolTailPrint(crc8);
-				memcpy((&buffer[positionPtr]),(uint8_t*)&tail,sizeof(tail)/sizeof(uint8_t));
-				positionPtr += sizeof(tail)/sizeof(uint8_t);
-				//Senden die Daten
-				result = (*(dev_p->transmitFunc_p))(buffer,positionPtr);
-#if WAIT_FUNCTION_ACTIVE
-				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
-#endif
-				positionPtr = 1;
-				(*(dev_p->receiveFunc_p))(buffer, positionPtr);
-#if WAIT_FUNCTION_ACTIVE
-				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
-#endif
-				if (buffer[0]!=0xA1){
-					result = PROCESS_FAIL;
-				}
+		int8_t regLen = getRegLen(reg);
+		if (((uint8_t)regLen) == length){
+			uint8_t temp1;
+			protocol[USV_START_BYTE_POS] = USV_PROTOCOL_START_BYTE;
+			protocol[USV_OBJ_ID_BYTE_POS] = add;
+			protocol[USV_REG_ADDR_AND_WR_LBYTE_POS] = SET_SLAVE_ADD_LOW_PART(reg);
+			protocol[USV_REG_ADDR_AND_WR_HBYTE_POS] = SET_SLAVE_ADD_HIGH_PART(reg,PROTOCOL_W_REQ);
+			protocol[USV_FRAME_LEN_BYTE_POS] = length+PROTOCOL_OVERHEAD_LEN;
+			memcpy((uint8_t*)&(protocol[USV_DATA_BEGIN_POS]),input_p,length);
+			protocol[USV_DATA_BEGIN_POS+length] = crc8Checksum(input_p,length,dev_p->crc8Polynom);
+			protocol[USV_DATA_BEGIN_POS+1+length] = USV_PROTOCOL_END_BYTE;
+			//Senden
+			__asm__("nop");
+			(*(dev_p->transmitFunc_p))((uint8_t*)protocol,USV_DATA_BEGIN_POS+2+length,(USV_DATA_BEGIN_POS+2+length)*BYTE_TRANSFER_TIME_US);//begin bei 0
+			//Empfangen
+			temp1 = !(*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_START_BYTE_POS]),1,1*BYTE_TRANSFER_TIME_US+DST_PROG_WORK_TIME_US);//magic number 1: Anzahl der empfangenen Bytes
+			__asm__("nop");
+			temp1 = temp1 && (protocol[USV_START_BYTE_POS] == USV_PROTOCOL_ACK_BYTE);
+			if (!temp1){
+				result = PROCESS_FAIL;
 			}
 		} else{
 			result = DATA_INVALID;
