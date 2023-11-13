@@ -304,6 +304,52 @@ uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 	return result;
 }
 
+static inline uint8_t getAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
+	uint8_t result = NO_ERROR;
+	uint8_t temp1, temp2;
+	uint16_t temp3;
+	protocol[USV_START_BYTE_POS] = USV_PROTOCOL_START_BYTE;
+	protocol[USV_OBJ_ID_BYTE_POS] = add;//slave-id = addr
+	temp1 = SET_SLAVE_ADD_LOW_PART(reg);
+	protocol[USV_REG_ADDR_AND_WR_LBYTE_POS] = temp1;
+	temp2 = SET_SLAVE_ADD_HIGH_PART(reg,PROTOCOL_R_REQ);
+	protocol[USV_REG_ADDR_AND_WR_HBYTE_POS] = temp2;
+	protocol[USV_FRAME_LEN_BYTE_POS] = PROTOCOL_OVERHEAD_LEN+1;
+	protocol[USV_FRAME_LEN_BYTE_POS+1] = (uint8_t)regLen;//Datenteil = Länge des Registers
+	protocol[USV_FRAME_LEN_BYTE_POS+2] = crc8Checksum((uint8_t*)&(protocol[USV_FRAME_LEN_BYTE_POS+1]),1,dev_p->crc8Polynom);//CRC8-Code
+	protocol[USV_FRAME_LEN_BYTE_POS+3] = USV_PROTOCOL_END_BYTE;
+	//Senden der Daten
+	(*(dev_p->transmitFunc_p))((uint8_t*)protocol, USV_FRAME_LEN_BYTE_POS+3+1,(USV_FRAME_LEN_BYTE_POS+3+1)*BYTE_TRANSFER_TIME_US*2);//begin bei 0
+	
+	//Nach dem Request-Senden, empfangen erste Byte
+	rxRes = (*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_START_BYTE_POS]), 1,BYTE_TRANSFER_TIME_US*1+DST_PROG_WORK_TIME_US);//magic number 0=timeout, 1=Anzahl der empfangenen Bytes
+	if(protocol[USV_START_BYTE_POS] == USV_PROTOCOL_START_BYTE){ //Wenn erfolgreich, checken weitere 4 Bytes
+		//Byte 4 beim Daten lesen: Bei Hinprotokoll 0x4X, bei Rückprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
+		rxRes = (*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_OBJ_ID_BYTE_POS]), 4,BYTE_TRANSFER_TIME_US*4);
+		bool checkByteReg = add == protocol[USV_OBJ_ID_BYTE_POS];
+		bool checkByteAddAndRw = (temp1 == protocol[USV_REG_ADDR_AND_WR_LBYTE_POS]) && ((temp2 ^ protocol[USV_REG_ADDR_AND_WR_HBYTE_POS])==0x40);
+		bool checkAll = checkByteReg && checkByteAddAndRw;
+		if(checkAll){
+			//empfangen weitere n Datenbytes sowie 1 CRC8- und 1 Endbyte
+			rxRes = (*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_DATA_BEGIN_POS]), protocol[USV_FRAME_LEN_BYTE_POS]-5, (protocol[USV_FRAME_LEN_BYTE_POS]-5)*BYTE_TRANSFER_TIME_US);
+			temp3 = USV_DATA_BEGIN_POS + protocol[USV_FRAME_LEN_BYTE_POS] - 7;
+			bool checkDataBlock = checkRxData((uint8_t*)&(protocol[USV_DATA_BEGIN_POS]),protocol[USV_FRAME_LEN_BYTE_POS] - 7, protocol[temp3],dev_p->crc8Polynom);
+			bool checkEnd = protocol[temp3+1] == USV_PROTOCOL_END_BYTE;
+			if (checkEnd&&checkDataBlock){
+				//kopieren aller Datenbytes in Ausgabe
+				memcpy(output_p,(uint8_t*)protocol,(protocol[USV_FRAME_LEN_BYTE_POS]-7));
+			} else {
+				result = PROCESS_FAIL;
+			}
+		} else{
+			result = PROCESS_FAIL;
+		}
+	} else{
+		result = PROCESS_FAIL;
+	}
+	return result;
+}
+
 /**
  * \brief Empfangen die Daten aus dem Slave-Gerät, inklusiv CRC-Byte
  * 
@@ -324,61 +370,10 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 	{
 		result = HANDLER_NOT_INIT;
 	} else{
-		uint8_t temp1, temp2;
-		uint16_t temp3;
-		int8_t regLen = getRegLen(reg);
+		
+		int16_t regLen = getRegLen(reg);
 		if (regLen!=-1){
-			//Bildung von Datenrahmen
-			/**
-			 * Bei Byte 3,4 (Adresse-Bytes) wird ein 2-Byte-langes Register dafür festgelegt. 
-			 * Aufgrund vom little-endian System werden die Daten im Protokoll (Egal Hin- oder 
-			 * Rückprotokoll) vertauscht
-			 */
-			//protocolIdx = 0;//Reset des Indexes vom Zwischenprotokoll
-			protocol[USV_START_BYTE_POS] = USV_PROTOCOL_START_BYTE;
-			protocol[USV_OBJ_ID_BYTE_POS] = add;//slave-id = addr
-			temp1 = SET_SLAVE_ADD_LOW_PART(reg);
-			protocol[USV_REG_ADDR_AND_WR_LBYTE_POS] = temp1;
-			temp2 = SET_SLAVE_ADD_HIGH_PART(reg,PROTOCOL_R_REQ);
-			protocol[USV_REG_ADDR_AND_WR_HBYTE_POS] = temp2;
-			protocol[USV_FRAME_LEN_BYTE_POS] = PROTOCOL_OVERHEAD_LEN+1;
-			protocol[USV_FRAME_LEN_BYTE_POS+1] = (uint8_t)regLen;//Datenteil = Länge des Registers
-			protocol[USV_FRAME_LEN_BYTE_POS+2] = crc8Checksum((uint8_t*)&(protocol[USV_FRAME_LEN_BYTE_POS+1]),1,dev_p->crc8Polynom);//CRC8-Code
-			protocol[USV_FRAME_LEN_BYTE_POS+3] = USV_PROTOCOL_END_BYTE;
-			//Senden der Daten		
-			(*(dev_p->transmitFunc_p))((uint8_t*)protocol, USV_FRAME_LEN_BYTE_POS+3+1,0);//begin bei 0
-
-			//Nach dem Request-Senden, empfangen erste Byte
-			
-			rxRes = (*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_START_BYTE_POS]), 1,BYTE_TRANSFER_TIME_US*1+DST_PROG_WORK_TIME_US);//magic number 0=timeout, 1=Anzahl der empfangenen Bytes
-			//__asm__("nop");
-			
-			if(protocol[USV_START_BYTE_POS] == USV_PROTOCOL_START_BYTE){ //Wenn erfolgreich, checken weitere 4 Bytes
-				//Byte 4 beim Daten lesen: Bei Hinprotokoll 0x4X, bei Rückprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
-				rxRes = (*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_OBJ_ID_BYTE_POS]), 4,BYTE_TRANSFER_TIME_US*4);
-				__asm__("nop");
-				bool checkByteReg = add == protocol[USV_OBJ_ID_BYTE_POS];
-				bool checkByteAddAndRw = (temp1 == protocol[USV_REG_ADDR_AND_WR_LBYTE_POS]) && ((temp2 ^ protocol[USV_REG_ADDR_AND_WR_HBYTE_POS])==0x40);
-				bool checkAll = checkByteReg && checkByteAddAndRw;
-				if(checkAll){
-					//empfangen weitere n Datenbytes sowie 1 CRC8- und 1 Endbyte
-					rxRes = (*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_DATA_BEGIN_POS]), protocol[USV_FRAME_LEN_BYTE_POS]-5, (protocol[USV_FRAME_LEN_BYTE_POS]-5)*BYTE_TRANSFER_TIME_US);
-					temp3 = USV_DATA_BEGIN_POS + protocol[USV_FRAME_LEN_BYTE_POS] - 7;
-					bool checkDataBlock = checkRxData((uint8_t*)&(protocol[USV_DATA_BEGIN_POS]),protocol[USV_FRAME_LEN_BYTE_POS] - 7, protocol[temp3],dev_p->crc8Polynom);
-					bool checkEnd = protocol[temp3+1] == USV_PROTOCOL_END_BYTE;
-					__asm__("nop");
-					if (checkEnd&&checkDataBlock){
-						//kopieren aller Datenbytes in Ausgabe
-						memcpy(output_p,(uint8_t*)protocol,(protocol[USV_FRAME_LEN_BYTE_POS]-7));
-					} else {
-						result = PROCESS_FAIL;
-					}
-				} else{
-					result = PROCESS_FAIL;
-				}
-			} else{
-				result = PROCESS_FAIL;
-			}
+			result = getAndCheckData(add, reg, (uint16_t) regLen, dev_p, output_p, outputLen);
 		} else{
 			result = DATA_INVALID;
 		}
