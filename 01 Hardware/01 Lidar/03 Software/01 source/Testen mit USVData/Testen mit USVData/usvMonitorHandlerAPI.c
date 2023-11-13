@@ -20,34 +20,6 @@ typedef enum {
 	HANDLER_NOT_INIT
 }processResult_t;
 
-//Liste der Register und deren Länge
-static const slaveReg_t regSet[]={
-	//Sensorblock
-	{SEN_GESB_ADD,1},
-	{SEN_LONGNITUDE_ADD,4},
-	{SEN_LATITUDE_ADD,4},
-	{SEN_SATFIX_ADD,1},
-	{SEN_GPS_VEL_ADD,2},
-	{SEN_COURSE_ANGLE_ADD,2},
-	{SEN_TIMESTAMP_ADD,3},
-	//Radar
-	{RADAR_1_ADD,1},
-	{RADAR_1_ADD,2},
-	//Führungsgrößen der Antriebsregelung
-	{REF_DRV_CTRL_REF_A_ADD,8},
-	{REF_DRV_CTRL_REF_B_ADD,8},
-	{REF_DRV_CTRL_VEL_ADD,2},
-	{REF_DRV_CTRL_EPS_ADD,2},
-	//Stellgrößen der Antriebsregelung
-	{CTRL_DRV_CTRL_THRUST_ADD,2},
-	{CTRL_DRV_CTRL_RUDDER_ANGLE_ADD,2},
-	//lokaler Error Block
-	{ESB_GPS_ADD,1},
-	{ESB_COMPASS_ADD,1},
-	{ESB_CTRL_ADD,1},
-	//Lidar
-	{LIDAR_VALUE_ADD,360},
-};
 
 /**
  * \brief Bildung der checksum-Code für Programm
@@ -83,15 +55,84 @@ static uint8_t crc8Checksum(uint8_t *data, uint16_t len, uint8_t polynom){
  * 
  * \return int8_t -1: kein gefunden, sonst: die Position in der Liste
  */
-static inline int8_t searchReg(uint16_t reg){
-	int8_t result = -1;
-	for (uint8_t i = 0;i<sizeof(regSet)/sizeof(slaveReg_t);i++)
-	{
-		if (regSet[i].add == reg){
-			result = i;
+static inline int16_t searchReg(uint16_t reg){//TODO change name into getLen
+	int16_t result = 0;
+	switch(reg){
+		//Sensorblock
+		case SEN_GESB_ADD:
+			result = 1;//0
 			break;
-		}
+		case SEN_LONGNITUDE_ADD:
+			result = 4;//1
+			break;
+		case SEN_LATITUDE_ADD:
+			result = 4;//2
+			break;
+		case SEN_SATFIX_ADD:
+			result = 1;//3
+			break;
+		case SEN_GPS_VEL_ADD:
+			result = 2;//4
+			break;
+		case SEN_COURSE_ANGLE_ADD:
+			result = 2;//5
+			break;
+		case SEN_TIMESTAMP_ADD:
+			result = 3;//6
+			break;
+		//Radar
+		case RADAR_1_ADD:
+			result = 1;//7
+			break;
+		case RADAR_2_ADD:
+			result = 2;//8
+			break;
+		//Führungsgrößen der Antriebsregelung
+		case REF_DRV_CTRL_REF_A_ADD:
+			result = 8;//9
+			break;
+		case REF_DRV_CTRL_REF_B_ADD:
+			result = 8;//10
+			break;
+		case REF_DRV_CTRL_VEL_ADD:
+			result = 2;//11
+			break;
+		case REF_DRV_CTRL_EPS_ADD:
+			result = 2;//12
+			break;
+		//Stellgrößen der Antriebsregelung
+		case CTRL_DRV_CTRL_THRUST_ADD:
+			result = 2;//13
+			break;
+		case CTRL_DRV_CTRL_RUDDER_ANGLE_ADD:
+			result = 2;//14
+			break;
+		//lokaler Error Block
+		case ESB_GPS_ADD:
+			result = 1;//15
+			break;
+		case ESB_COMPASS_ADD:
+			result = 1;//16
+			break;
+		case ESB_CTRL_ADD:
+			result = 1;//17
+			break;
+		//Lidar
+		case LIDAR_VALUE_ADD:
+			result = 360;
+			break;
+		default:
+			result = -1;
+			break;
 	}
+	
+	//for (uint8_t i = 0;i<sizeof(regSet)/sizeof(slaveReg_t);i++)
+	//{
+		//if (regSet[i].add == reg){
+			//result = i;
+			//break;
+		//}
+	//}
 	return result;
 }
 
