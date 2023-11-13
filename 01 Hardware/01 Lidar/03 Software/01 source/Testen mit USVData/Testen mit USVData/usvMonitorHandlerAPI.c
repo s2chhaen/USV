@@ -55,7 +55,7 @@ static uint8_t crc8Checksum(uint8_t *data, uint16_t len, uint8_t polynom){
  * 
  * \return int8_t -1: kein gefunden, sonst: die Position in der Liste
  */
-static inline int16_t searchReg(uint16_t reg){//TODO change name into getLen
+static inline int16_t getRegLen(uint16_t reg){
 	int16_t result = 0;
 	switch(reg){
 		//Sensorblock
@@ -125,14 +125,6 @@ static inline int16_t searchReg(uint16_t reg){//TODO change name into getLen
 			result = -1;
 			break;
 	}
-	
-	//for (uint8_t i = 0;i<sizeof(regSet)/sizeof(slaveReg_t);i++)
-	//{
-		//if (regSet[i].add == reg){
-			//result = i;
-			//break;
-		//}
-	//}
 	return result;
 }
 
