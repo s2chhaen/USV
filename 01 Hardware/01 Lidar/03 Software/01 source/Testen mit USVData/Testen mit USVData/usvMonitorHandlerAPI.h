@@ -23,7 +23,7 @@
 //Parameter für Zwischenspeicherbuffer
 #define MAX_SIZE_FRAME 400
 //Parameter des Datenrahmens
-#define DATA_REG_LENGTH_BIT 8UL
+#define MAX_FRAME_LEN_BIT 8UL
 #define MAX_FRAME_LEN (1<<DATA_REG_LENGTH_BIT)
 #define MAX_VALUE_DATA_REG (MAX_FRAME_LEN -1)
 #define OVERHEAD_LEN 7
