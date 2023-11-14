@@ -415,6 +415,8 @@ static inline uint8_t getAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen
  * 
  * \return uint8_t 0: keinen Fehler, sonst: Fehler
  */
+#pragma GCC push_options
+#pragma GCC optimize ("O3")
 uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
 	//TODO zu optimieren
 	uint8_t result = NO_ERROR;
@@ -434,6 +436,7 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 	}
 	return result;
 }
+#pragma GCC pop_options
 
 /**
  * \brief zum Lesen in vielen Registern nur mit einem Protokoll (bis zum 255 Bytes unterstützt)
