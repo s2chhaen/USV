@@ -346,7 +346,7 @@ static inline uint8_t getAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen
 			bool checkEnd = protocol[temp3+1] == USV_PROTOCOL_END_BYTE;
 			if (checkEnd&&checkDataBlock){
 				//kopieren aller Datenbytes in Ausgabe
-				memcpy(output_p,(uint8_t*)protocol,(protocol[USV_FRAME_LEN_BYTE_POS]-7));
+				memcpy(output_p,(uint8_t*)&(protocol[USV_DATA_BEGIN_POS]),(protocol[USV_FRAME_LEN_BYTE_POS]-7));
 			} else {
 				result = PROCESS_FAIL;
 			}
