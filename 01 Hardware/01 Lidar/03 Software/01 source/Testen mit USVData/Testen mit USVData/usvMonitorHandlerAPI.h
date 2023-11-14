@@ -41,32 +41,33 @@
 
 typedef enum {
 	//Sensorblock
-	SEN_GESB_ADD = 0x00,
-	SEN_LONGNITUDE_ADD = 0x01,
-	SEN_LATITUDE_ADD = 0x05,
-	SEN_SATFIX_ADD = 0x09,
-	SEN_GPS_VEL_ADD = 0x0A,
-	SEN_COURSE_ANGLE_ADD = 0x0C,
-	SEN_TIMESTAMP_ADD = 0x0E,
+	SEN_GESB_ADD = 0x00,//00
+	SEN_LONGNITUDE_ADD = 0x01,//01
+	SEN_LATITUDE_ADD = 0x05,//02
+	SEN_SATFIX_ADD = 0x09,//03
+	SEN_GPS_VEL_ADD = 0x0A,//04
+	SEN_COURSE_ANGLE_ADD = 0x0C,//05
+	SEN_TIMESTAMP_ADD = 0x0E,//06
 	//Radar
-	RADAR_1_ADD = 0x12,
-	RADAR_2_ADD = 0x13,
+	RADAR_1_ADD = 0x12,//07
+	RADAR_2_ADD = 0x13,//08
 	//Führungsgrößen der Antriebsregelung
-	REF_DRV_CTRL_REF_A_ADD = 0x100,
-	REF_DRV_CTRL_REF_B_ADD = 0x108,
-	REF_DRV_CTRL_VEL_ADD = 0x110,
-	REF_DRV_CTRL_EPS_ADD = 0x112,
+	REF_DRV_CTRL_REF_A_ADD = 0x100,//09
+	REF_DRV_CTRL_REF_B_ADD = 0x108,//10
+	REF_DRV_CTRL_VEL_ADD = 0x110,//11
+	REF_DRV_CTRL_EPS_ADD = 0x112,//12
 	//Stellgrößen der Antriebsregelung
-	CTRL_DRV_CTRL_THRUST_ADD = 0x120,
-	CTRL_DRV_CTRL_RUDDER_ANGLE_ADD = 0x122,
+	CTRL_DRV_CTRL_THRUST_ADD = 0x120,//13
+	CTRL_DRV_CTRL_RUDDER_ANGLE_ADD = 0x122,//14
 	//lokaler Error Block
-	ESB_GPS_ADD = 0x200,
-	ESB_COMPASS_ADD = 0x201,
-	ESB_CTRL_ADD = 0x202,
+	ESB_GPS_ADD = 0x200,//15
+	ESB_COMPASS_ADD = 0x201,//16
+	ESB_CTRL_ADD = 0x202,//17
 	//Lidar
-	LIDAR_VALUE_ADD =0x203
+	LIDAR_VALUE_ADD =0x203//18
 }slaveRegAdd_t;
 
+#define USV_LAST_DATA_BLOCK_ADDR LIDAR_VALUE_ADD
 
 typedef uint8_t (*dataRx_t)(uint8_t* data, uint16_t length, uint32_t timeout_us);
 typedef uint8_t (*dataTx_t)(uint8_t* data, uint16_t length, uint32_t timeout_us);
