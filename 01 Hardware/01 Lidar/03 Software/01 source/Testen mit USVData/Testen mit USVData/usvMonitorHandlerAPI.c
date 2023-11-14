@@ -354,6 +354,9 @@ uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 	return result;
 }
 
+volatile uint8_t rxRes = 0;
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
 static inline uint8_t getAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
 	uint8_t result = NO_ERROR;
 	uint8_t temp1, temp2;
@@ -399,6 +402,7 @@ static inline uint8_t getAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen
 	}
 	return result;
 }
+#pragma GCC pop_options
 
 /**
  * \brief Empfangen die Daten aus dem Slave-Gerät, inklusiv CRC-Byte
