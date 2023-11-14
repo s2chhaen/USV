@@ -72,6 +72,14 @@ typedef enum {
 typedef uint8_t (*dataRx_t)(uint8_t* data, uint16_t length, uint32_t timeout_us);
 typedef uint8_t (*dataTx_t)(uint8_t* data, uint16_t length, uint32_t timeout_us);
 
+enum bytesPosInUSVProtocolHeader{
+	USV_START_BYTE_POS,
+	USV_OBJ_ID_BYTE_POS,
+	USV_REG_ADDR_AND_WR_LBYTE_POS,
+	USV_REG_ADDR_AND_WR_HBYTE_POS,
+	USV_FRAME_LEN_BYTE_POS,
+	USV_DATA_BEGIN_POS
+};
 
 typedef struct {
 	dataRx_t receiveFunc_p;
