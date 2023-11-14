@@ -145,12 +145,11 @@ static inline bool checkRxData(uint8_t* data,uint16_t dataLen, uint8_t rxChecksu
  * 
  * \return uint8_t 0: keinen Fehler, sonst Fehler
  */
-uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRxFunc_p, dataTx_t inputTxFunc_p, wait_t inputWaitFunc_p, uint8_t inputCrc8){
+uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRxFunc_p, dataTx_t inputTxFunc_p, uint8_t inputCrc8){
 	uint8_t result = NO_ERROR;
-	if ((inputRxFunc_p!=NULL)&&(inputTxFunc_p!=NULL)&&(inputWaitFunc_p!=NULL)){
+	if ((inputRxFunc_p!=NULL)&&(inputTxFunc_p!=NULL)){
 		dev_p->receiveFunc_p = inputRxFunc_p;
 		dev_p->transmitFunc_p = inputTxFunc_p;
-		dev_p->waitFunc_p = inputWaitFunc_p;
 		dev_p->crc8Polynom = inputCrc8;
 		dev_p->initState = 1;
 	} else{
