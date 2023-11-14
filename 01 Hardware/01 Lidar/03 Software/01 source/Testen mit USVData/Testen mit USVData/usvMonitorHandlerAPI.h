@@ -91,14 +91,13 @@ typedef struct{
 }slaveReg_t;
 
 
-typedef uint8_t (*dataRx_t)(uint8_t* data, uint16_t length);
-typedef uint8_t (*dataTx_t)(uint8_t* data, uint16_t length);
-typedef void (*wait_t)(uint32_t us);
+typedef uint8_t (*dataRx_t)(uint8_t* data, uint16_t length, uint32_t timeout_us);
+typedef uint8_t (*dataTx_t)(uint8_t* data, uint16_t length, uint32_t timeout_us);
+
 
 typedef struct {
 	dataRx_t receiveFunc_p;
 	dataTx_t transmitFunc_p;
-	wait_t waitFunc_p;
 	uint8_t initState:1;
 	uint8_t crc8Polynom;
 }usvMonitorHandler_t;
