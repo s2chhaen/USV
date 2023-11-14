@@ -313,6 +313,47 @@ uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 }
 #pragma GCC pop_options
 
+/**
+ * \brief zum Schreiben in vielen Registern nur mit einem Protokoll (bis zum 255 Bytes unterstützt)
+ * 
+ * \param add die Adresse vom geschriebenen Gerät
+ * \param reg die Adresse des ersten Registers im geschriebenen Datenblock
+ * \param dev_p der Zeiger zum Handler
+ * \param input_p das Eingabebuffer
+ * \param inputLen die Länge vom Eingabebuffer
+ * 
+ * \return uint8_t 0: kein Fehler, sonst: Fehler
+ */
+uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t inputLen){
+	uint8_t result = NO_ERROR;
+	if((dev_p==NULL)||(input_p==NULL)){
+		result = NULL_POINTER;
+	} else{
+		const uint16_t maxLen = getRegLen(USV_LAST_DATA_BLOCK_ADDR) + USV_LAST_DATA_BLOCK_ADDR;
+		uint16_t tempLen = (reg+inputLen);
+		int8_t checkReg = (getRegLen(reg) != -1) && (tempLen <= maxLen);
+		if (checkReg){
+			uint8_t processTime = inputLen/PAYLOAD_PER_FRAME + ((inputLen%PAYLOAD_PER_FRAME)?1:0);
+			uint16_t temp4;
+			__asm__("nop");
+			for (volatile uint8_t i = 0; i < processTime; i++){
+				temp4 = (inputLen >PAYLOAD_PER_FRAME)?PAYLOAD_PER_FRAME:inputLen;
+				result = setAndCheckData(add, reg+i*PAYLOAD_PER_FRAME, temp4,dev_p, &(input_p[i*PAYLOAD_PER_FRAME]), temp4);
+				if (result==NO_ERROR){
+					inputLen -= PAYLOAD_PER_FRAME;
+				} else{
+					result = PROCESS_FAIL;
+					break;
+				}
+			}
+			__asm__("nop");
+		} else{
+			result = DATA_INVALID;
+		}
+	}
+	return result;
+}
+
 static inline uint8_t getAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
 	uint8_t result = NO_ERROR;
 	uint8_t temp1, temp2;
@@ -434,83 +475,5 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 }
 #pragma GCC pop_options
 
-/**
- * \brief zum Schreiben in vielen Registern nur mit einem Protokoll (bis zum 255 Bytes unterstützt)
- * 
- * \param add die Adresse vom geschriebenen Gerät
- * \param reg die Adresse des ersten Registers im geschriebenen Datenblock
- * \param dev_p der Zeiger zum Handler
- * \param input_p das Eingabebuffer
- * \param inputLen die Länge vom Eingabebuffer
- * 
- * \return uint8_t 0: kein Fehler, sonst: Fehler
- */
-
-volatile uint8_t payload = PAYLOAD_PER_FRAME;
-volatile int8_t begin=0;
-volatile int8_t end=0;
-volatile uint16_t lenTemp=0;
-volatile uint8_t processTime = 0;
-
-uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t inputLen){
-	//TODO zu testen
-	uint8_t result = NO_ERROR;
-	if((dev_p==NULL)||(input_p==NULL)){
-		result = NULL_POINTER;
-	} else{
-		/*volatile int8_t*/ begin = searchReg(reg);
-		/*volatile int8_t*/ end = searchEnd(begin, inputLen);
-		
-		if ((begin != -1)&&(end>=begin)){
-			uint8_t buffer[MAX_SIZE_FRAME] = {0};//Zwischenspeicherbuffer
-			uint16_t positionPtr = 0;//der Zeiger zur nächsten freien Position, die Länge der nutzbaren Bytes
-			lenTemp = getTotalLen(begin,end);
-			//Anzahl der Protocol im abhängig von Nutzdaten (erwartet Nutzdaten = 247)
-			
-			/*uint8_t*/ processTime = (lenTemp/(uint16_t)PAYLOAD_PER_FRAME) + ((lenTemp%(uint16_t)PAYLOAD_PER_FRAME)?1:0);
-			uint8_t temp = 0;
-			for (volatile uint8_t i = 0; i<processTime; i++){
-				positionPtr = 0;
-				//Header im Gesamtarray kopieren
-				begin = begin + ((int8_t)i)*payload;
-				uuaslProtocolHeader_t head = protocolHeaderPrint(add,begin,UUASL_W_REQ);
-				temp = (inputLen>payload)?payload:inputLen;
-				head.length = temp+7;
-				positionPtr+= sizeof(head)/sizeof(uint8_t);
-				memcpy((&buffer[0]),(uint8_t*)&head,positionPtr);
-				
-				//TODO Inhalt im Gesamtarray kopieren
-				memcpy((&buffer[positionPtr]),&(input_p[i*payload]),temp);
-				positionPtr+=temp;
-				
-				//Tail im Gesamtarray kopieren
-				uint8_t crc8 = crc8Checksum(&(input_p[i*payload]),temp,dev_p->crc8Polynom);
-				uuaslProtocolTail_t tail = writeProtocolTailPrint(crc8);
-				memcpy((&buffer[positionPtr]),(uint8_t*)&tail,2);//magic number: Länge des Endteils/Tails in Byte
-				positionPtr += sizeof(tail)/sizeof(uint8_t);
-				
-				//Senden der Daten
-				result = (*(dev_p->transmitFunc_p))(buffer,positionPtr);
-#if WAIT_FUNCTION_ACTIVE
-				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
-#endif
-				positionPtr = 1;//hier dient als die zu empfangenen Daten
-				(*(dev_p->receiveFunc_p))(buffer, positionPtr);
-#if WAIT_FUNCTION_ACTIVE
-				(*(dev_p->waitFunc_p))(FACTOR_TO_MICROSEC*CHARS_PER_FRAME*positionPtr*3/BAUDRATE_BAUD/2);//warten
-#endif
-				if (buffer[0]!=0xA1){
-					result = PROCESS_FAIL;
-					break;
-				}
-				//Immer am Ende der Schleife
-				inputLen -= payload;
-			}
-		} else{
-			result = DATA_INVALID;
-		}
-	}
-	return result;
-}
 
 
