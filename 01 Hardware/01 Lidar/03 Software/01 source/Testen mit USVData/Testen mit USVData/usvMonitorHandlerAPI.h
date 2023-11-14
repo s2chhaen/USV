@@ -28,6 +28,16 @@
 #define PROTOCOL_OVERHEAD_LEN 7
 #define PROTOCOL_PAYLOAD_PER_FRAME (MAX_FRAME_LEN - PROTOCOL_OVERHEAD_LEN)
 
+//DST = destination, Arbeitsdauer vom Zielprogramm (MATLAB)
+#define BYTE_TRANSFER_TIME_US 44
+#define DST_PROG_WORK_TIME_US 150000
+//Protokoll
+#define USV_PROTOCOL_START_BYTE 0xA5
+#define USV_PROTOCOL_END_BYTE 0xA6
+#define USV_PROTOCOL_ACK_BYTE 0xA1
+//Empfangen Byte
+#define USV_1ST_RX_LEN 1
+#define USV_2ND_RX_LEN 4
 
 typedef enum {
 	//Sensorblock
