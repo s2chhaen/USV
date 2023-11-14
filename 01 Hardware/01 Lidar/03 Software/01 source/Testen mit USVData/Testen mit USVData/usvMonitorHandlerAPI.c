@@ -120,7 +120,7 @@ static inline int16_t getRegLen(uint16_t reg){
 			break;
 		//Lidar
 		case LIDAR_VALUE_ADD:
-			result = 360;
+			result = 361;
 			break;
 		default:
 			result = -1;
