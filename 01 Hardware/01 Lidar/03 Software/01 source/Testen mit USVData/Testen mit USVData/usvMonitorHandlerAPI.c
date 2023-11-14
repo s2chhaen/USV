@@ -467,7 +467,7 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 			uint16_t temp4;
 			for (volatile uint8_t i = 0; i < processTime; i++){
 				temp4 = (outputLen > PAYLOAD_PER_FRAME)?PAYLOAD_PER_FRAME:outputLen;
-				result = getAndCheckData(add, reg, (uint16_t) temp4, dev_p, &(output_p[i*PAYLOAD_PER_FRAME]), temp4);
+				result = getAndCheckData(add, reg+i*PAYLOAD_PER_FRAME, (uint16_t) temp4, dev_p, &(output_p[i*PAYLOAD_PER_FRAME]), temp4);
 				if (result==NO_ERROR){
 					outputLen -= PAYLOAD_PER_FRAME;
 				} else{
