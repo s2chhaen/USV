@@ -31,31 +31,6 @@
 #define OVERHEAD_LEN 7
 #define PAYLOAD_PER_FRAME (MAX_VALUE_DATA_REG-OVERHEAD_LEN)
 
-typedef struct{
-	uint8_t start;
-	uint8_t slaveAdd;
-	union rwa{
-		uint8_t value[2];
-		struct{
-			uint8_t slaveRegAddL:8;//low
-			uint8_t slaveRegAddH:4;
-			uint8_t rw:4;//high
-		}value_bf;
-	}rwaBytes;
-	uint8_t length;
-}uuaslProtocolHeader_t;
-
-typedef struct{
-	uint8_t checksum;
-	uint8_t end;
-}uuaslProtocolTail_t;
-
-typedef struct 
-{
-	uuaslProtocolHeader_t header;
-	uint8_t dataLen;
-	uuaslProtocolTail_t tail;
-}uuaslReadProtocol_t;
 
 typedef enum {
 	//Sensorblock
