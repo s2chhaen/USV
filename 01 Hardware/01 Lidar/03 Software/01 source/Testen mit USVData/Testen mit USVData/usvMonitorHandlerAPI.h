@@ -17,7 +17,7 @@
 #include "usVMonitorHandlerAPIConfig.h"
 
 #define USV_PROTOCOL_W_REQ 8
-#define UUASL_R_REQ 4
+#define USV_PROTOCOL_R_REQ 4
 #define GET_SLAVE_ADD_LOW_PART(a) a&0x00ff
 #define GET_SLAVE_ADD_HIGH_PART(a) a>>8
 #define SET_SLAVE_ADD_LOW_PART(add) (uint8_t)(add&0xff)
