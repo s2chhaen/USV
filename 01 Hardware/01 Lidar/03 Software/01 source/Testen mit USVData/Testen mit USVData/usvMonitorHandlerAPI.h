@@ -60,11 +60,6 @@ typedef enum {
 	LIDAR_VALUE_ADD =0x203
 }slaveRegAdd_t;
 
-typedef struct{
-	slaveRegAdd_t add:12;
-	uint16_t len:9;
-}slaveReg_t;
-
 
 typedef uint8_t (*dataRx_t)(uint8_t* data, uint16_t length, uint32_t timeout_us);
 typedef uint8_t (*dataTx_t)(uint8_t* data, uint16_t length, uint32_t timeout_us);
