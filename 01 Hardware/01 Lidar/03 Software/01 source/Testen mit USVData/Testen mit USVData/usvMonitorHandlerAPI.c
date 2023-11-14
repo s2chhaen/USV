@@ -259,6 +259,30 @@ uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRxFunc_p, dataTx_t inp
 	
 }
 
+static inline uint8_t setAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t length){
+	uint8_t result = NO_ERROR;
+	volatile uint8_t temp1;
+	protocol[USV_START_BYTE_POS] = USV_PROTOCOL_START_BYTE;
+	protocol[USV_OBJ_ID_BYTE_POS] = add;
+	protocol[USV_REG_ADDR_AND_WR_LBYTE_POS] = SET_SLAVE_ADD_LOW_PART(reg);
+	protocol[USV_REG_ADDR_AND_WR_HBYTE_POS] = SET_SLAVE_ADD_HIGH_PART(reg,PROTOCOL_W_REQ);
+	protocol[USV_FRAME_LEN_BYTE_POS] = length+PROTOCOL_OVERHEAD_LEN;
+	memcpy((uint8_t*)&(protocol[USV_DATA_BEGIN_POS]),input_p,length);
+	protocol[USV_DATA_BEGIN_POS+length] = crc8Checksum(input_p,length,dev_p->crc8Polynom);
+	protocol[USV_DATA_BEGIN_POS+1+length] = USV_PROTOCOL_END_BYTE;
+	//Senden
+	__asm__("nop");
+	(*(dev_p->transmitFunc_p))((uint8_t*)protocol,USV_DATA_BEGIN_POS+2+length,(USV_DATA_BEGIN_POS+2+length)*BYTE_TRANSFER_TIME_US);//begin bei 0
+	//Empfangen
+	temp1 = !(*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_START_BYTE_POS]),1,1*BYTE_TRANSFER_TIME_US+DST_PROG_WORK_TIME_US);//magic number 1: Anzahl der empfangenen Bytes
+	__asm__("nop");
+	temp1 = temp1 && (protocol[USV_START_BYTE_POS] == USV_PROTOCOL_ACK_BYTE);
+	if (!temp1){
+		result = PROCESS_FAIL;
+	}
+	return result;
+}
+
 /**
  * \brief Zum Schreiben in einem Register im Slave-Gerät
  * 
