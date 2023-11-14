@@ -18,9 +18,8 @@
 
 #define USV_PROTOCOL_W_REQ 8
 #define USV_PROTOCOL_R_REQ 4
-#define GET_SLAVE_ADD_LOW_PART(a) a&0x00ff
+#define USV_PROTOCOL_SET_SLAVE_ADD_LOW(add) (uint8_t)(add&0xff)
 #define GET_SLAVE_ADD_HIGH_PART(a) a>>8
-#define SET_SLAVE_ADD_LOW_PART(add) (uint8_t)(add&0xff)
 #define SET_SLAVE_ADD_HIGH_PART(add,rw) (uint8_t)((add>>8)|(rw<<4))
 //Parameter für Zwischenspeicherbuffer
 #define MAX_SIZE_FRAME 400
