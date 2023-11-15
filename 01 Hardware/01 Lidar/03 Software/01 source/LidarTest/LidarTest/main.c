@@ -6,6 +6,7 @@
  */ 
 
 #include "main.h"
+
 EMPTY_INTERRUPT(BADISR_vect);
 
 static void ucInit(){
@@ -13,6 +14,8 @@ static void ucInit(){
 
 int main(void)
 {
+	ucInit();
+	sei();
     /* Replace with your application code */
     while (1) 
     {
