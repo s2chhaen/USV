@@ -110,7 +110,7 @@ static uint8_t waitWithBreak(uint64_t cycles, uint8_t* obj, uint8_t desiredValue
  * 
  * \return uint8_t 0: keinen Fehler, sonst: Fehler
  */
-uint8_t usartDataTx(uint8_t* data, uint16_t length){
+uint8_t usartDataTx(uint8_t* data, uint16_t length, uint32_t timeout_us){
 	uint8_t result = NO_ERROR;
 	if(length > BUFFER_LEN){
 		result = DATA_INVALID;
@@ -119,16 +119,17 @@ uint8_t usartDataTx(uint8_t* data, uint16_t length){
 	} else if (!comUnit_control.init){
 		result = NO_INIT;
 	} else{
-		const uint16_t* temp = timer_getCounter();
-		timer_setCounter((4*length*3)/2);//magic number: 4 = Zeitsdauer/Zeichen (us), 3/2 = Sicherheit
-		timer_setState(1);
-		while(comUnit_tx.toHandleBytes){
-			if (!(*temp)){
-				result = TIME_OUT;
-				break;
-			}
-		};
-		timer_setState(0);
+		if (comUnit_tx.toHandleBytes){
+			timer_setCounter(timeout_us);
+			timer_setState(1);
+			while(comUnit_tx.toHandleBytes){
+				if (timer_getCounter() < 0){//Zum Testen nochmals
+					result = TIME_OUT;
+					break;
+				}
+			};
+			timer_setState(0);
+		}
 		if (result==NO_ERROR){
 			memcpy((uint8_t*)comUnit_tx.data, data, length);
 			if (length <= usartFIFOMaxLen){
@@ -139,9 +140,10 @@ uint8_t usartDataTx(uint8_t* data, uint16_t length){
 				comUnit_tx.strPtr += usartFIFOMaxLen;
 				USART_send_Array(comUnit_control.usart4USVData, 0, (uint8_t*)(comUnit_tx.data), usartFIFOMaxLen);
 			}
+			timer_setCounter(timeout_us);
 			timer_setState(1);
 			while(comUnit_tx.toHandleBytes){
-				if (!(*temp)){
+				if (timer_getCounter() < 0){//Zum Testen nochmals
 					result = TIME_OUT;
 					break;
 				}

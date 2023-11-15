@@ -50,7 +50,7 @@ typedef struct{
 }comHandlerStatusNConfig_t;
 
 extern uint8_t initUserUnit(usartConfig_t config);
-extern uint8_t usartDataTx(uint8_t* data, uint16_t length);
+extern uint8_t usartDataTx(uint8_t* data, uint16_t length, uint32_t timeout_us);
 extern uint8_t usartDataRx(uint8_t* data, uint16_t length);
 
 #endif /* USERUNIT_H_ */
