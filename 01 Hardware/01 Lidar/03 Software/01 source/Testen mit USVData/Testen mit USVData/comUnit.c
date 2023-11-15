@@ -13,6 +13,8 @@ const uint16_t usartFIFOMaxLen = _FIFO_max_def - 1;
 comUnitBuffer_t comUnit_rx = {0};
 comUnitBuffer_t comUnit_tx = {0};
 volatile comHandlerStatusNConfig_t comUnit_control = {0};
+	
+volatile uint16_t tempVar;
 
 /**
  * \brief die Funktion, die bei ISR() von USART-Transmit zurückgeruft wird
