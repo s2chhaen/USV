@@ -55,19 +55,21 @@ static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, u
  * 
  * \return bool immer true, da es bisher nicht weiter betrachtet wird
  */
+#pragma GCC push_options
+#pragma GCC optimize ("O3")
 static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
-	//Empfangen der Daten in USART-FIFO und Kopieren in das Zwischenbuffer
-	uint16_t temp = comUnit_rx.toHandleBytes;
-	comUnit_rx.toHandleBytes -= length;
-	memcpy((uint8_t*)&(comUnit_rx.data[comUnit_rx.strPtr]),data,length);
-	if (temp){
-		if (temp < usartFIFOMaxLen){
-			USART_set_Bytes_to_receive(comUnit_control.usart4USVData,temp);
-		} else{
+	//if (comUnit_rx.toHandleBytes){
+		comUnit_rx.toHandleBytes -= length;
+		tempVar = comUnit_rx.toHandleBytes;
+		memcpy((uint8_t*)&(comUnit_rx.data[comUnit_rx.strPtr]),data,length);
+		comUnit_rx.strPtr += length;
+		
+		if (tempVar > usartFIFOMaxLen){
 			USART_set_Bytes_to_receive(comUnit_control.usart4USVData,usartFIFOMaxLen);
+		} else if(tempVar){
+			USART_set_Bytes_to_receive(comUnit_control.usart4USVData,tempVar);
 		}
-	}
-	comUnit_rx.strPtr += length;
+	//}
 	return true;
 }
 
