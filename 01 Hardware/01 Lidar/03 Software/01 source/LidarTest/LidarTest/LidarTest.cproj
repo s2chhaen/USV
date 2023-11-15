@@ -153,10 +153,25 @@
     <Compile Include="ATMegaXX09\USART\USART_config.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="errorList.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="lidarComProtocol.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="lidarIf\asciiTable.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="lidarIf\lidarIf.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="lidarIf\lidarIf.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="main.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Math\checksum.c">
@@ -176,6 +191,7 @@
     <Folder Include="ATMegaXX09\USART" />
     <Folder Include="ATMegaXX09\Port" />
     <Folder Include="Math" />
+    <Folder Include="lidarIf" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
