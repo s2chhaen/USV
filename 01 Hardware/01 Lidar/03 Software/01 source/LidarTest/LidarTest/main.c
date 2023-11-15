@@ -8,6 +8,8 @@
 #include "main.h"
 EMPTY_INTERRUPT(BADISR_vect);
 
+static void ucInit(){
+}
 
 int main(void)
 {
