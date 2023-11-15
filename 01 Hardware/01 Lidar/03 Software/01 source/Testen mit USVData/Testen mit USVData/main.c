@@ -139,12 +139,12 @@ int main(void)
 	setErr1State(ON);
 #endif	
 	
-	const uint8_t add = 1;
+	const uint8_t add = 0;
 	uint16_t reg = 0;
-	uint16_t rxLen = 0;
-	volatile uint8_t output[500] = {0};
+	volatile uint16_t rxLen = 0;
 	
 #ifdef READ_ONE_REGISTER
+	volatile uint8_t output[500] = {0};
 	//Lesen in Registern
 	reg = SEN_COURSE_ANGLE_ADD;
 	rxLen = 2;
