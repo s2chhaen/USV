@@ -41,8 +41,9 @@ uint8_t timerInit(uint8_t rezConfig, uint8_t resolution){
 		timer_status.rez = rezConfig;
 		timer_status.init = 1;
 		TCA0.SINGLE.PER = (uint16_t)(CLK_CPU/prescalerWConvertFactor*resolution);//Res = resolution
+		timer_res = resolution;
 		TCA0.SINGLE.INTCTRL |= TCA_SINGLE_OVF_bm;//Aktivieren des OVF - Interrupt
-		TCA0.SINGLE.CTRLA = config|TCA_SINGLE_ENABLE_bm;
+		TCA0.SINGLE.CTRLA = config;
 	} else{
 		timer_status.init = 0;
 	}
