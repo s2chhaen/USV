@@ -5,7 +5,8 @@
  * Author : Thach
  */ 
 
-#include <avr/io.h>
+#include "main.h"
+EMPTY_INTERRUPT(BADISR_vect);
 
 
 int main(void)
