@@ -64,8 +64,8 @@ void timer_setCounter(uint32_t value){
 	TCA0.SINGLE.CNT = 0;
 }
 
-const int32_t timer_getCounter(){
-	return timer_counter[timer_status.rez];
+const int16_t timer_getCounter(){
+	return timer_stepCounter[timer_status.rez];
 }
 
 /**
