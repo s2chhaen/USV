@@ -29,6 +29,8 @@ EMPTY_INTERRUPT(BADISR_vect)
 //#define READ_ONE_REGISTER 1
 //Schreiben in eines Register
 //#define WRITE_IN_ONE_REGISTER 1
+//Lesen Multiregister
+//#define READ_MULTIREGISTER 1
 //Echo (Schreiben und dann Lesen Multiregister)
 #define WRITE_AND_READ_MULTI_REGISTER 1
 
@@ -165,6 +167,9 @@ int main(void)
 	}
 #endif
 
+#ifdef READ_MULTIREGISTER
+#define BUFFER_3_LEN 361
+	volatile uint8_t outputBuffer3[BUFFER_3_LEN] = {0};
 #ifdef WRITE_AND_READ_MULTI_REGISTER
 #define INPUT_2_LEN 20
 	//Multiregister schreiben und lesen
@@ -175,15 +180,16 @@ int main(void)
 		input2[i] = i;
 	}
 	reg = LIDAR_VALUE_ADD;
-	rxLen = 360;
-	error1 = setMultiregister(add,reg,&handler,(uint8_t*)input2, rxLen);
-	if (error1!=NO_ERROR){
+	rxLen = BUFFER_3_LEN;
+	error1 = getMultiregister(add,reg,&handler,(uint8_t*)outputBuffer3,rxLen);
+	__asm__("nop");
+	if (error1==NO_ERROR){
 		setErr1State(ON);
-	} else {
+	} else{
 		setErr1State(OFF);
 	}
-	error1 = getMultiregister(add,reg,&handler,(uint8_t*)output, rxLen);
-	if (error1!=NO_ERROR){
+#endif //READ_MULTIREGISTER
+
 		setErr1State(ON);
 	} else {
 		setErr1State(OFF);
