@@ -59,10 +59,9 @@ void timer_setState(uint8_t state){
 	}
 }
 
-void timer_setCounter(int32_t value){
-	timer_status.state = 0;
-	timer_counter[timer_status.rez] = value;
-	timer_status.state = 1;
+void timer_setCounter(uint32_t value){
+	timer_stepCounter[timer_status.rez] = (int16_t)(value/(uint32_t)timer_res);
+	TCA0.SINGLE.CNT = 0;
 }
 
 const int32_t timer_getCounter(){

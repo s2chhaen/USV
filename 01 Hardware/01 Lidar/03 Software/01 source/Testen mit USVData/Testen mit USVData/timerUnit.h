@@ -40,7 +40,7 @@ typedef struct{
 
 extern uint8_t timerInit(uint8_t rezConfig, uint8_t resolution);
 extern void timer_setState(uint8_t state);
-extern void timer_setCounter(int32_t value);
+extern void timer_setCounter(uint32_t value);
 extern const int32_t timer_getCounter();
 extern void timer_stopWatch(uint16_t val);
 
