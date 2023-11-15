@@ -106,6 +106,10 @@ int main(void)
 	//IO-Pin für Fehleranzeige Init
 	
 	ioInit();
+	//ccp_write_io((void*)&CPUINT.CTRLA,CPUINT_LVL0RR_bm);//TODO zu überlegen noch
+	ccp_write_io((void*)&(CPUINT.LVL1VEC),USART1_RXC_vect_num);
+	ccp_write_io((void*)&(CPUINT.LVL0PRI),TCA0_OVF_vect_num);
+	
 	//Benutzereinheit init
 	usartConfig_t config= {
 		.usartNo= iUSART1,
