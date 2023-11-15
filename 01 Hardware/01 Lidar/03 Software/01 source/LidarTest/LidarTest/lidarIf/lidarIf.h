@@ -26,4 +26,5 @@ typedef struct lidarHandler{
 	lidarIf_txFunc_p tx_p;
 	uint16_t firmwareVersion:14;
 }lidarHandler_t;
+
 #endif /* LIDARIF_H_ */
