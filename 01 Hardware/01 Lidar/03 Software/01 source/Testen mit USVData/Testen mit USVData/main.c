@@ -4,7 +4,7 @@
  * Created: 7/6/2023 4:59:08 PM
  * Author : Thach
  * Version: 1.0
- * Revision: 1.1
+ * Revision: 1.2
  */ 
 
 #include <avr/io.h>
@@ -17,7 +17,7 @@
 #define INPUT_DISABLE 0x04
 
 //verhindern Reset bei falschen Interrupt
-EMPTY_INTERRUPT(BADISR_vect)
+EMPTY_INTERRUPT(BADISR_vect);
 
 /************************************************************************/
 /* Definition des Macros für das Test                                                                     */
@@ -81,7 +81,7 @@ static void setErr1State(uint8_t state){
 uint8_t stringCmp(uint8_t* str1_p, uint16_t lenStr1, uint8_t* str2_p, uint16_t lenStr2){
 	uint8_t result = 1;
 	if (lenStr1==lenStr2){
-		for (uint16_t i = 0; i<lenStr1; i++){
+		for (volatile uint16_t i = 0; i<lenStr1; i++){
 			if (str1_p[i]!=str2_p[i]){
 				result = 0;
 				break;
@@ -104,7 +104,6 @@ int main(void)
 	uint8_t prescalerClk=1;
 	init_Core_CLK(INTERN_CLK,prescalerClk);
 	//IO-Pin für Fehleranzeige Init
-	
 	ioInit();
 	//ccp_write_io((void*)&CPUINT.CTRLA,CPUINT_LVL0RR_bm);//TODO zu überlegen noch
 	ccp_write_io((void*)&(CPUINT.LVL1VEC),USART1_RXC_vect_num);
@@ -133,7 +132,6 @@ int main(void)
 	/* Testbeginn                                                                     */
 	/************************************************************************/
 	
-
 #ifdef LED_ERR1_TEST
 	setErr1State(ON);
 #endif	
@@ -148,7 +146,7 @@ int main(void)
 	reg = SEN_COURSE_ANGLE_ADD;
 	rxLen = 2;
 	error1 = getData(add,reg,&handler,(uint8_t*)output,rxLen);
-	if (error1!=NO_ERROR){
+	if (error1==NO_ERROR){
 		setErr1State(ON);
 	} else{
 		setErr1State(OFF);
@@ -225,6 +223,7 @@ int main(void)
 
     /* Replace with your application code */
     while (1){
+		error1++;
     }
 }
 
