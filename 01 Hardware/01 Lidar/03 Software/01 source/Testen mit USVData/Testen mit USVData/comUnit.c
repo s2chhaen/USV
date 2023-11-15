@@ -162,46 +162,54 @@ uint8_t usartDataTx(uint8_t* data, uint16_t length, uint32_t timeout_us){
  * 
  * \return uint8_t 0: kein Fehler, sonst Fehler
  */
-uint8_t usartDataRx(uint8_t* data, uint16_t length){
+#pragma GCC push_options
+#pragma GCC optimize ("O3")
+uint8_t usartDataRx(uint8_t* data, uint16_t length, uint32_t timeout_us){
 	uint8_t result = NO_ERROR;
 	if (data==NULL){
 		result = NULL_POINTER;
-	} else if ((length>BUFFER_LEN) || (length==0)){
+		} else if (length>BUFFER_LEN){
 		result = DATA_INVALID;
 	} else{
-		const uint16_t* temp = timer_getCounter();
-		timer_setCounter((4*length*3)/2);//magic number: 4 = Zeitsdauer/Zeichen (us), 3/2 = Sicherheit
-		timer_setState(1);
-		while(comUnit_rx.toHandleBytes){
-			if (!(*temp)){
-				result = TIME_OUT;
-				break;
-			}	
-		};
-		if (result==NO_ERROR){
-			comUnit_rx.toHandleBytes = length;
-			if (length < usartFIFOMaxLen){
-				USART_set_Bytes_to_receive(comUnit_control.usart4USVData,length);
-			} else{
-				USART_set_Bytes_to_receive(comUnit_control.usart4USVData,usartFIFOMaxLen);
-			}
+		if (comUnit_rx.toHandleBytes){
+			timer_setCounter(timeout_us);
 			timer_setState(1);
-			while(comUnit_rx.toHandleBytes){
-				if (!(*temp)){
+			while (comUnit_rx.toHandleBytes){
+				if (timer_getCounter() < 0){//Zum Testen nochmals
 					result = TIME_OUT;
 					break;
 				}
-			};
+			}
+			timer_setState(0);
+		}
+		if (result==NO_ERROR){
+			if (length < usartFIFOMaxLen){
+				comUnit_rx.toHandleBytes = length;
+				USART_set_Bytes_to_receive(comUnit_control.usart4USVData,length);
+			} else{
+				comUnit_rx.toHandleBytes = length;
+				USART_set_Bytes_to_receive(comUnit_control.usart4USVData,usartFIFOMaxLen);
+			}
+			//comUnit_rx.toHandleBytes = length;
+			//USART_set_Bytes_to_receive(comUnit_control.usart4USVData,length);
+			timer_setCounter(timeout_us);
+			timer_setState(1);
+			while (comUnit_rx.toHandleBytes){//Zum Testen nochmals
+				if (timer_getCounter() < 0){
+					result = TIME_OUT;
+					break;
+				}
+			}
+			timer_setState(0);
 			if (result==NO_ERROR){
 				memcpy((uint8_t*)data,(uint8_t*)comUnit_rx.data,length);
-			} else{
-				memcpy((uint8_t*)data,(uint8_t*)comUnit_rx.data,comUnit_rx.strPtr);
 			}
-			comUnit_rx.strPtr = 0;
 		}
+		comUnit_rx.strPtr = 0;
 	}
 	return result;
 }
+#pragma GCC pop_options
 
 /**
  * \brief Funktion zur Initialisation des User-Unit-Objektes
