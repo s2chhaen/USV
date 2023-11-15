@@ -78,9 +78,9 @@ const int16_t timer_getCounter(){
 extern void timer_stopWatch(uint16_t val){
 	uint8_t mode = timer_status.rez;
 	timer_status.state = 1;
-	timer_counter[mode] = val;
+	timer_stepCounter[mode] = val;
 	timer_status.state = 1;
-	while (timer_counter[mode]);
+	while (timer_stepCounter[mode]);
 }
 
 /**
