@@ -164,8 +164,8 @@ static inline uint8_t setAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen
 	volatile uint8_t temp1;
 	protocol[USV_START_BYTE_POS] = USV_PROTOCOL_START_BYTE;
 	protocol[USV_OBJ_ID_BYTE_POS] = add;
-	protocol[USV_REG_ADDR_AND_WR_LBYTE_POS] = SET_SLAVE_ADD_LOW_PART(reg);
-	protocol[USV_REG_ADDR_AND_WR_HBYTE_POS] = SET_SLAVE_ADD_HIGH_PART(reg,PROTOCOL_W_REQ);
+	protocol[USV_REG_ADDR_AND_WR_LBYTE_POS] = USV_PROTOCOL_SET_SLAVE_ADD_LOW(reg);
+	protocol[USV_REG_ADDR_AND_WR_HBYTE_POS] = USV_PROTOCOL_SET_SLAVE_ADD_HIGH(reg,USV_PROTOCOL_W_REQ);
 	protocol[USV_FRAME_LEN_BYTE_POS] = length+PROTOCOL_OVERHEAD_LEN;
 	memcpy((uint8_t*)&(protocol[USV_DATA_BEGIN_POS]),input_p,length);
 	protocol[USV_DATA_BEGIN_POS+length] = crc8Checksum(input_p,length,dev_p->crc8Polynom);
@@ -233,14 +233,14 @@ uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 		uint16_t tempLen = (reg+inputLen);
 		int8_t checkReg = (getRegLen(reg) != -1) && (tempLen <= maxLen);
 		if (checkReg){
-			uint8_t processTime = inputLen/PAYLOAD_PER_FRAME + ((inputLen%PAYLOAD_PER_FRAME)?1:0);
+			uint8_t processTime = inputLen/PROTOCOL_PAYLOAD_PER_FRAME + ((inputLen%PROTOCOL_PAYLOAD_PER_FRAME)?1:0);
 			uint16_t temp4;
 			__asm__("nop");
 			for (volatile uint8_t i = 0; i < processTime; i++){
-				temp4 = (inputLen >PAYLOAD_PER_FRAME)?PAYLOAD_PER_FRAME:inputLen;
-				result = setAndCheckData(add, reg+i*PAYLOAD_PER_FRAME, temp4,dev_p, &(input_p[i*PAYLOAD_PER_FRAME]), temp4);
+				temp4 = (inputLen >PROTOCOL_PAYLOAD_PER_FRAME)?PROTOCOL_PAYLOAD_PER_FRAME:inputLen;
+				result = setAndCheckData(add, reg+i*PROTOCOL_PAYLOAD_PER_FRAME, temp4,dev_p, &(input_p[i*PROTOCOL_PAYLOAD_PER_FRAME]), temp4);
 				if (result==NO_ERROR){
-					inputLen -= PAYLOAD_PER_FRAME;
+					inputLen -= PROTOCOL_PAYLOAD_PER_FRAME;
 				} else{
 					result = PROCESS_FAIL;
 					break;
@@ -263,9 +263,9 @@ static inline uint8_t getAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen
 	uint16_t temp3;
 	protocol[USV_START_BYTE_POS] = USV_PROTOCOL_START_BYTE;
 	protocol[USV_OBJ_ID_BYTE_POS] = add;//slave-id = addr
-	temp1 = SET_SLAVE_ADD_LOW_PART(reg);
+	temp1 = USV_PROTOCOL_SET_SLAVE_ADD_LOW(reg);
 	protocol[USV_REG_ADDR_AND_WR_LBYTE_POS] = temp1;
-	temp2 = SET_SLAVE_ADD_HIGH_PART(reg,PROTOCOL_R_REQ);
+	temp2 = USV_PROTOCOL_SET_SLAVE_ADD_HIGH(reg,USV_PROTOCOL_R_REQ);
 	protocol[USV_REG_ADDR_AND_WR_HBYTE_POS] = temp2;
 	protocol[USV_FRAME_LEN_BYTE_POS] = PROTOCOL_OVERHEAD_LEN+1;
 	protocol[USV_FRAME_LEN_BYTE_POS+1] = (uint8_t)regLen;//Datenteil = Länge des Registers
@@ -363,13 +363,13 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 		uint16_t tempLen = (reg+outputLen);
 		int8_t checkReg = (getRegLen(reg) != -1) && (tempLen <= maxLen);
 		if (checkReg){
-			uint8_t processTime = outputLen/PAYLOAD_PER_FRAME + ((outputLen%PAYLOAD_PER_FRAME)?1:0);
+			uint8_t processTime = outputLen/PROTOCOL_PAYLOAD_PER_FRAME + ((outputLen%PROTOCOL_PAYLOAD_PER_FRAME)?1:0);
 			uint16_t temp4;
 			for (volatile uint8_t i = 0; i < processTime; i++){
-				temp4 = (outputLen > PAYLOAD_PER_FRAME)?PAYLOAD_PER_FRAME:outputLen;
-				result = getAndCheckData(add, reg+i*PAYLOAD_PER_FRAME, (uint16_t) temp4, dev_p, &(output_p[i*PAYLOAD_PER_FRAME]), temp4);
+				temp4 = (outputLen > PROTOCOL_PAYLOAD_PER_FRAME)?PROTOCOL_PAYLOAD_PER_FRAME:outputLen;
+				result = getAndCheckData(add, reg+i*PROTOCOL_PAYLOAD_PER_FRAME, (uint16_t) temp4, dev_p, &(output_p[i*PROTOCOL_PAYLOAD_PER_FRAME]), temp4);
 				if (result==NO_ERROR){
-					outputLen -= PAYLOAD_PER_FRAME;
+					outputLen -= PROTOCOL_PAYLOAD_PER_FRAME;
 				} else{
 					break;
 				}
@@ -381,6 +381,5 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 	return result;
 }
 #pragma GCC pop_options
-
 
 
