@@ -20,4 +20,10 @@
 typedef uint8_t (*lidarIf_rxFunc_p)(uint8_t* data, uint16_t length);
 typedef uint8_t (*lidarIf_txFunc_p)(uint8_t* data, uint16_t length);
 
+
+typedef struct lidarHandler{
+	lidarIf_rxFunc_p rx_p;
+	lidarIf_txFunc_p tx_p;
+	uint16_t firmwareVersion:14;
+}lidarHandler_t;
 #endif /* LIDARIF_H_ */
