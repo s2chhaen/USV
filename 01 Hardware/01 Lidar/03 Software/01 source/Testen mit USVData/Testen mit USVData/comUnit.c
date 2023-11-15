@@ -223,7 +223,7 @@ uint8_t initUserUnit(usartConfig_t config){
 	volatile uint8_t usartInit = USART_init(config.usartNo,config.baudrate, config.usartChSize, config.parity, \
 									config.stopbit, config.sync, config.mpcm,config.address, config.portMux);
 	comUnit_control.usart4USVData = config.usartNo;
-	comUnit_control.init = (!usartInit)?1:0;
+	comUnit_control.init = 1;//TODO noch zu korrigieren
 	USART_set_send_Array_callback_fnc(config.usartNo,&usartCallbackTx);
 	USART_set_receive_Array_callback_fnc(config.usartNo,&usartCallbackRx);
 	result = usartInit?NO_ERROR:PROCESS_FAIL;
