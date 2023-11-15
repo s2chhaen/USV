@@ -126,6 +126,7 @@ int main(void)
 	//User-Unit and Slave API Handler Init
 	usvMonitorHandler_t handler;
 	initDev(&handler, &usartDataRx, &usartDataTx, 0xD5);
+	timerInit(REZ_US,70);//magic number: Zeitsdauer für 1 Byte von USART mit der oberen Konfiguration
 	sei();//globales Interrupt aktiviert
 	
 	/************************************************************************/
