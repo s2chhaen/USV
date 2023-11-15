@@ -121,7 +121,7 @@ int main(void)
 	initUserUnit(config);
 	//User-Unit and Slave API Handler Init
 	usvMonitorHandler_t handler;
-	initDev(&handler,usartDataRx,usartDataTx,waitCycle,0xD5);
+	initDev(&handler, &usartDataRx, &usartDataTx, 0xD5);
 	sei();//globales Interrupt aktiviert
 	
 	/************************************************************************/
