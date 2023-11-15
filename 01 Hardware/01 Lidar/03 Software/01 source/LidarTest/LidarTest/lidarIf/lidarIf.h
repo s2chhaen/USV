@@ -18,5 +18,6 @@
 #define DEFAULT_VERSION ((1<<8)|(10<<0));
 
 typedef uint8_t (*lidarIf_rxFunc_p)(uint8_t* data, uint16_t length);
+typedef uint8_t (*lidarIf_txFunc_p)(uint8_t* data, uint16_t length);
 
 #endif /* LIDARIF_H_ */
