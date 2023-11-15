@@ -173,15 +173,6 @@ int main(void)
 #ifdef READ_MULTIREGISTER
 #define BUFFER_3_LEN 361
 	volatile uint8_t outputBuffer3[BUFFER_3_LEN] = {0};
-#ifdef WRITE_AND_READ_MULTI_REGISTER
-#define INPUT_2_LEN 20
-	//Multiregister schreiben und lesen
-	volatile uint8_t input2[INPUT_2_LEN] = {0};
-	//memset((uint8_t*)input2,0x14,INPUT_2_LEN);
-	for (int i = 0; i<INPUT_2_LEN;i++)
-	{
-		input2[i] = i;
-	}
 	reg = LIDAR_VALUE_ADD;
 	rxLen = BUFFER_3_LEN;
 	error1 = getMultiregister(add,reg,&handler,(uint8_t*)outputBuffer3,rxLen);
