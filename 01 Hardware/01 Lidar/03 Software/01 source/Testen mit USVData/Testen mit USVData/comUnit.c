@@ -75,34 +75,6 @@ static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 #pragma GCC pop_options
 
 /**
- * \brief Funktion zum Überwachen einer Variable, ob es erwünschten Wert in bestimmter Zeit erreicht
- * \detailed diese Funktion überwächt die Variable obj in bestimmter Zeitraum (in Schleifen), wenn sie
- * den Wert desiredValue erreicht dann gibt die Funktion keinen Fehler zurück. Sonst gibt sie 
- * timeout-Fehler zurück
- *
- * \param cycles die max. Timeout-Zeit (in Zyklen)
- * \param obj die zu überwachende Variable
- * \param desiredValue der erwünschte Wert
- * 
- * \return uint8_t 0: kein Fehler, die Variable den Wert rechtzeitig erreicht, sonst: nicht
- */
-static uint8_t waitWithBreak(uint64_t cycles, uint8_t* obj, uint8_t desiredValue){
-	uint8_t result = NO_ERROR;
-	//Betrachtet den Wert von obj in einer bestimmten Zeit (in Anzahl der Schleife)
-	for (uint64_t i = 0; i<cycles;i++){
-		if ((*obj)==desiredValue){
-			break;
-		}
-	}
-	//Wird es nach der Zeit den Wert nicht erreicht, dann Fehler zurückgegeben
-	if((*obj)!=desiredValue){
-		result = TIME_OUT;
-	}
-	return result;
-}
-
-
-/**
  * \brief Daten über USART senden
  * 
  * \param data die Zeiger zum Datenblock
@@ -168,14 +140,14 @@ uint8_t usartDataRx(uint8_t* data, uint16_t length, uint32_t timeout_us){
 	uint8_t result = NO_ERROR;
 	if (data==NULL){
 		result = NULL_POINTER;
-		} else if (length>BUFFER_LEN){
+	} else if (length>BUFFER_LEN){
 		result = DATA_INVALID;
 	} else{
 		if (comUnit_rx.toHandleBytes){
 			timer_setCounter(timeout_us);
 			timer_setState(1);
 			while (comUnit_rx.toHandleBytes){
-				if (timer_getCounter() < 0){//Zum Testen nochmals
+				if (timer_getCounter() < 0){
 					result = TIME_OUT;
 					break;
 				}
@@ -190,11 +162,9 @@ uint8_t usartDataRx(uint8_t* data, uint16_t length, uint32_t timeout_us){
 				comUnit_rx.toHandleBytes = length;
 				USART_set_Bytes_to_receive(comUnit_control.usart4USVData,usartFIFOMaxLen);
 			}
-			//comUnit_rx.toHandleBytes = length;
-			//USART_set_Bytes_to_receive(comUnit_control.usart4USVData,length);
 			timer_setCounter(timeout_us);
 			timer_setState(1);
-			while (comUnit_rx.toHandleBytes){//Zum Testen nochmals
+			while (comUnit_rx.toHandleBytes){
 				if (timer_getCounter() < 0){
 					result = TIME_OUT;
 					break;
