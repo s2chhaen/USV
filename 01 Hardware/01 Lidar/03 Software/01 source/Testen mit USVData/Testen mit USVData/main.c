@@ -94,6 +94,8 @@ uint8_t stringCmp(uint8_t* str1_p, uint16_t lenStr1, uint8_t* str2_p, uint16_t l
 	return result;
 }
 
+volatile uint8_t error1 = NO_ERROR;
+
 int main(void)
 {
 	/************************************************************************/
@@ -137,7 +139,6 @@ int main(void)
 	setErr1State(ON);
 #endif	
 	
-	volatile uint8_t error1 = NO_ERROR;
 	const uint8_t add = 1;
 	uint16_t reg = 0;
 	uint16_t rxLen = 0;
