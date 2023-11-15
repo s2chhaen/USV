@@ -4,7 +4,7 @@
  * Created: 6/29/2023 11:57:34 PM
  * Author: Thach
  * Version: 1.0
- * Revision: 1.1
+ * Revision: 1.2
  */ 
 
 #include "timerUnit.h"
@@ -92,4 +92,3 @@ ISR(TCA0_OVF_vect){
 	timer_stepCounter[timer_status.rez]--;
 	TCA0.SINGLE.INTFLAGS = TCA_SINGLE_OVF_bm;//Loeschen von Interrupt-Flag
 }
-
