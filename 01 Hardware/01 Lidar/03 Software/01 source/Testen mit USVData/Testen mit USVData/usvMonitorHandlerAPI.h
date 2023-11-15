@@ -22,8 +22,6 @@
 #define USV_PROTOCOL_R_REQ 4
 #define USV_PROTOCOL_SET_SLAVE_ADD_LOW(add) (uint8_t)(add&0xff)
 #define USV_PROTOCOL_SET_SLAVE_ADD_HIGH(add,rw) (uint8_t)((add>>8)|(rw<<4))
-//Parameter für Zwischenspeicherbuffer
-#define MAX_SIZE_FRAME 400
 //Parameter des Datenrahmens
 #define MAX_FRAME_LEN_BIT 8UL
 #define MAX_FRAME_LEN ((1<<MAX_FRAME_LEN_BIT)-1)
