@@ -45,7 +45,6 @@ EMPTY_INTERRUPT(BADISR_vect)
  */
 static void ioInit(){
 	PORTD.DIR |= (1<<ERR1);
-	PORTD.PIN0CTRL |= (INPUT_DISABLE<<0);
 }
 
 /**
@@ -104,10 +103,6 @@ int main(void)
 	//Systemclock init
 	uint8_t prescalerClk=1;
 	init_Core_CLK(INTERN_CLK,prescalerClk);
-	//Stopuhr init
-	uint8_t timerResolutionUs = 1;
-	uint16_t timerPrescaler = 1024;
-	timerInit(timerResolutionUs,timerPrescaler);
 	//IO-Pin für Fehleranzeige Init
 	
 	ioInit();
@@ -124,7 +119,6 @@ int main(void)
 		.portMux = PORTMUX_USARTx_DEFAULT_gc,
 	};
 	initUserUnit(config);
-	setErr1State(OFF);
 	//User-Unit and Slave API Handler Init
 	usvMonitorHandler_t handler;
 	initDev(&handler,usartDataRx,usartDataTx,waitCycle,0xD5);
@@ -149,7 +143,6 @@ int main(void)
 	reg = SEN_COURSE_ANGLE_ADD;
 	rxLen = 2;
 	error1 = getData(add,reg,&handler,(uint8_t*)output,rxLen);
-	waitUs(5);
 	if (error1!=NO_ERROR){
 		setErr1State(ON);
 	} else{
