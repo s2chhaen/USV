@@ -12,6 +12,7 @@
 #define MAIN_H_
 
 #include <avr/io.h>
+#include <avr/cpufunc.h>
 #include <avr/interrupt.h>
 #include <stdbool.h>
 #include <stdint.h>
