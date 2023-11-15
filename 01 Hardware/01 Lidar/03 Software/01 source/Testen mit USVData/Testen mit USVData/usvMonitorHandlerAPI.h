@@ -11,6 +11,8 @@
 #ifndef USVMONITORHANDLER_H_
 #define USVMONITORHANDLER_H_
 
+#define F_CPU 20000000
+#include <util/delay.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
