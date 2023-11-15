@@ -72,6 +72,7 @@ static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	//}
 	return true;
 }
+#pragma GCC pop_options
 
 /**
  * \brief Funktion zum Überwachen einer Variable, ob es erwünschten Wert in bestimmter Zeit erreicht
