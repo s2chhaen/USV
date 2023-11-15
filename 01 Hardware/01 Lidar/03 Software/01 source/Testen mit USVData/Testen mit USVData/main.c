@@ -201,6 +201,23 @@ int main(void)
 	}
 #endif // WRITE_MULTIREGISTER
 
+#ifdef WRITE_AND_READ_MULTI_REGISTER
+#define INPUT_2_LEN 361
+	//Multiregister schreiben und lesen
+	volatile uint8_t input2[INPUT_2_LEN] = {0};
+	volatile uint8_t output2[INPUT_2_LEN] = {0};
+	for (int i = 0; i<INPUT_2_LEN;i++){
+		input2[i] = i+1;//von 1 zu 362
+	}
+	reg = LIDAR_VALUE_ADD;
+	rxLen = INPUT_2_LEN;
+	__asm__("nop");
+	error1 = setMultiregister(add,reg,&handler,(uint8_t*)input2, rxLen);
+	__asm__("nop");
+	error1 = getMultiregister(add,reg,&handler,(uint8_t*)output2, rxLen);
+	__asm__("nop");
+	error1 = !stringCmp((uint8_t*)input2,rxLen,(uint8_t*)output2,rxLen);
+	__asm__("nop");
 	if (error1==0){
 		setErr1State(ON);
 	} else {
