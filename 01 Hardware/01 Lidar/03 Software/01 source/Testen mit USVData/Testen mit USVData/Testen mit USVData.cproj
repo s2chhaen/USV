@@ -221,13 +221,13 @@
     <Compile Include="comUnit.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="usvMonitorHandlerAPI.c">
+    <Compile Include="usvDataHandler.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="usvMonitorHandlerAPI.h">
+    <Compile Include="usvDataHandler.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="usVMonitorHandlerAPIConfig.h">
+    <Compile Include="usVDataHandlerConfig.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
