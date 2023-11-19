@@ -1,22 +1,23 @@
 /*
- * usvMonitorHandlerAPI.h
+ * usvDataHandler.h
  *
  * Created: 7/7/2023 5:25:53 AM
  * Author: Thach
- * Version: 1.2
+ * Version: 1.3
  * Revision: 1.1
  */ 
 
+//Refaktorisierung in Bearbeitung
 
-#ifndef USVMONITORHANDLER_H_
-#define USVMONITORHANDLER_H_
+#ifndef USVDATAHANDLER_H_
+#define USVDATAHANDLER_H_
 
 #define F_CPU 20000000
 #include <util/delay.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include "usVMonitorHandlerAPIConfig.h"
+#include "usvDataHandlerConfig.h"
 
 #define USV_PROTOCOL_W_REQ 8
 #define USV_PROTOCOL_R_REQ 4
@@ -51,12 +52,12 @@ typedef enum {
 	//Radar
 	RADAR_1_ADD = 0x12,//07
 	RADAR_2_ADD = 0x13,//08
-	//Führungsgrößen der Antriebsregelung
+	//FÃ¼hrungsgrÃ¶ÃŸen der Antriebsregelung
 	REF_DRV_CTRL_REF_A_ADD = 0x100,//09
 	REF_DRV_CTRL_REF_B_ADD = 0x108,//10
 	REF_DRV_CTRL_VEL_ADD = 0x110,//11
 	REF_DRV_CTRL_EPS_ADD = 0x112,//12
-	//Stellgrößen der Antriebsregelung
+	//StellgrÃ¶ÃŸen der Antriebsregelung
 	CTRL_DRV_CTRL_THRUST_ADD = 0x120,//13
 	CTRL_DRV_CTRL_RUDDER_ANGLE_ADD = 0x122,//14
 	//lokaler Error Block
@@ -94,4 +95,4 @@ extern uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, ui
 extern uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen);
 extern uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t inputLen);
 
-#endif /* USVMONITORHANDLER_H_ */
+#endif /* USVDATAHANDLER_H_ */
