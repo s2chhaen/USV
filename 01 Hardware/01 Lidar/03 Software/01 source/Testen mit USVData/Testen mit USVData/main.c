@@ -34,7 +34,7 @@ EMPTY_INTERRUPT(BADISR_vect);
 //Schreiben Multiregister
 //#define WRITE_MULTIREGISTER 1
 //Echo (Schreiben und dann Lesen Multiregister)
-#define WRITE_AND_READ_MULTI_REGISTER 1
+//#define WRITE_AND_READ_MULTI_REGISTER 1
 
 
 /**
@@ -123,8 +123,8 @@ int main(void)
 	};
 	initUserUnit(config);
 	//User-Unit and Slave API Handler Init
-	usvMonitorHandler_t handler;
-	initDev(&handler, &usartDataRx, &usartDataTx, 0xD5);
+	//usvMonitorHandler_t handler;
+	//initDev(&handler, &usartDataRx, &usartDataTx, 0xD5);
 	timerInit(REZ_US,70);//magic number: Zeitsdauer für 1 Byte von USART mit der oberen Konfiguration
 	sei();//globales Interrupt aktiviert
 	
