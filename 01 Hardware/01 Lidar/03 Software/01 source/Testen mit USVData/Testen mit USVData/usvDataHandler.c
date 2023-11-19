@@ -1,13 +1,15 @@
 /*
- * usvMonitorHandlerAPI.c
+ * usvDataHandler.c
  *
  * Created: 7/7/2023 8:42:59 AM
  * Author: Thach
- * Version: 1.3
- * Revision: 1.2
+ * Version: 1.4
+ * Revision: 1.1
  */
 
-#include "usvMonitorHandlerAPI.h"
+#include "usvDataHandler.h"
+
+//Refaktorisierung in Bearbeitung
 
 //statische Fehlerdefinition
 typedef enum {
@@ -23,11 +25,11 @@ typedef enum {
 volatile uint8_t protocol[MAX_FRAME_LEN] = {0};
 
 /**
- * \brief Bildung der checksum-Code f¸r Programm
+ * \brief Bildung der checksum-Code f√ºr Programm
  * 
  * \param data der Zeiger zum Datenblock
- * \param len die L‰nge des Datenblocks
- * \param polynom das bin‰re Polynom (in hex Form)
+ * \param len die L√§nge des Datenblocks
+ * \param polynom das bin√§re Polynom (in hex Form)
  * 
  * \return uint8_t das checksum-Code
  */
@@ -88,7 +90,7 @@ static inline int16_t getRegLen(uint16_t reg){
 		case RADAR_2_ADD:
 			result = 2;//8
 			break;
-		//F¸hrungsgrˆﬂen der Antriebsregelung
+		//F√ºhrungsgr√∂√üen der Antriebsregelung
 		case REF_DRV_CTRL_REF_A_ADD:
 			result = 8;//9
 			break;
@@ -101,7 +103,7 @@ static inline int16_t getRegLen(uint16_t reg){
 		case REF_DRV_CTRL_EPS_ADD:
 			result = 2;//12
 			break;
-		//Stellgrˆﬂen der Antriebsregelung
+		//Stellgr√∂√üen der Antriebsregelung
 		case CTRL_DRV_CTRL_THRUST_ADD:
 			result = 2;//13
 			break;
@@ -184,13 +186,13 @@ static inline uint8_t setAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen
 }
 
 /**
- * \brief Zum Schreiben in einem Register im Slave-Ger‰t
+ * \brief Zum Schreiben in einem Register im Slave-Ger√§t
  * 
  * \param add Adresse vom Slave
  * \param reg die slavespezifische ID (Adresse von Register vom Slave)
  * \param dev_p der Zeiger zum Handler
  * \param input_p der Zeiger zur Eingabedaten 
- * \param length die L‰nge der Eingabe
+ * \param length die L√§nge der Eingabe
  * 
  * \return uint8_t 0: keinen Fehler, sonst: Fehler
  */
@@ -214,13 +216,13 @@ uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 #pragma GCC pop_options
 
 /**
- * \brief zum Schreiben in vielen Registern nur mit einem Protokoll (bis zum 255 Bytes unterst¸tzt)
+ * \brief zum Schreiben in vielen Registern nur mit einem Protokoll (bis zum 255 Bytes unterst√ºtzt)
  * 
- * \param add die Adresse vom geschriebenen Ger‰t
+ * \param add die Adresse vom geschriebenen Ger√§t
  * \param reg die Adresse des ersten Registers im geschriebenen Datenblock
  * \param dev_p der Zeiger zum Handler
  * \param input_p das Eingabebuffer
- * \param inputLen die L‰nge vom Eingabebuffer
+ * \param inputLen die L√§nge vom Eingabebuffer
  * 
  * \return uint8_t 0: kein Fehler, sonst: Fehler
  */
@@ -268,7 +270,7 @@ static inline uint8_t getAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen
 	temp2 = USV_PROTOCOL_SET_SLAVE_ADD_HIGH(reg,USV_PROTOCOL_R_REQ);
 	protocol[USV_REG_ADDR_AND_WR_HBYTE_POS] = temp2;
 	protocol[USV_FRAME_LEN_BYTE_POS] = PROTOCOL_OVERHEAD_LEN+1;
-	protocol[USV_FRAME_LEN_BYTE_POS+1] = (uint8_t)regLen;//Datenteil = L‰nge des Registers
+	protocol[USV_FRAME_LEN_BYTE_POS+1] = (uint8_t)regLen;//Datenteil = L√§nge des Registers
 	protocol[USV_FRAME_LEN_BYTE_POS+2] = crc8Checksum((uint8_t*)&(protocol[USV_FRAME_LEN_BYTE_POS+1]),1,dev_p->crc8Polynom);//CRC8-Code
 	protocol[USV_FRAME_LEN_BYTE_POS+3] = USV_PROTOCOL_END_BYTE;
 	//Senden der Daten
@@ -277,7 +279,7 @@ static inline uint8_t getAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen
 	//Nach dem Request-Senden, empfangen erste Byte
 	rxRes = (*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_START_BYTE_POS]), 1,BYTE_TRANSFER_TIME_US*1+DST_PROG_WORK_TIME_US);//magic number 0=timeout, 1=Anzahl der empfangenen Bytes
 	if(protocol[USV_START_BYTE_POS] == USV_PROTOCOL_START_BYTE){ //Wenn erfolgreich, checken weitere 4 Bytes
-		//Byte 4 beim Daten lesen: Bei Hinprotokoll 0x4X, bei R¸ckprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
+		//Byte 4 beim Daten lesen: Bei Hinprotokoll 0x4X, bei R√ºckprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
 		rxRes = (*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_OBJ_ID_BYTE_POS]), 4,BYTE_TRANSFER_TIME_US*4);
 		bool checkByteReg = add == protocol[USV_OBJ_ID_BYTE_POS];
 		bool checkByteAddAndRw = (temp1 == protocol[USV_REG_ADDR_AND_WR_LBYTE_POS]) && ((temp2 ^ protocol[USV_REG_ADDR_AND_WR_HBYTE_POS])==0x40);
@@ -305,13 +307,13 @@ static inline uint8_t getAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen
 #pragma GCC pop_options
 
 /**
- * \brief Empfangen die Daten aus dem Slave-Ger‰t, inklusiv CRC-Byte
+ * \brief Empfangen die Daten aus dem Slave-Ger√§t, inklusiv CRC-Byte
  * 
  * \param add die Adresse vom Slave
  * \param reg die slavespezifische ID (Adresse von Register vom Slave)
  * \param dev_p der Zeiger zum Handler
  * \param output der empfangene Datenteil im gelesenen Register zusammen mit der CRC8-Checksum-Datei
- * \param outputLen die L‰nge der empfangenen Daten inklusiv der Checksum
+ * \param outputLen die L√§nge der empfangenen Daten inklusiv der Checksum
  * 
  * \return uint8_t 0: keinen Fehler, sonst: Fehler
  */
@@ -339,13 +341,13 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
 #pragma GCC pop_options
 
 /**
- * \brief zum Lesen in vielen Registern nur mit einem Protokoll (bis zum 255 Bytes unterst¸tzt)
+ * \brief zum Lesen in vielen Registern nur mit einem Protokoll (bis zum 255 Bytes unterst√ºtzt)
  * 
- * \param add die Adresse vom abgefragten Ger‰t
+ * \param add die Adresse vom abgefragten Ger√§t
  * \param reg die Adresse des ersten Registers im gelesenen Datenblock
  * \param dev_p der Zeiger zum Handler
  * \param output_p das Buffer zur Ausgabe
- * \param outputLen die L‰nge der Ausgabebuffer
+ * \param outputLen die L√§nge der Ausgabebuffer
  * 
  * \return uint8_t 0: kein Fehler, sonst: Fehler
  */
