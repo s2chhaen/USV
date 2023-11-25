@@ -145,7 +145,7 @@ enum usv_fsmStateGetter{
 typedef uint8_t (*usv_fsmStateHandlerFunc_t)();//Func: Function/Funktion
 
 
-extern uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRXFunc_p, dataTx_t inputTxFunc_p, uint8_t inputCrc8);
+extern uint8_t usv_initDev(usartConfig_t config, uint8_t crc8Polynom);
 extern uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p,uint16_t length);
 extern uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen);
 extern uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen);

@@ -135,32 +135,6 @@ static inline bool checkRxData(uint8_t* data,uint16_t dataLen, uint8_t rxChecksu
 	return crc8Checksum(data,dataLen,crc8Polynom)==rxChecksumValue;
 }
 
-
-/**
- * \brief Initalisierung des Handlers
- * 
- * \param dev_p Zeiger zum zu initalisierenden Handler 
- * \param inputRxFunc_p der Zeiger zur Datenempfangen Funktion
- * \param inputTxFunc_p der Zeiger zur Datensenden Funktion
- * \param inputWaitFunc_p der Zeiger zur Warte Funktion
- * \param inputCrc8 der Checksum-CRC8 Polynom
- * 
- * \return uint8_t 0: keinen Fehler, sonst Fehler
- */
-uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRxFunc_p, dataTx_t inputTxFunc_p, uint8_t inputCrc8){
-	uint8_t result = NO_ERROR;
-	if ((inputRxFunc_p!=NULL)&&(inputTxFunc_p!=NULL)){
-		dev_p->receiveFunc_p = inputRxFunc_p;
-		dev_p->transmitFunc_p = inputTxFunc_p;
-		dev_p->crc8Polynom = inputCrc8;
-		dev_p->initState = 1;
-	} else{
-		result = NULL_POINTER;
-	}
-	return result;
-	
-}
-
 static inline uint8_t setAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t length){
 	uint8_t result = NO_ERROR;
 	volatile uint8_t temp1;
@@ -351,15 +325,35 @@ uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* 
  * 
  * \return uint8_t 0: kein Fehler, sonst: Fehler
  */
+uint8_t usv_initDev(usartConfig_t config, uint8_t crc8Polynom){
 #pragma GCC push_options
 #pragma GCC optimize ("O3")
 uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
 	uint8_t result = NO_ERROR;
-	if((dev_p==NULL)||(output_p==NULL)){
-		result = NULL_POINTER;
-	} else if (dev_p->initState==0)
-	{
-		result = HANDLER_NOT_INIT;
+	uint8_t temp = config.usartNo;
+	usv_mgr.init = USART_init(temp,config.baudrate, config.usartChSize, config.parity, config.stopbit, config.sync, config.mpcm,config.address, config.portMux);
+	usv_mgr.usartNo = temp;
+	result = !usv_mgr.init;
+	usv_checksumPolynom = crc8Polynom;
+	crc8Init(crc8Polynom);
+	USART_set_send_Array_callback_fnc(temp,&usartCallbackTx);
+	USART_set_receive_Array_callback_fnc(temp,&usartCallbackRx);
+	//Setter - Mode
+	usv_cbTable[USV_FSM_SETTER_START_STATE] = &fsm_setterStartStateHandlerFunc;
+	usv_cbTable[USV_FSM_SETTER_READY_STATE] = &fsm_setterReadyStateHandlerFunc;
+	usv_cbTable[USV_FSM_SETTER_TX_STATE] = &fsm_setterTxStateHandlerFunc;
+	usv_cbTable[USV_FSM_SETTER_RX_STATE] = &fsm_setterRxStateHandlerFunc;
+	//Getter - Mode
+	usv_getterCbTable[USV_FSM_GETTER_START_STATE] = &fsm_getterStartStateHandlerFunc;
+	usv_getterCbTable[USV_FSM_GETTER_READY_STATE] = &fsm_getterReadyStateHandlerFunc;
+	usv_getterCbTable[USV_FSM_GETTER_TX_STATE] = &fsm_getterTXStateHandlerFunc;
+	usv_getterCbTable[USV_FSM_GETTER_RX_CHECK_1_OHD_STATE] = &fsm_getterRX1stCheckHandlerFunc;
+	usv_getterCbTable[USV_FSM_GETTER_RX_CHECK_2_OHD_STATE] = &fsm_getterRX2ndCheckHandlerFunc;
+	usv_getterCbTable[USV_FSM_GETTER_RX_DATA_STATE] = &fsm_getterRXDataHandlerFunc;
+	usv_getterCbTable[USV_FSM_GETTER_RX_CHECK_3_OHD_STATE] = &fsm_getterRX3rdCheckHandlerFunc;
+	return result;
+}
+
 	} else{
 		const uint16_t maxLen = getRegLen(USV_LAST_DATA_BLOCK_ADDR) + USV_LAST_DATA_BLOCK_ADDR;
 		uint16_t tempLen = (reg+outputLen);
