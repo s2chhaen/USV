@@ -149,6 +149,14 @@ usv_fsmStateHandlerFunc_t usv_cbTable[USV_FSM_STATE_NUM] = {0};//cb: callback/R�
 volatile uint8_t usv_getterFsmState = USV_FSM_GETTER_START_STATE;
 usv_fsmStateHandlerFunc_t usv_getterCbTable[USV_FSM_GETTER_STATE_NUM] = {0};//cb: callback/Rückruf
 	
+uint8_t fsm_setterStartStateHandlerFunc(){
+	uint8_t retVal = USV_FSM_SETTER_READY_STATE;
+	if (usv_mgr.lock){
+		retVal = USV_FSM_SETTER_START_STATE;
+	}
+	return retVal;
+}
+
 /**
  * \brief Zum Schreiben in einem Register im Slave-Gerät
  * 
