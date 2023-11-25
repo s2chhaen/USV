@@ -291,45 +291,25 @@ uint8_t fsm_getterRX2ndCheckHandlerFunc(){
 	return retVal;
 }
 
-volatile uint8_t rxRes = 0;
-#pragma GCC push_options
-#pragma GCC optimize ("O0")
-static inline uint8_t getAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
-	uint8_t result = NO_ERROR;
-	uint8_t temp1, temp2;
-	uint16_t temp3;
-	protocol[USV_START_BYTE_POS] = USV_PROTOCOL_START_BYTE;
-	protocol[USV_OBJ_ID_BYTE_POS] = add;//slave-id = addr
-	temp1 = USV_PROTOCOL_SET_SLAVE_ADD_LOW(reg);
-	protocol[USV_REG_ADDR_AND_WR_LBYTE_POS] = temp1;
-	temp2 = USV_PROTOCOL_SET_SLAVE_ADD_HIGH(reg,USV_PROTOCOL_R_REQ);
-	protocol[USV_REG_ADDR_AND_WR_HBYTE_POS] = temp2;
-	protocol[USV_FRAME_LEN_BYTE_POS] = PROTOCOL_OVERHEAD_LEN+1;
-	protocol[USV_FRAME_LEN_BYTE_POS+1] = (uint8_t)regLen;//Datenteil = Länge des Registers
-	protocol[USV_FRAME_LEN_BYTE_POS+2] = crc8Checksum((uint8_t*)&(protocol[USV_FRAME_LEN_BYTE_POS+1]),1,dev_p->crc8Polynom);//CRC8-Code
-	protocol[USV_FRAME_LEN_BYTE_POS+3] = USV_PROTOCOL_END_BYTE;
-	//Senden der Daten
-	(*(dev_p->transmitFunc_p))((uint8_t*)protocol, USV_FRAME_LEN_BYTE_POS+3+1,(USV_FRAME_LEN_BYTE_POS+3+1)*BYTE_TRANSFER_TIME_US*2);//begin bei 0
-	
-	//Nach dem Request-Senden, empfangen erste Byte
-	rxRes = (*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_START_BYTE_POS]), 1,BYTE_TRANSFER_TIME_US*1+DST_PROG_WORK_TIME_US);//magic number 0=timeout, 1=Anzahl der empfangenen Bytes
-	if(protocol[USV_START_BYTE_POS] == USV_PROTOCOL_START_BYTE){ //Wenn erfolgreich, checken weitere 4 Bytes
-		//Byte 4 beim Daten lesen: Bei Hinprotokoll 0x4X, bei Rückprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
-		rxRes = (*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_OBJ_ID_BYTE_POS]), 4,BYTE_TRANSFER_TIME_US*4);
-		bool checkByteReg = add == protocol[USV_OBJ_ID_BYTE_POS];
-		bool checkByteAddAndRw = (temp1 == protocol[USV_REG_ADDR_AND_WR_LBYTE_POS]) && ((temp2 ^ protocol[USV_REG_ADDR_AND_WR_HBYTE_POS])==0x40);
-		bool checkAll = checkByteReg && checkByteAddAndRw;
-		if(checkAll){
-			//empfangen weitere n Datenbytes sowie 1 CRC8- und 1 Endbyte
-			rxRes = (*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_DATA_BEGIN_POS]), protocol[USV_FRAME_LEN_BYTE_POS]-5, (protocol[USV_FRAME_LEN_BYTE_POS]-5)*BYTE_TRANSFER_TIME_US);
-			temp3 = USV_DATA_BEGIN_POS + protocol[USV_FRAME_LEN_BYTE_POS] - 7;
-			bool checkDataBlock = checkRxData((uint8_t*)&(protocol[USV_DATA_BEGIN_POS]),protocol[USV_FRAME_LEN_BYTE_POS] - 7, protocol[temp3],dev_p->crc8Polynom);
-			bool checkEnd = protocol[temp3+1] == USV_PROTOCOL_END_BYTE;
-			if (checkEnd&&checkDataBlock){
-				//kopieren aller Datenbytes in Ausgabe
-				memcpy(output_p,(uint8_t*)&(protocol[USV_DATA_BEGIN_POS]),(protocol[USV_FRAME_LEN_BYTE_POS]-7));
-			} else {
-				result = PROCESS_FAIL;
+uint8_t fsm_getterRXDataHandlerFunc(){
+	uint8_t retVal = USV_FSM_GETTER_RX_DATA_STATE;
+	usv_rxBufferToHandledBytes -= rxTempLength;
+	memcpy((uint8_t*)&(usv_rxBuffer[usv_rxBufferIdx]),(uint8_t*)rxTempData,rxTempLength);
+	usv_rxBufferIdx += rxTempLength;
+	if (usv_rxBufferToHandledBytes){
+		if (usv_rxBufferToHandledBytes > usartFIFOMaxLen){
+			USART_set_Bytes_to_receive(usv_mgr.usartNo, usartFIFOMaxLen);
+		} else{
+			USART_set_Bytes_to_receive(usv_mgr.usartNo, usv_rxBufferToHandledBytes);
+		}
+	} else {
+		__asm__("nop");
+		retVal = USV_FSM_GETTER_RX_CHECK_3_OHD_STATE;
+		USART_set_Bytes_to_receive(usv_mgr.usartNo, 2);
+	}
+	return retVal;
+}
+
 			}
 		} else{
 			result = PROCESS_FAIL;
