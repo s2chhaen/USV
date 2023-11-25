@@ -21,9 +21,9 @@
 #include <math.h>
 #include "./ATMegaXX09/ATMegaXX09Clock.h"
 #include "./ATMegaXX09/USART/USART.h"
+#include "./Math/checksum.h"
 #include "timerUnit.h"
-//#include "usvMonitorHandler.h"
-#include "comUnit.h"
+#include "usvDataHandler.h"
 
 
 #endif /* MAIN_H_ */
