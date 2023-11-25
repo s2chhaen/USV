@@ -182,13 +182,36 @@ uint8_t fsm_setterTxStateHandlerFunc(){
 	return retVal;
 }
 
+uint8_t fsm_setterRxStateHandlerFunc(){
+	uint8_t retVal = USV_FSM_SETTER_START_STATE;
+	uint8_t check = (rxTempLength == 1) && (rxTempData[0] == USV_PROTOCOL_ACK_BYTE);
+	if (check){
+		if (usv_tempBufferToHandleBytes){
+			if (usv_tempBufferToHandleBytes < PROTOCOL_PAYLOAD_PER_FRAME){
+				usv_protocolToHandleBytes = usv_setProtocol(usv_savedAddr, usv_nextReg, (uint8_t*) (&usv_tempBuffer[usv_tempBufferIdx]), usv_tempBufferToHandleBytes, USV_PROTOCOL_W_REQ);
+				usv_tempBufferToHandleBytes = 0;
+				usv_tempBufferIdx = 0;
+			} else{
+				usv_protocolToHandleBytes = usv_setProtocol(usv_savedAddr, usv_nextReg, (uint8_t*) (&usv_tempBuffer[usv_tempBufferIdx]), PROTOCOL_PAYLOAD_PER_FRAME,USV_PROTOCOL_W_REQ);
+				usv_nextReg += PROTOCOL_PAYLOAD_PER_FRAME;
+				usv_tempBufferIdx += PROTOCOL_PAYLOAD_PER_FRAME;
+				usv_tempBufferToHandleBytes -= PROTOCOL_PAYLOAD_PER_FRAME;		
+			}
+			retVal = USV_FSM_SETTER_TX_STATE;
+			usv_sendProtocol();
 		} else{
-			result = DATA_INVALID;
+			usv_mgr.res = 0;
+			usv_mgr.lock = 0;
+			retVal =  USV_FSM_SETTER_START_STATE;
 		}
+	} else{
+		usv_mgr.res = 1;
+		usv_mgr.lock = 0;
+		usv_tempBufferToHandleBytes = 0;
+		usv_protocolToHandleBytes = 0;
 	}
-	return result;
+	return retVal;
 }
-#pragma GCC pop_options
 
 /**
  * \brief zum Schreiben in vielen Registern nur mit einem Protokoll (bis zum 255 Bytes unterstützt)
