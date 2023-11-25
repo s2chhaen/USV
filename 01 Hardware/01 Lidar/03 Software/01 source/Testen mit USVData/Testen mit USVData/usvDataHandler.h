@@ -119,6 +119,15 @@ enum usv_mode{
 	USV_SETTER_MODE
 };
 
+//setter
+enum usv_fsmStateSetter{
+	USV_FSM_SETTER_START_STATE,
+	USV_FSM_SETTER_READY_STATE,//Auswahl des Betriebsmodi, Daten in Speicherbuffer kopieren
+	USV_FSM_SETTER_TX_STATE,//Transfer-Protocol - Quyet dinh xem se lam gi buoc tiep theo
+	USV_FSM_SETTER_RX_STATE//Receive and check protocol and send second protocol (if necessary)
+};
+#define USV_FSM_LAST_STATE USV_FSM_SETTER_RX_STATE
+#define USV_FSM_STATE_NUM (USV_FSM_LAST_STATE+1)
 extern uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRXFunc_p, dataTx_t inputTxFunc_p, uint8_t inputCrc8);
 extern uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p,uint16_t length);
 extern uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen);
