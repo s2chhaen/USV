@@ -518,6 +518,12 @@ uint8_t usv_getRegister(uint8_t add, uint16_t reg, uint8_t* output_p, uint16_t* 
 	return retVal;
 }
 
+uint8_t usv_getLockState(){
+	return usv_mgr.lock;
+}
+
+uint8_t usv_getProRes(){
+	return usv_mgr.res;
 }
 
 
