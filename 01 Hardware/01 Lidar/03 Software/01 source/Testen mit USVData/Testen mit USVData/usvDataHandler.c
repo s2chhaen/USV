@@ -251,6 +251,20 @@ uint8_t fsm_getterTXStateHandlerFunc(){
 	return retVal;
 }
 
+uint8_t fsm_getterRX1stCheckHandlerFunc(){
+	__asm__("nop");
+	uint8_t retVal = USV_FSM_GETTER_RX_CHECK_2_OHD_STATE;
+	uint8_t check = (rxTempLength == 1) && (rxTempData[0] == USV_PROTOCOL_START_BYTE);
+	if (check){
+		USART_set_Bytes_to_receive(usv_mgr.usartNo,4);
+	} else{
+		retVal = USV_FSM_GETTER_START_STATE;
+		usv_mgr.lock = 0;
+		usv_mgr.res = 1;
+	}
+	return retVal;
+}
+
 			}
 			__asm__("nop");
 		} else{
