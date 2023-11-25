@@ -7,6 +7,9 @@
 
 #include "checksum.h"
 
+static uint8_t crc8Polynom = 0;
+volatile uint8_t crc8LookupTable[ASCII_MAX_LEN] = {0};
+
 uint8_t crc8(uint8_t *data, uint16_t len, uint8_t polynom){
 	uint8_t crc = 0;
 	uint8_t mix;
