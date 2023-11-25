@@ -215,12 +215,6 @@
     <Compile Include="timerUnit.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="comUnit.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="comUnit.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="usvDataHandler.c">
       <SubType>compile</SubType>
     </Compile>
