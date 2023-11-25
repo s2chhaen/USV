@@ -26,6 +26,11 @@ volatile uint16_t usv_rxBufferToHandledBytes = 0;
 volatile uint16_t usv_rxBufferIdx = 0;
 volatile uint8_t usv_rxPayloadLen = 0;
 
+//Verwaltungsbereich
+volatile uint8_t usv_checksumPolynom = 0;
+volatile usvMgr_t usv_mgr = {0};
+volatile uint16_t usv_nextReg = 0;
+volatile uint8_t usv_savedAddr = 0;
 
 /**
  * \brief die Position des Registers in der Liste suchen
