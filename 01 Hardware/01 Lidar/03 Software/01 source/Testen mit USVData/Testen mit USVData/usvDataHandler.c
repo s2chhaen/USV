@@ -229,23 +229,28 @@ uint8_t fsm_getterReadyStateHandlerFunc(){
 	return USV_FSM_GETTER_TX_STATE;
 }
 
+uint8_t fsm_getterTXStateHandlerFunc(){
+	uint8_t retVal = USV_FSM_GETTER_TX_STATE;
+	if (usv_protocolToHandleBytes){
+		txTempData[0] = (uint8_t*)&(protocol[usv_protocolIdx]);
+		if (usv_protocolToHandleBytes < txTempMax_length){
+			*txTempLength = usv_protocolToHandleBytes;
+			usv_protocolToHandleBytes = 0;
+		} else{
+			*txTempLength = txTempMax_length;
+			usv_protocolToHandleBytes -= txTempMax_length;
+			usv_protocolIdx += txTempMax_length;
+		}
 	} else{
-		const uint16_t maxLen = getRegLen(USV_LAST_DATA_BLOCK_ADDR) + USV_LAST_DATA_BLOCK_ADDR;
-		uint16_t tempLen = (reg+inputLen);
-		int8_t checkReg = (getRegLen(reg) != -1) && (tempLen <= maxLen);
-		if (checkReg){
-			uint8_t processTime = inputLen/PROTOCOL_PAYLOAD_PER_FRAME + ((inputLen%PROTOCOL_PAYLOAD_PER_FRAME)?1:0);
-			uint16_t temp4;
-			__asm__("nop");
-			for (volatile uint8_t i = 0; i < processTime; i++){
-				temp4 = (inputLen >PROTOCOL_PAYLOAD_PER_FRAME)?PROTOCOL_PAYLOAD_PER_FRAME:inputLen;
-				result = setAndCheckData(add, reg+i*PROTOCOL_PAYLOAD_PER_FRAME, temp4,dev_p, &(input_p[i*PROTOCOL_PAYLOAD_PER_FRAME]), temp4);
-				if (result==NO_ERROR){
-					inputLen -= PROTOCOL_PAYLOAD_PER_FRAME;
-				} else{
-					result = PROCESS_FAIL;
-					break;
-				}
+		USART_set_Bytes_to_receive(usv_mgr.usartNo,1);
+		usv_protocolIdx = 0;
+		retVal = USV_FSM_GETTER_RX_CHECK_1_OHD_STATE;
+		usv_tempBufferToHandleBytes--;
+		usv_tempBufferIdx++;
+	}
+	return retVal;
+}
+
 			}
 			__asm__("nop");
 		} else{
