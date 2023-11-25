@@ -116,26 +116,18 @@ static inline bool checkRxData(uint8_t* data,uint8_t dataLen, uint8_t rxChecksum
 	return crc8CodeGen(data,(uint16_t)dataLen)==rxChecksumValue;
 }
 
-static inline uint8_t setAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t length){
-	uint8_t result = NO_ERROR;
-	volatile uint8_t temp1;
+static inline uint8_t usv_setProtocol(uint8_t add, uint16_t reg, uint8_t* input_p, uint8_t length, uint8_t wr){
 	protocol[USV_START_BYTE_POS] = USV_PROTOCOL_START_BYTE;
 	protocol[USV_OBJ_ID_BYTE_POS] = add;
 	protocol[USV_REG_ADDR_AND_WR_LBYTE_POS] = USV_PROTOCOL_SET_SLAVE_ADD_LOW(reg);
-	protocol[USV_REG_ADDR_AND_WR_HBYTE_POS] = USV_PROTOCOL_SET_SLAVE_ADD_HIGH(reg,USV_PROTOCOL_W_REQ);
+	protocol[USV_REG_ADDR_AND_WR_HBYTE_POS] = USV_PROTOCOL_SET_SLAVE_ADD_HIGH(reg,wr);
 	protocol[USV_FRAME_LEN_BYTE_POS] = length+PROTOCOL_OVERHEAD_LEN;
 	memcpy((uint8_t*)&(protocol[USV_DATA_BEGIN_POS]),input_p,length);
-	protocol[USV_DATA_BEGIN_POS+length] = crc8Checksum(input_p,length,dev_p->crc8Polynom);
+	protocol[USV_DATA_BEGIN_POS+length] = crc8CodeGen(input_p,(uint16_t)length);
 	protocol[USV_DATA_BEGIN_POS+1+length] = USV_PROTOCOL_END_BYTE;
-	//Senden
-	__asm__("nop");
-	(*(dev_p->transmitFunc_p))((uint8_t*)protocol,USV_DATA_BEGIN_POS+2+length,(USV_DATA_BEGIN_POS+2+length)*BYTE_TRANSFER_TIME_US);//begin bei 0
-	//Empfangen
-	temp1 = !(*(dev_p->receiveFunc_p))((uint8_t*)&(protocol[USV_START_BYTE_POS]),1,1*BYTE_TRANSFER_TIME_US+DST_PROG_WORK_TIME_US);//magic number 1: Anzahl der empfangenen Bytes
-	__asm__("nop");
-	temp1 = temp1 && (protocol[USV_START_BYTE_POS] == USV_PROTOCOL_ACK_BYTE);
-	if (!temp1){
-		result = PROCESS_FAIL;
+	return USV_DATA_BEGIN_POS+1+length+1;//begin bei 0
+}
+
 	}
 	return result;
 }
