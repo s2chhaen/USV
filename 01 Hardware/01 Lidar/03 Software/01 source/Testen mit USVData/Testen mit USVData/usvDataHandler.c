@@ -216,6 +216,14 @@ uint8_t fsm_setterRxStateHandlerFunc(){
 	return retVal;
 }
 
+uint8_t fsm_getterStartStateHandlerFunc(){
+	uint8_t retVal = USV_FSM_GETTER_READY_STATE;
+	if (usv_mgr.lock){
+		retVal = USV_FSM_GETTER_START_STATE;
+	}
+	return retVal;
+}
+
 	} else{
 		const uint16_t maxLen = getRegLen(USV_LAST_DATA_BLOCK_ADDR) + USV_LAST_DATA_BLOCK_ADDR;
 		uint16_t tempLen = (reg+inputLen);
