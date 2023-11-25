@@ -157,6 +157,11 @@ uint8_t fsm_setterStartStateHandlerFunc(){
 	return retVal;
 }
 
+uint8_t fsm_setterReadyStateHandlerFunc(){
+	usv_mode = USV_SETTER_MODE;
+	return USV_FSM_SETTER_TX_STATE;
+}
+
 /**
  * \brief Zum Schreiben in einem Register im Slave-Gerät
  * 
