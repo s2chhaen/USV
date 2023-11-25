@@ -162,28 +162,26 @@ uint8_t fsm_setterReadyStateHandlerFunc(){
 	return USV_FSM_SETTER_TX_STATE;
 }
 
-/**
- * \brief Zum Schreiben in einem Register im Slave-Gerät
- * 
- * \param add Adresse vom Slave
- * \param reg die slavespezifische ID (Adresse von Register vom Slave)
- * \param dev_p der Zeiger zum Handler
- * \param input_p der Zeiger zur Eingabedaten 
- * \param length die Länge der Eingabe
- * 
- * \return uint8_t 0: keinen Fehler, sonst: Fehler
- */
-#pragma GCC push_options
-#pragma GCC optimize ("O3")
-uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t length){
-	//TODO zu optimieren
-	uint8_t result = NO_ERROR;
-	if ((dev_p==NULL)|(input_p==NULL)){
-		result = NULL_POINTER;
+uint8_t fsm_setterTxStateHandlerFunc(){
+	uint8_t retVal = USV_FSM_SETTER_TX_STATE;
+	if (usv_protocolToHandleBytes){
+		txTempData[0] = (uint8_t*)&(protocol[usv_protocolIdx]);
+		if (usv_protocolToHandleBytes < txTempMax_length){
+			*txTempLength =  usv_protocolToHandleBytes;
+			usv_protocolToHandleBytes = 0;
+		} else{
+			*txTempLength = txTempMax_length;
+			usv_protocolToHandleBytes -= txTempMax_length;
+			usv_protocolIdx += txTempMax_length;
+		}
 	} else{
-		int8_t regLen = getRegLen(reg);
-		if (((uint8_t)regLen) == length){
-			result = setAndCheckData(add,reg,regLen,dev_p,input_p,length);
+		usv_protocolIdx = 0;
+		retVal = USV_FSM_SETTER_RX_STATE;
+		USART_set_Bytes_to_receive(usv_mgr.usartNo,1);
+	}
+	return retVal;
+}
+
 		} else{
 			result = DATA_INVALID;
 		}
