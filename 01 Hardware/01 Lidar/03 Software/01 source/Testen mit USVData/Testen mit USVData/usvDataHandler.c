@@ -372,6 +372,16 @@ static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, u
 	return true;
 }
 
+static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
+	rxTempLength = length;
+	rxTempData = data;
+	if (usv_mode){//USV_SETTER_MODE
+		__asm__("nop");
+		usv_fsmState = usv_cbTable[usv_fsmState]();
+	} else{
+		usv_getterFsmState = usv_getterCbTable[usv_getterFsmState]();
+	}
+	return true;
 }
 
 /**
