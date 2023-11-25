@@ -265,13 +265,30 @@ uint8_t fsm_getterRX1stCheckHandlerFunc(){
 	return retVal;
 }
 
+uint8_t fsm_getterRX2ndCheckHandlerFunc(){
+	__asm__("nop");
+	uint8_t retVal = USV_FSM_GETTER_RX_DATA_STATE;
+	if (rxTempLength == 4){
+		 //Byte 4 beim Daten lesen: Bei Hinprotokoll 0x4X, bei Rückprotokoll 0x0X => 0x4X XOR 0x0X = 0x40
+		uint8_t check = (rxTempData[0] == protocol[USV_OBJ_ID_BYTE_POS]) &&\
+						(rxTempData[1] == protocol[USV_REG_ADDR_AND_WR_LBYTE_POS]) &&\
+						((rxTempData[2] ^ protocol[USV_REG_ADDR_AND_WR_HBYTE_POS]) == 0x40);
+		if (check){
+			usv_rxPayloadLen = rxTempData[3] - 7;
+			usv_rxBufferToHandledBytes = usv_rxPayloadLen;
+			if (usv_rxBufferToHandledBytes > usartFIFOMaxLen){
+				USART_set_Bytes_to_receive(usv_mgr.usartNo, usartFIFOMaxLen);
+			} else{
+				USART_set_Bytes_to_receive(usv_mgr.usartNo, usv_rxBufferToHandledBytes);
 			}
-			__asm__("nop");
+			retVal = USV_FSM_GETTER_RX_DATA_STATE;
 		} else{
-			result = DATA_INVALID;
+			retVal = USV_FSM_GETTER_START_STATE;
+			usv_mgr.lock = 0;
+			usv_mgr.res = 1;
 		}
 	}
-	return result;
+	return retVal;
 }
 
 volatile uint8_t rxRes = 0;
