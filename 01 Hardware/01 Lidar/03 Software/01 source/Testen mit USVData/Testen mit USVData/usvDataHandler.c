@@ -10,7 +10,21 @@
 #include "usvDataHandler.h"
 
 //Refaktorisierung in Bearbeitung
+const uint16_t usartFIFOMaxLen = _FIFO_max_def - 1;
+//Protocolbereich
 volatile uint8_t protocol[MAX_FRAME_LEN] = {0};
+volatile uint8_t usv_protocolToHandleBytes = 0;
+volatile uint8_t usv_protocolIdx = 0; //Idx: Index
+//Data Bereich Temp-Buffer
+volatile uint8_t usv_tempBuffer[400] = {0};
+volatile uint16_t usv_tempBufferToHandleBytes = 0;
+volatile uint16_t usv_tempBufferIdx = 0; 
+//Data Bereich RX-Buffer
+volatile uint8_t* usv_rxBuffer;
+volatile uint16_t* usv_rxBufferStrLen;
+volatile uint16_t usv_rxBufferToHandledBytes = 0;
+volatile uint16_t usv_rxBufferIdx = 0;
+volatile uint8_t usv_rxPayloadLen = 0;
 
 
 /**
