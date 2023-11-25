@@ -93,6 +93,14 @@ typedef struct {
 	uint8_t crc8Polynom;
 }usvMonitorHandler_t;
 
+typedef struct{
+	uint8_t init:1;
+	uint8_t usartNo:2;
+	uint8_t lock:1;//0: ready, 1: busy
+	uint8_t multiregister:1;
+	uint8_t res:1;//res: result: 0: no error, 1: fail
+}usvMgr_t;//Mgr: Manager
+
 extern uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRXFunc_p, dataTx_t inputTxFunc_p, uint8_t inputCrc8);
 extern uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p,uint16_t length);
 extern uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen);
