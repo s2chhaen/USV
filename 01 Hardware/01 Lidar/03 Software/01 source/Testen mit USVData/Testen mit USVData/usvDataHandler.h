@@ -128,6 +128,19 @@ enum usv_fsmStateSetter{
 };
 #define USV_FSM_LAST_STATE USV_FSM_SETTER_RX_STATE
 #define USV_FSM_STATE_NUM (USV_FSM_LAST_STATE+1)
+
+//getter
+enum usv_fsmStateGetter{
+	USV_FSM_GETTER_START_STATE,//check lock
+	USV_FSM_GETTER_READY_STATE,//state used in getter - Funktion
+	USV_FSM_GETTER_TX_STATE,// Tx the protocol, called in ISR
+	USV_FSM_GETTER_RX_CHECK_1_OHD_STATE,//OHD: Overhead receive first byte and check if ACK (= START_BYTE) or not (!= START_BYTE)
+	USV_FSM_GETTER_RX_CHECK_2_OHD_STATE, //receive next 4 Bytes with the data of pack data
+	USV_FSM_GETTER_RX_DATA_STATE,//nhan data va luu vao register
+	USV_FSM_GETTER_RX_CHECK_3_OHD_STATE//receive last 2 Byte TODO to decide if CRC check in ISR or in main
+};
+#define USV_FSM_GETTER_LAST_STATE USV_FSM_GETTER_RX_CHECK_3_OHD_STATE
+#define USV_FSM_GETTER_STATE_NUM (USV_FSM_GETTER_LAST_STATE+1)
 extern uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRXFunc_p, dataTx_t inputTxFunc_p, uint8_t inputCrc8);
 extern uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p,uint16_t length);
 extern uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen);
