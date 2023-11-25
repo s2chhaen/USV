@@ -352,8 +352,26 @@ uint8_t fsm_getterRX3rdCheckHandlerFunc(){
 	return retVal;
 }
 
+static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, uint8_t max_length){
+	txTempLength = length;
+	txTempMax_length = max_length;
+	if (usv_mode){//USV_SETTER_MODE
+		usv_fsmState = usv_cbTable[usv_fsmState]();
 	} else{
+		usv_getterFsmState = usv_getterCbTable[usv_getterFsmState]();
 	}
+	if (txTempData[0]!=NULL){
+		*data = (uint8_t*)txTempData[0];
+	}
+	
+	//if (usv_fsmState == USV_FSM_TX_STATE){//TODO choose mode here
+		//txTempLength = length;
+		//txTempMax_length = max_length;
+		//*data = (uint8_t*)txTempData[0];
+	//}
+	return true;
+}
+
 }
 
 /**
