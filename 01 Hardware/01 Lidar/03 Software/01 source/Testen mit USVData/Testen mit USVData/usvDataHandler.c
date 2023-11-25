@@ -343,55 +343,22 @@ uint8_t fsm_getterRX3rdCheckHandlerFunc(){
 	return retVal;
 }
 
-/**
- * \brief Empfangen die Daten aus dem Slave-Gerät, inklusiv CRC-Byte
- * 
- * \param add die Adresse vom Slave
- * \param reg die slavespezifische ID (Adresse von Register vom Slave)
- * \param dev_p der Zeiger zum Handler
- * \param output der empfangene Datenteil im gelesenen Register zusammen mit der CRC8-Checksum-Datei
- * \param outputLen die Länge der empfangenen Daten inklusiv der Checksum
- * 
- * \return uint8_t 0: keinen Fehler, sonst: Fehler
- */
-#pragma GCC push_options
-#pragma GCC optimize ("O3")
-uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
-	//TODO zu optimieren
-	uint8_t result = NO_ERROR;
-	if((dev_p==NULL)||(output_p==NULL)){
-		result = NULL_POINTER;
-	} else if (dev_p->initState==0)
-	{
-		result = HANDLER_NOT_INIT;
 	} else{
-		
-		int16_t regLen = getRegLen(reg);
-		if (regLen!=-1){
-			result = getAndCheckData(add, reg, (uint16_t) regLen, dev_p, output_p, outputLen);
-		} else{
-			result = DATA_INVALID;
-		}
 	}
-	return result;
 }
-#pragma GCC pop_options
 
 /**
- * \brief zum Lesen in vielen Registern nur mit einem Protokoll (bis zum 255 Bytes unterstützt)
+ * \brief Initalisierung des Handlers
  * 
- * \param add die Adresse vom abgefragten Gerät
- * \param reg die Adresse des ersten Registers im gelesenen Datenblock
- * \param dev_p der Zeiger zum Handler
- * \param output_p das Buffer zur Ausgabe
- * \param outputLen die Länge der Ausgabebuffer
+ * \param dev_p Zeiger zum zu initalisierenden Handler 
+ * \param inputRxFunc_p der Zeiger zur Datenempfangen Funktion
+ * \param inputTxFunc_p der Zeiger zur Datensenden Funktion
+ * \param inputWaitFunc_p der Zeiger zur Warte Funktion
+ * \param inputCrc8 der Checksum-CRC8 Polynom
  * 
- * \return uint8_t 0: kein Fehler, sonst: Fehler
+ * \return uint8_t 0: keinen Fehler, sonst Fehler
  */
 uint8_t usv_initDev(usartConfig_t config, uint8_t crc8Polynom){
-#pragma GCC push_options
-#pragma GCC optimize ("O3")
-uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen){
 	uint8_t result = NO_ERROR;
 	uint8_t temp = config.usartNo;
 	usv_mgr.init = USART_init(temp,config.baudrate, config.usartChSize, config.parity, config.stopbit, config.sync, config.mpcm,config.address, config.portMux);
@@ -460,16 +427,60 @@ uint8_t usv_setRegister(uint8_t add, uint16_t reg, uint8_t* input_p, uint16_t le
 	return retVal;
 }
 
+uint8_t usv_getRegister(uint8_t add, uint16_t reg, uint8_t* output_p, uint16_t* length){//Protokoll Senden
+	uint8_t retVal = NO_ERROR;
+	const uint16_t maxLen = getRegLen(USV_LAST_DATA_BLOCK_ADDR) + USV_LAST_DATA_BLOCK_ADDR;
+	uint8_t check = (usv_getterCbTable[USV_FSM_GETTER_START_STATE]() == USV_FSM_GETTER_READY_STATE) && (usv_getterFsmState == USV_FSM_GETTER_START_STATE) && (output_p != NULL) && (length != NULL);
+	if(check){
+		usv_mgr.lock = 1;
+		uint16_t tempLen = *length;
+		check = ((reg+tempLen) <= maxLen); // Länge check
+		usv_mgr.res = 0;
+		if (check){
+			int16_t regLen = getRegLen(reg);
+			if (regLen != -1){
+				usv_rxBuffer = output_p;
+				usv_rxBufferStrLen = length;
+				usv_protocolIdx = 0;
+				usv_rxBufferIdx = 0;
+				usv_tempBufferIdx = 0;
+				usv_nextReg = 0;
+				usv_rxPayloadLen = 0;
+				usv_savedAddr = add;
+				if (tempLen > PROTOCOL_PAYLOAD_PER_FRAME){
+					usv_nextReg = reg + PROTOCOL_PAYLOAD_PER_FRAME;
+					uint8_t temp1, temp2;
+					
+					temp2 = tempLen/PROTOCOL_PAYLOAD_PER_FRAME + ((tempLen%PROTOCOL_PAYLOAD_PER_FRAME)?1:0);
+					for(volatile uint8_t i = temp2; i; i--){
+						temp1 = (tempLen > PROTOCOL_PAYLOAD_PER_FRAME)?PROTOCOL_PAYLOAD_PER_FRAME:tempLen;
+						usv_tempBuffer[temp2-i] = temp1;
+						tempLen -= PROTOCOL_PAYLOAD_PER_FRAME;
+					}
+					usv_tempBufferToHandleBytes = temp2;
 				} else{
-					break;
+					usv_tempBufferToHandleBytes = 1;
+					usv_tempBuffer[0] = tempLen;
 				}
+				usv_protocolToHandleBytes = usv_setProtocol(add,reg,(uint8_t*)(&usv_tempBuffer[0]),1,USV_PROTOCOL_R_REQ);
+				usv_getterFsmState = usv_getterCbTable[USV_FSM_GETTER_READY_STATE]();
+				usv_sendProtocol();
+			} else{
+				usv_mgr.lock = 0;
+				usv_getterFsmState = USV_FSM_GETTER_START_STATE;
+				retVal = PROCESS_FAIL;
 			}
 		} else{
-			result = DATA_INVALID;
+			usv_mgr.lock = 0;
+			usv_getterFsmState = USV_FSM_GETTER_START_STATE;
+			retVal = PROCESS_FAIL;
 		}
+	} else{
+		retVal = PROCESS_FAIL;
 	}
-	return result;
+	return retVal;
 }
-#pragma GCC pop_options
+
+}
 
 

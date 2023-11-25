@@ -147,7 +147,6 @@ typedef uint8_t (*usv_fsmStateHandlerFunc_t)();//Func: Function/Funktion
 
 extern uint8_t usv_initDev(usartConfig_t config, uint8_t crc8Polynom);
 extern uint8_t usv_setRegister(uint8_t add, uint16_t reg, uint8_t* input_p, uint16_t length);
-extern uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen);
-extern uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen);
+extern uint8_t usv_getRegister(uint8_t add, uint16_t reg, uint8_t* output_p, uint16_t* length);
 
 #endif /* USVDATAHANDLER_H_ */
