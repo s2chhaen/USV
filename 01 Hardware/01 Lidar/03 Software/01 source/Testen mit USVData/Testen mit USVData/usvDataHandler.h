@@ -122,22 +122,22 @@ enum usv_mode{
 //setter
 enum usv_fsmStateSetter{
 	USV_FSM_SETTER_START_STATE,
-	USV_FSM_SETTER_READY_STATE,//Auswahl des Betriebsmodi, Daten in Speicherbuffer kopieren
-	USV_FSM_SETTER_TX_STATE,//Transfer-Protocol - Quyet dinh xem se lam gi buoc tiep theo
-	USV_FSM_SETTER_RX_STATE//Receive and check protocol and send second protocol (if necessary)
+	USV_FSM_SETTER_READY_STATE,
+	USV_FSM_SETTER_TX_STATE,
+	USV_FSM_SETTER_RX_STATE
 };
 #define USV_FSM_LAST_STATE USV_FSM_SETTER_RX_STATE
 #define USV_FSM_STATE_NUM (USV_FSM_LAST_STATE+1)
 
 //getter
 enum usv_fsmStateGetter{
-	USV_FSM_GETTER_START_STATE,//check lock
-	USV_FSM_GETTER_READY_STATE,//state used in getter - Funktion
-	USV_FSM_GETTER_TX_STATE,// Tx the protocol, called in ISR
-	USV_FSM_GETTER_RX_CHECK_1_OHD_STATE,//OHD: Overhead receive first byte and check if ACK (= START_BYTE) or not (!= START_BYTE)
-	USV_FSM_GETTER_RX_CHECK_2_OHD_STATE, //receive next 4 Bytes with the data of pack data
-	USV_FSM_GETTER_RX_DATA_STATE,//nhan data va luu vao register
-	USV_FSM_GETTER_RX_CHECK_3_OHD_STATE//receive last 2 Byte TODO to decide if CRC check in ISR or in main
+	USV_FSM_GETTER_START_STATE,
+	USV_FSM_GETTER_READY_STATE,
+	USV_FSM_GETTER_TX_STATE,
+	USV_FSM_GETTER_RX_CHECK_1_OHD_STATE,
+	USV_FSM_GETTER_RX_CHECK_2_OHD_STATE, 
+	USV_FSM_GETTER_RX_DATA_STATE,
+	USV_FSM_GETTER_RX_CHECK_3_OHD_STATE
 };
 #define USV_FSM_GETTER_LAST_STATE USV_FSM_GETTER_RX_CHECK_3_OHD_STATE
 #define USV_FSM_GETTER_STATE_NUM (USV_FSM_GETTER_LAST_STATE+1)
