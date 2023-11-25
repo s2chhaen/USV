@@ -10,18 +10,6 @@
 #include "usvDataHandler.h"
 
 //Refaktorisierung in Bearbeitung
-
-//statische Fehlerdefinition
-typedef enum {
-	NO_ERROR,
-	NULL_POINTER,
-	FIFO_EMPTY,
-	FIFO_FULL,
-	DATA_INVALID,
-	PROCESS_FAIL,
-	HANDLER_NOT_INIT
-}processResult_t;
-
 volatile uint8_t protocol[MAX_FRAME_LEN] = {0};
 
 /**
