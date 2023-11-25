@@ -17,6 +17,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include "ATMegaXX09/USART/USART.h"
+#include "ATMegaXX09/FIFO/FIFO.h"
+#include "Math/checksum.h"
+#include "timerUnit.h"
 #include "usvDataHandlerConfig.h"
 
 #define USV_PROTOCOL_W_REQ 8
