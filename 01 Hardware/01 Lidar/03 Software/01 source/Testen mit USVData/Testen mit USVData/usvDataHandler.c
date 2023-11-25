@@ -140,6 +140,15 @@ static inline uint8_t setAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen
 	return result;
 }
 
+volatile uint8_t usv_mode = USV_SETTER_MODE;
+//FSM - Setter
+volatile uint8_t usv_fsmState = USV_FSM_SETTER_START_STATE;
+usv_fsmStateHandlerFunc_t usv_cbTable[USV_FSM_STATE_NUM] = {0};//cb: callback/Rückruf
+
+//FSM - Getter
+volatile uint8_t usv_getterFsmState = USV_FSM_GETTER_START_STATE;
+usv_fsmStateHandlerFunc_t usv_getterCbTable[USV_FSM_GETTER_STATE_NUM] = {0};//cb: callback/Rückruf
+	
 /**
  * \brief Zum Schreiben in einem Register im Slave-Gerät
  * 
