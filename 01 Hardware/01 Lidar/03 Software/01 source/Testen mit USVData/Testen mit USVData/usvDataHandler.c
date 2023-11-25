@@ -12,32 +12,6 @@
 //Refaktorisierung in Bearbeitung
 volatile uint8_t protocol[MAX_FRAME_LEN] = {0};
 
-/**
- * \brief Bildung der checksum-Code für Programm
- * 
- * \param data der Zeiger zum Datenblock
- * \param len die Länge des Datenblocks
- * \param polynom das binäre Polynom (in hex Form)
- * 
- * \return uint8_t das checksum-Code
- */
-static uint8_t crc8Checksum(uint8_t *data, uint16_t len, uint8_t polynom){
-	uint8_t crc = 0;
-	uint8_t mix;
-	uint8_t inbyte;
-	while (len--){
-		inbyte = *data++;
-		for (uint8_t i = 8; i; i--){
-			mix = ( crc ^ inbyte ) & 0x80;
-			crc <<= 1;
-			if (mix){
-				crc ^= polynom;
-			}
-			inbyte <<= 1;
-		}
-	}
-	return crc;
-}
 
 /**
  * \brief die Position des Registers in der Liste suchen
