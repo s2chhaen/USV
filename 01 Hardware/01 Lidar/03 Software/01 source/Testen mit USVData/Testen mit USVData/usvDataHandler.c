@@ -224,6 +224,11 @@ uint8_t fsm_getterStartStateHandlerFunc(){
 	return retVal;
 }
 
+uint8_t fsm_getterReadyStateHandlerFunc(){
+	usv_mode = USV_GETTER_MODE;
+	return USV_FSM_GETTER_TX_STATE;
+}
+
 	} else{
 		const uint16_t maxLen = getRegLen(USV_LAST_DATA_BLOCK_ADDR) + USV_LAST_DATA_BLOCK_ADDR;
 		uint16_t tempLen = (reg+inputLen);
