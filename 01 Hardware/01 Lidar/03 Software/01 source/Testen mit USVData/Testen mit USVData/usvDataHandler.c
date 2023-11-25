@@ -216,21 +216,6 @@ uint8_t fsm_setterRxStateHandlerFunc(){
 	return retVal;
 }
 
-/**
- * \brief zum Schreiben in vielen Registern nur mit einem Protokoll (bis zum 255 Bytes unterstützt)
- * 
- * \param add die Adresse vom geschriebenen Gerät
- * \param reg die Adresse des ersten Registers im geschriebenen Datenblock
- * \param dev_p der Zeiger zum Handler
- * \param input_p das Eingabebuffer
- * \param inputLen die Länge vom Eingabebuffer
- * 
- * \return uint8_t 0: kein Fehler, sonst: Fehler
- */
-uint8_t setMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t inputLen){
-	uint8_t result = NO_ERROR;
-	if((dev_p==NULL)||(input_p==NULL)){
-		result = NULL_POINTER;
 	} else{
 		const uint16_t maxLen = getRegLen(USV_LAST_DATA_BLOCK_ADDR) + USV_LAST_DATA_BLOCK_ADDR;
 		uint16_t tempLen = (reg+inputLen);
@@ -381,18 +366,49 @@ uint8_t getMultiregister(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, 
 	return result;
 }
 
+uint8_t usv_setRegister(uint8_t add, uint16_t reg, uint8_t* input_p, uint16_t length){//Nur Protokoll senden
+	uint8_t retVal = NO_ERROR;
+	const uint16_t maxLen = getRegLen(USV_LAST_DATA_BLOCK_ADDR) + USV_LAST_DATA_BLOCK_ADDR;
+	uint8_t check = (usv_cbTable[USV_FSM_SETTER_START_STATE]() == USV_FSM_SETTER_READY_STATE) && (usv_fsmState == USV_FSM_SETTER_START_STATE);
+	if (check){ //TODO test again
+		usv_mgr.lock = 1;
+		check = ((reg+length) <= maxLen); // Länge check
+		usv_mgr.res = 0;
+		if (check){
+			int16_t regLen = getRegLen(reg);
+			if (regLen != -1){
+				usv_protocolIdx = 0;
+				usv_tempBufferIdx = 0;
+				usv_nextReg = 0;
+				memcpy((uint8_t*)usv_tempBuffer,input_p,length);
+				if (length > PROTOCOL_PAYLOAD_PER_FRAME){
+					usv_protocolToHandleBytes = usv_setProtocol(add,reg,(uint8_t*)(&usv_tempBuffer[0]),PROTOCOL_PAYLOAD_PER_FRAME,USV_PROTOCOL_W_REQ);
+					usv_savedAddr = add;
+					usv_nextReg = reg + PROTOCOL_PAYLOAD_PER_FRAME;
+					usv_tempBufferIdx += PROTOCOL_PAYLOAD_PER_FRAME;
+					usv_tempBufferToHandleBytes = length - PROTOCOL_PAYLOAD_PER_FRAME;
+				} else{
+					usv_protocolToHandleBytes = usv_setProtocol(add,reg,(uint8_t*)(&usv_tempBuffer[0]),length,USV_PROTOCOL_W_REQ);
+					usv_tempBufferToHandleBytes = 0;
+				}
+				usv_fsmState = usv_cbTable[USV_FSM_SETTER_READY_STATE]();
+				usv_sendProtocol();
+			} else{
+				usv_fsmState = USV_FSM_SETTER_START_STATE;
+				usv_mgr.lock = 0;
+				retVal = PROCESS_FAIL;
+			}
+		} else{
+			usv_fsmState = USV_FSM_SETTER_START_STATE;
+			usv_mgr.lock = 0;
+			retVal = PROCESS_FAIL;
+		}
 	} else{
-		const uint16_t maxLen = getRegLen(USV_LAST_DATA_BLOCK_ADDR) + USV_LAST_DATA_BLOCK_ADDR;
-		uint16_t tempLen = (reg+outputLen);
-		int8_t checkReg = (getRegLen(reg) != -1) && (tempLen <= maxLen);
-		if (checkReg){
-			uint8_t processTime = outputLen/PROTOCOL_PAYLOAD_PER_FRAME + ((outputLen%PROTOCOL_PAYLOAD_PER_FRAME)?1:0);
-			uint16_t temp4;
-			for (volatile uint8_t i = 0; i < processTime; i++){
-				temp4 = (outputLen > PROTOCOL_PAYLOAD_PER_FRAME)?PROTOCOL_PAYLOAD_PER_FRAME:outputLen;
-				result = getAndCheckData(add, reg+i*PROTOCOL_PAYLOAD_PER_FRAME, (uint16_t) temp4, dev_p, &(output_p[i*PROTOCOL_PAYLOAD_PER_FRAME]), temp4);
-				if (result==NO_ERROR){
-					outputLen -= PROTOCOL_PAYLOAD_PER_FRAME;
+		retVal = PROCESS_FAIL;
+	}
+	return retVal;
+}
+
 				} else{
 					break;
 				}
