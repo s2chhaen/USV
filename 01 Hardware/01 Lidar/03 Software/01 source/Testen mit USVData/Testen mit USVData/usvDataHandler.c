@@ -128,8 +128,19 @@ static inline uint8_t usv_setProtocol(uint8_t add, uint16_t reg, uint8_t* input_
 	return USV_DATA_BEGIN_POS+1+length+1;//begin bei 0
 }
 
+static inline void usv_sendProtocol(){//trigger send new protocol
+	uint8_t temp1 = 0;
+	usv_protocolIdx = 0;
+	if (usv_protocolToHandleBytes < usartFIFOMaxLen){
+		temp1 = usv_protocolToHandleBytes;
+		usv_protocolToHandleBytes = 0;
+		USART_send_Array(usv_mgr.usartNo, 0, (uint8_t*)(&protocol[0]), temp1);
+	} else{
+		temp1 = usv_protocolIdx;
+		usv_protocolToHandleBytes -= usartFIFOMaxLen;
+		usv_protocolIdx = usartFIFOMaxLen;
+		USART_send_Array(usv_mgr.usartNo, 0, (uint8_t*)(uint8_t*)(&protocol[0]), usartFIFOMaxLen);
 	}
-	return result;
 }
 
 volatile uint8_t usv_mode = USV_SETTER_MODE;
