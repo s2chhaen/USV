@@ -101,6 +101,19 @@ typedef struct{
 	uint8_t res:1;//res: result: 0: no error, 1: fail
 }usvMgr_t;//Mgr: Manager
 
+//Struktur für Konfiguration der USART-Einheit
+typedef struct{
+	uint8_t usartNo:2;
+	uint32_t baudrate;
+	uint8_t usartChSize;
+	uint8_t parity;
+	uint8_t stopbit;
+	uint8_t sync:1;
+	uint8_t mpcm:1;
+	uint8_t address;
+	uint8_t portMux:2;
+}usartConfig_t;
+
 extern uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRXFunc_p, dataTx_t inputTxFunc_p, uint8_t inputCrc8);
 extern uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p,uint16_t length);
 extern uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen);
