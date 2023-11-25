@@ -10,6 +10,16 @@
 static uint8_t crc8Polynom = 0;
 volatile uint8_t crc8LookupTable[ASCII_MAX_LEN] = {0};
 
+void crc8Init(uint8_t polynom){
+	uint8_t temp;
+	crc8Polynom = polynom;
+	for (volatile int i = ASCII_MAX_LEN; i; i--){
+		temp = ASCII_MAX_LEN - i;
+		for (volatile uint8_t j = 8; j; j--){
+			if (temp&0x80){
+				temp = (temp<<1) ^ crc8Polynom;
+			} else{
+				temp = temp << 1;
 uint8_t crc8(uint8_t *data, uint16_t len, uint8_t polynom){
 	uint8_t crc = 0;
 	uint8_t mix;
@@ -22,7 +32,12 @@ uint8_t crc8(uint8_t *data, uint16_t len, uint8_t polynom){
 			if (mix){
 				crc ^= polynom;
 			}
-			inbyte <<= 1;
+			
+		}
+		crc8LookupTable[ASCII_MAX_LEN-i] = temp;
+	}
+}
+
 		}
 	}
 	return crc;
