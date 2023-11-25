@@ -141,6 +141,10 @@ enum usv_fsmStateGetter{
 };
 #define USV_FSM_GETTER_LAST_STATE USV_FSM_GETTER_RX_CHECK_3_OHD_STATE
 #define USV_FSM_GETTER_STATE_NUM (USV_FSM_GETTER_LAST_STATE+1)
+
+typedef uint8_t (*usv_fsmStateHandlerFunc_t)();//Func: Function/Funktion
+
+
 extern uint8_t initDev(usvMonitorHandler_t* dev_p, dataRx_t inputRXFunc_p, dataTx_t inputTxFunc_p, uint8_t inputCrc8);
 extern uint8_t setData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* input_p,uint16_t length);
 extern uint8_t getData(uint8_t add, uint16_t reg, usvMonitorHandler_t* dev_p, uint8_t* output_p, uint16_t outputLen);
