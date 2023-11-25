@@ -310,16 +310,38 @@ uint8_t fsm_getterRXDataHandlerFunc(){
 	return retVal;
 }
 
+uint8_t fsm_getterRX3rdCheckHandlerFunc(){
+	uint8_t retVal = USV_FSM_GETTER_START_STATE;
+	static uint8_t rxTime = 0;
+	volatile uint8_t check = (rxTempLength == 2);
+	if (check){
+		check &= checkRxData((uint8_t*)(&usv_rxBuffer[rxTime*PROTOCOL_PAYLOAD_PER_FRAME]), usv_rxPayloadLen, (uint8_t)rxTempData[0], (uint8_t)usv_checksumPolynom);//checksum here
+		check &= rxTempData[1] == USV_PROTOCOL_END_BYTE;//endbyte here
+	}
+	if (check){
+		usv_mgr.res = 0;
+		if (usv_tempBufferToHandleBytes){
+			rxTime++;
+			usv_protocolToHandleBytes = usv_setProtocol(usv_savedAddr,usv_nextReg,(uint8_t*)(&usv_tempBuffer[usv_tempBufferIdx]),1,USV_PROTOCOL_R_REQ);
+			if (usv_tempBuffer[usv_tempBufferIdx] == PROTOCOL_PAYLOAD_PER_FRAME){
+				usv_nextReg += PROTOCOL_PAYLOAD_PER_FRAME;
+			} else{
+				usv_nextReg = 0;
 			}
+			retVal = USV_FSM_GETTER_TX_STATE;
+			usv_sendProtocol();
 		} else{
-			result = PROCESS_FAIL;
+			rxTime = 0;
+			*usv_rxBufferStrLen = usv_rxBufferIdx;
+			usv_mgr.lock = 0;
 		}
 	} else{
-		result = PROCESS_FAIL;
+		usv_mgr.res = 1;
+		usv_mgr.lock = 0;
 	}
-	return result;
+	usv_rxPayloadLen = 0;
+	return retVal;
 }
-#pragma GCC pop_options
 
 /**
  * \brief Empfangen die Daten aus dem Slave-Gerät, inklusiv CRC-Byte
