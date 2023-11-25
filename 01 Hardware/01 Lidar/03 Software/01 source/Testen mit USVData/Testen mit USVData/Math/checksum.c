@@ -52,7 +52,7 @@ uint16_t crc16(uint8_t* input, uint16_t length, uint16_t polynom){
 		if (uCrc16&0x8000){
 			uCrc16 = (uCrc16&0x7fff)<<1;
 			uCrc16 ^= polynom;
-			} else{
+		} else{
 			uCrc16<<=1;
 		}
 		uCrc16 ^= (temp[0]|(temp[1]<<8));
