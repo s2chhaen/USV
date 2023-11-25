@@ -112,8 +112,8 @@ static inline int16_t getRegLen(uint16_t reg){
 	return result;
 }
 
-static inline bool checkRxData(uint8_t* data,uint16_t dataLen, uint8_t rxChecksumValue, uint8_t crc8Polynom){
-	return crc8Checksum(data,dataLen,crc8Polynom)==rxChecksumValue;
+static inline bool checkRxData(uint8_t* data,uint8_t dataLen, uint8_t rxChecksumValue, uint8_t crc8Polynom){
+	return crc8CodeGen(data,(uint16_t)dataLen)==rxChecksumValue;
 }
 
 static inline uint8_t setAndCheckData(uint8_t add, uint16_t reg, uint16_t regLen, usvMonitorHandler_t* dev_p, uint8_t* input_p, uint16_t length){
