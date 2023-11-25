@@ -35,7 +35,12 @@ EMPTY_INTERRUPT(BADISR_vect);
 //#define WRITE_MULTIREGISTER 1
 //Echo (Schreiben und dann Lesen Multiregister)
 //#define WRITE_AND_READ_MULTI_REGISTER 1
+//Schreiben Multiregister with FSM
+#define WRITE_MULTIREGISTER_FSM 1
+//Lesen Multiregister with FSM
+#define READ_MULTIREGISTER_FSM 1
 
+//TODO To document and clear this guy
 
 /**
  * \brief Initialisation des I/O-Pin D0 als Ausgabe
@@ -110,7 +115,7 @@ int main(void)
 	ccp_write_io((void*)&(CPUINT.LVL0PRI),TCA0_OVF_vect_num);
 	
 	//Benutzereinheit init
-	usartConfig_t config= {
+	usartConfig_t config = {
 		.usartNo= iUSART1,
 		.baudrate = 250000,
 		.usartChSize = USART_CHSIZE_8BIT_gc,
@@ -121,11 +126,12 @@ int main(void)
 		.address = 0,
 		.portMux = PORTMUX_USARTx_DEFAULT_gc,
 	};
-	initUserUnit(config);
+	//initUserUnit(config);
 	//User-Unit and Slave API Handler Init
 	//usvMonitorHandler_t handler;
 	//initDev(&handler, &usartDataRx, &usartDataTx, 0xD5);
 	timerInit(REZ_US,70);//magic number: Zeitsdauer für 1 Byte von USART mit der oberen Konfiguration
+	usv_initDev(config, 0xD5);
 	sei();//globales Interrupt aktiviert
 	
 	/************************************************************************/
@@ -139,6 +145,42 @@ int main(void)
 	const uint8_t add = 0;
 	uint16_t reg = 0;
 	volatile uint16_t rxLen = 0;
+
+#ifdef WRITE_MULTIREGISTER_FSM
+#define BUFFER_5_LEN 361
+	volatile uint8_t inputBuffer5[BUFFER_5_LEN] = {0};
+	reg = LIDAR_VALUE_ADD;
+	rxLen = BUFFER_5_LEN;
+	for (int i = 0; i < BUFFER_5_LEN; i++){
+		inputBuffer5[i] = i+1;
+	}
+	error1 = usv_setRegister(add,reg,(uint8_t*)inputBuffer5,rxLen);
+	//error1 = usv_setRegister(add,reg,(uint8_t*)inputBuffer5,rxLen);
+	while(usv_getLockState());
+	__asm__("nop");
+	error1 = usv_getProRes();
+	if (error1==NO_ERROR){
+		setErr1State(ON);
+	} else{
+		setErr1State(OFF);
+	}
+#endif // WRITE_MULTIREGISTER_FSM
+
+#ifdef READ_MULTIREGISTER_FSM
+#define BUFFER_6_LEN 361
+	uint8_t outputBuffer6[BUFFER_6_LEN] = {0};
+	reg = LIDAR_VALUE_ADD;
+	rxLen = BUFFER_6_LEN;
+	error1 = usv_getRegister(add,reg,(uint8_t*)outputBuffer6,(uint16_t*)&rxLen);
+	while(usv_getLockState());
+	__asm__("nop");
+	if (error1==NO_ERROR){
+		setErr1State(ON);
+	} else{
+		setErr1State(OFF);
+	}
+#endif // READ_MULTIREGISTER_FSM
+
 	
 #ifdef READ_ONE_REGISTER
 	volatile uint8_t output[500] = {0};
