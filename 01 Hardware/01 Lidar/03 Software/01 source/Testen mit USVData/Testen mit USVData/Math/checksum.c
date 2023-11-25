@@ -20,17 +20,6 @@ void crc8Init(uint8_t polynom){
 				temp = (temp<<1) ^ crc8Polynom;
 			} else{
 				temp = temp << 1;
-uint8_t crc8(uint8_t *data, uint16_t len, uint8_t polynom){
-	uint8_t crc = 0;
-	uint8_t mix;
-	uint8_t inbyte;
-	while (len--){
-		inbyte = *data++;
-		for (uint8_t i = 8; i; i--){
-			mix = ( crc ^ inbyte ) & 0x80;
-			crc <<= 1;
-			if (mix){
-				crc ^= polynom;
 			}
 			
 		}
@@ -38,9 +27,20 @@ uint8_t crc8(uint8_t *data, uint16_t len, uint8_t polynom){
 	}
 }
 
+static inline uint8_t crc8OneByte(uint8_t input){
+	return crc8LookupTable[input];
+}
+
+uint8_t crc8CodeGen(uint8_t *data, uint16_t len){
+	uint8_t retVal = 0;
+	uint8_t temp = 0;
+	if ((data != NULL) && len){
+		for (volatile uint16_t i = 0; i < len; i++){
+			temp = data[i] ^ retVal;
+			retVal = crc8LookupTable[temp];
 		}
 	}
-	return crc;
+	return retVal;
 }
 
 uint16_t crc16(uint8_t* input, uint16_t length, uint16_t polynom){
