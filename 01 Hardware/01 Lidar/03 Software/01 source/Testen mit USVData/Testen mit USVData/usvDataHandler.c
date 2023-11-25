@@ -31,6 +31,15 @@ volatile uint8_t usv_checksumPolynom = 0;
 volatile usvMgr_t usv_mgr = {0};
 volatile uint16_t usv_nextReg = 0;
 volatile uint8_t usv_savedAddr = 0;
+//temp-Var used to saved the param of callback function
+
+//für usart TX - callback Funktion angewendet
+volatile uint8_t* txTempData[1] = {0}; 
+volatile uint8_t* txTempLength; 
+volatile uint8_t txTempMax_length;
+//für usart RX - callback Funktion angewendet
+volatile uint8_t* rxTempData; 
+volatile uint8_t rxTempLength;
 
 /**
  * \brief die Position des Registers in der Liste suchen
