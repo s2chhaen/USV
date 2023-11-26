@@ -36,6 +36,11 @@ typedef struct{
 	uint8_t portMux:2;
 }usartConfig_t;
 
+enum usv_mode{
+	LIDAR_GETTER_MODE,
+	LIDAR_SETTER_MODE
+};
+
 enum lidarProtocolBytesPos{//pos: position
 	LIDAR_START_BYTE_POS,
 	LIDAR_ADDR_BYTE_POS,
