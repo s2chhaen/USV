@@ -23,4 +23,11 @@
 #define LIDAR_PROTOCOL_RESP_CONVERT_COEF 0x80
 #define LIDAR_REQ_PROTOCOL_MAX_LEN 20
 
+enum lidarProtocolBytesPos{//pos: position
+	LIDAR_START_BYTE_POS,
+	LIDAR_ADDR_BYTE_POS,
+	LIDAR_PROTOCOL_LEN_BYTE_POS, //len: length => len = data bytes len + 2-checksum (crc16) bytes
+	LIDAR_DATA_INCL_CMD_BYTE_POS //cmd: command, incl: include
+};
+
 #endif /* LIDARHANDLER_H_ */
