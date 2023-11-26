@@ -23,6 +23,19 @@
 #define LIDAR_PROTOCOL_RESP_CONVERT_COEF 0x80
 #define LIDAR_REQ_PROTOCOL_MAX_LEN 20
 
+//Struktur für Konfiguration der USART-Einheit
+typedef struct{
+	uint8_t usartNo:2;
+	uint32_t baudrate;
+	uint8_t usartChSize;
+	uint8_t parity;
+	uint8_t stopbit;
+	uint8_t sync:1;
+	uint8_t mpcm:1;
+	uint8_t address;
+	uint8_t portMux:2;
+}usartConfig_t;
+
 enum lidarProtocolBytesPos{//pos: position
 	LIDAR_START_BYTE_POS,
 	LIDAR_ADDR_BYTE_POS,
