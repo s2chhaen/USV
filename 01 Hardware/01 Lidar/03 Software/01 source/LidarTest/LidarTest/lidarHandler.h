@@ -47,4 +47,26 @@ enum lidar_promptFsmState{
 #define LIDAR_PROMPT_FSM_LAST_STATE LIDAR_PROMPT_FSM_ERROR_STATE
 #define LIDAR_PROMPT_FSM_STATE_NUM (LIDAR_PROMPT_FSM_LAST_STATE+1)
 
+//wkng: working
+enum lidar_getterFsmState{
+	//Checken-Lock
+	LIDAR_GETTER_START_STATE,
+	//Checken-lock fertig, bereits, Protocol vorbereiten
+	LIDAR_GETTER_READY_STATE,
+	//TX-Zustand => Am Ende empfangen 1 Byte
+	LIDAR_GETTER_TX_STATE,
+	//RX-Checken 1. Overhead - ACK oder nicht => Am Ende empfangen 4 Byte
+	LIDAR_GETTER_RX_CHECK_1_OHD_STATE,
+	//RX-Checken 2. Overhead - STX (1 Byte), Addr (1 Byte), Länge (2 Bytes)
+	//=> Am Ende empfangen n Byte (von Länge-Bytes)
+	LIDAR_GETTER_RX_CHECK_2_OHD_STATE,
+	//Rx-Daten => Am Ende empfangen 2 Bytes
+	LIDAR_GETTER_RX_DATA_STATE,
+	//Checksum
+	LIDAR_GETTER_RX_CHECK_3_OHD_STATE
+};
+#define LIDAR_GETTER_FSM_LAST_STATE LIDAR_GETTER_RX_CHECK_3_OHD_STATE
+#define LIDAR_GETTER_FSM_STATE_NUM (LIDAR_GETTER_FSM_LAST_STATE+1)
+
+typedef uint8_t (*lidar_fsmStateHandlerFunc_t)();//Func: Function/Funktion
 #endif /* LIDARHANDLER_H_ */
