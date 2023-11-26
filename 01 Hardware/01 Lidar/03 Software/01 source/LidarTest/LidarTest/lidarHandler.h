@@ -69,4 +69,11 @@ enum lidar_getterFsmState{
 #define LIDAR_GETTER_FSM_STATE_NUM (LIDAR_GETTER_FSM_LAST_STATE+1)
 
 typedef uint8_t (*lidar_fsmStateHandlerFunc_t)();//Func: Function/Funktion
+
+typedef struct{
+	uint8_t init:1;
+	uint8_t usartNo:2;
+	uint8_t lock:1;
+}lidarMgr_t;
+
 #endif /* LIDARHANDLER_H_ */
