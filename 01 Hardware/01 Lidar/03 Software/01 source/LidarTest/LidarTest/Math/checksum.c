@@ -3,6 +3,7 @@
  *
  * Created: 7/7/2023 9:13:10 AM
  * Author: Thach
+ * Version: 1.1
  */ 
 
 #include "checksum.h"
