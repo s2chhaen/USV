@@ -11,9 +11,9 @@
 
 volatile timerStatus_t timer_status = { .init = 0, .rez = REZ_MS, .state = 0};
 volatile int16_t timer_stepCounter[REZ_MODE_NO] = {0};
-static uint8_t timer_res = 0;
+static uint16_t timer_res = 0;
 
-uint8_t timerInit(uint8_t rezConfig, uint8_t resolution){
+uint8_t timerInit(uint8_t rezConfig, uint16_t resolution){
 	uint8_t result = NO_ERROR;
 	volatile uint8_t config = 0x00;//No optimized
 	uint32_t prescalerWConvertFactor = 1;
