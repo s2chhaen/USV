@@ -145,7 +145,6 @@ static inline void usv_sendProtocol(){//trigger send new protocol
 		usv_protocolToHandleBytes = 0;
 		USART_send_Array(usv_mgr.usartNo, 0, (uint8_t*)(&protocol[0]), temp1);
 	} else{
-		temp1 = usv_protocolIdx;
 		usv_protocolToHandleBytes -= usartFIFOMaxLen;
 		usv_protocolIdx = usartFIFOMaxLen;
 		USART_send_Array(usv_mgr.usartNo, 0, (uint8_t*)(uint8_t*)(&protocol[0]), usartFIFOMaxLen);
