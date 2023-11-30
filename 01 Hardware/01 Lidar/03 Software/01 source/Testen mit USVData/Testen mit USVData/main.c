@@ -152,7 +152,7 @@ int main(void)
 	reg = LIDAR_VALUE_ADD;
 	rxLen = BUFFER_5_LEN;
 	for (int i = 0; i < BUFFER_5_LEN; i++){
-		inputBuffer5[i] = i+1;
+		inputBuffer5[i] = i;
 	}
 	error1 = usv_setRegister(add,reg,(uint8_t*)inputBuffer5,rxLen);
 	//error1 = usv_setRegister(add,reg,(uint8_t*)inputBuffer5,rxLen);
