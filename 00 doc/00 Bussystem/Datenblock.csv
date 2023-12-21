@@ -1,1 +1,31 @@
-Adresse;Byte;Bezeichner0;1;SB11;4;SB25;4;SB39;1;SB4A;2;SB5C;2;SB6E;3;SB712;2;SB814;1;SB9
+Adresse;Byte;Bezeichner;Funktion;Wert
+0;1;SB1;Error Status global;
+1;4;SB2;Längengrad;
+5;4;SB3;Breitengrad;
+9;1;SB4;SatFix;
+A;2;SB5;Geschwindigkeit;
+C;2;SB6;Kurswinkel;
+E;3;SB7;Timestamp;
+12;2;SB8;Radar Entfernung;
+14;1;SB9;Radar Geschwindigkeit;
+100;8;AF1;Führung Punkt A, Länge, Breite;
+108;8;AF2;Führung Punkt B, Länge, Breite;
+110;2;AF3;Führung Geschwindigkeit;
+112;2;AF4;Führung Epsilon;
+120;2;AS1;Schub;
+122;2;AS2;Ruder;
+200;1;ER1;ESB GPS;
+201;1;ER2;ESB Kompass;
+202;1;ER3;ESB Control;
+203;1;ER4;ESB Lidar;
+204;1;ER5;ESB Radar;
+;2;EM1;U-Akku 1;24,20
+;2;EM2;I-Akku 1;55,40
+;2;EM3;Q-Akku 1;55,00
+;2;EM4;U-Akku 2;19,30
+;2;EM5;I-Akku 2;51,70
+;2;EM6;Q-Akku 2;52,00
+;2;EM7;Solar;24,60
+;2;EM8;Btemp;18,60
+;2;EM9;Ulidat;24,10
+;2;ES1;Lidar Entfernung;
