@@ -14,6 +14,8 @@ The example calculation includes the following parameters:
 - no wind drift
 - no water flow
 
-*Track 1:* Thrust 10N, Rudder 0, Duration 10 seconds
-*Track 2:* Thrust 10N, Rudder 0.2, Duration 100 seconds
-*Track 3:* Thrust 5N, Rudder 0, Duration 20 seconds
+**Track 1:** Thrust 10N, Rudder 0, Duration 10 seconds
+
+**Track 2:** Thrust 10N, Rudder 0.2, Duration 100 seconds
+
+**Track 3:** Thrust 5N, Rudder 0, Duration 20 seconds
