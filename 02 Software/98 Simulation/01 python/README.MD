@@ -20,4 +20,4 @@ The example calculation includes the following parameters:
 
 **Track 3:** Thrust 5N, Rudder 0, Duration 20 seconds
 
-![Track Demo](/assets/images/san-juan-mountains.jpg "Track Demo")
+![Track Demo](/02 Software/98 Simulation/00 docs/track_demo.png "Track Demo")
