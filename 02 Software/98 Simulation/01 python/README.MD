@@ -9,10 +9,10 @@ The example calculation includes the following parameters:
 | m         | Js                | kx         | ky         | kt                 |
 | 100 kg    | 10 kgm²           | 40 kg/s    | 80 kg/s    | 5 Nsm              |
 
-*Starting point:* X = 1m; Y = 1m
+**Starting point:** X = 1m; Y = 1m
+
 - no wind drift
 - no water flow
-
 
 *Track 1:* Thrust 10N, Rudder 0, Duration 10 seconds
 *Track 2:* Thrust 10N, Rudder 0.2, Duration 100 seconds
