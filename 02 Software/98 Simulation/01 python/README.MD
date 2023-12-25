@@ -4,10 +4,10 @@ Simple simulation model for the ship dynamics of a catamaran with two identical 
 
 The example calculation includes the following parameters:
 
-|Ship mass|Moment of inertia|Friction x|Friction y|Torsional friction|
-|------- -|-----------------|----------|----------|------------------|
-|m        |Js               |kx        |ky        |kt                |
-|100 kg   |10 kgm²          |40 kg/s   |80 kg/s   |5Nsm              |
+| Ship mass | Moment of inertia | Friction x | Friction y | Torsional friction |
+|-----------|-----------------|----------|----------|------------------|
+| m         | Js              | kx       | ky       | kt                |
+| 100 kg   | 10 kgm²          | 40 kg/s   | 80 kg/s   | 5Nsm              |
 
 Starting point: X = 1m; Y = 1m
 No wind drift
