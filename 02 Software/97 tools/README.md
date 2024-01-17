@@ -1,3 +1,5 @@
+### Tools zur Behandlung des Datenblocks
+
 Die Kommunikation zwischen dem Master und den einzelnen Slave-Modulen erfolgt über einen 1024-Byte großen Datenblock. Um die Adresszuordnung flexibel zu gestalten, können die Slave-Module über eine ID auf die jeweilige Adresse zugreifen. Der aktuelle Datenblock ist immer in der Datei „datablock.json“ hinterlegt.
 
 Zugriff in Matlab
