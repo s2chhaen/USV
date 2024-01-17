@@ -2,7 +2,7 @@
 
 Die Kommunikation zwischen dem Master und den einzelnen Slave-Modulen erfolgt über einen 1024-Byte großen Datenblock. Um die Adresszuordnung flexibel zu gestalten, können die Slave-Module über eine ID auf die jeweilige Adresse zugreifen. Der aktuelle Datenblock ist immer in der Datei „datablock.json“ hinterlegt.
 
-## Behandlung in Matlab
+### Behandlung in Matlab
     % Pfad zur JSON-Datei
     jsonDateiPfad = 'datablock.json';
     % JSON-Datei einlesen
@@ -12,7 +12,7 @@ Die Kommunikation zwischen dem Master und den einzelnen Slave-Modulen erfolgt ü
     % Zugriff auf die Daten in der Struktur
     disp(struktur);
 
-## Behandlung in Python
+### Behandlung in Python
     json_file = 'datablock.json'
     with open(json_file, 'r') as json_data:
         datablock = json.load(json_data)
