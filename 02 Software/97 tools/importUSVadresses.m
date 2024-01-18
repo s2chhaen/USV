@@ -12,5 +12,6 @@ function usvAddress = importUSVadresses()
 	if nargout == 0
 		% Zugriff auf die Daten in der Struktur
 		disp(usvAddress);
+		clear usvAddress
 	end
 end
