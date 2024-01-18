@@ -38,7 +38,8 @@ def read_csv_to_dict(file_path):
                 key = row[2]  # dritte Spalte als Key
                 decimal_value = int(row[0], 16)  # erste Spalte (Adresse dezimal)
                 hex_value = hex(decimal_value)  # erste Spalte (Adresse hexadezimal)
-                data_dict[key] = decimal_value, hex_value
+                address = int(row[1], 16)
+                data_dict[key] = hex_value, decimal_value, address
     return data_dict
 
 json_file = 'datablock.json'
