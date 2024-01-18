@@ -6,7 +6,7 @@ function usvAddress = importUSVaddresses()
 	% JSON-Datei einlesen
 	data = webread(jsonWebPath);
 	
-	% JSON-Daten decodieren
+	% JSON-Daten decodieren 
 	usvAddress = jsondecode(data);
 	
 	if nargout == 0
