@@ -1,30 +1,40 @@
 function jsonToCHeader()
+	dataBlockFileName = "datablock.h";
+	dataBlockPath = "..\00 Bussystem\" + dataBlockFileName;
+	headerSaveDefine = "DATABLOCK_H_";
+	enumeratorName = "Datablock";
+	templateHFile = "datablockTemplate.h";
+
 	function appendStrFile(str)
 		l = length(strFile);
 		strFile(l+1) = str;
 	end
-	dataBlockFileName = "datablock.h";
-	dataBlockPath = "..\00 Bussystem\" + dataBlockFileName;
-	
+	function str = replaceStr(str,str_find,str_rep)
+		TFl = contains(str,str_find);
+		strLinel = str(TFl);
+		strLinel = strrep(strLinel,str_find,str_rep);
+		str(TFl) = strLinel;
+	end
+
 	try
 		usvAddress = importUSVaddresses();
 	catch err
 		rethrow(err);
 	end
-	
-	[strH,strM,strF] = load_hTemplate("datablockTemplate.h");
-	AddrNames = string(fieldnames(usvAddress));
-	
-	strFile = strH;
-	
+
+	try
+		strArr = readlines(templateHFile,"LineEnding","\r\n");
+	catch err
+		rethrow(err);
+	end
+
 	% set filename
-	strFile(2) = sprintf(strFile(2),dataBlockFileName);
+	strArr = replaceStr(strArr,"/*filename*/",dataBlockFileName);
 	
 	% set file Date
-	TF = contains(strFile,"Created:");
-	DV = datevec(now);
-	strFile(TF) = sprintf(strFile(TF),DV(3),DV(2),DV(1),DV(4),DV(5));
-
+	DV = datetime;
+	DV.Format = 'dd.MM.uuuu HH:mm:ss';
+	strArr = replaceStr(strArr,"/*datetime*/",string(DV));
 
 	% get version from old file
 	strArrOldDB = readlines(dataBlockPath,"LineEnding","\r\n");
@@ -33,7 +43,7 @@ function jsonToCHeader()
 	version = nan;
 	if ~isempty(strLine)
 		res = strsplit(strLine," ");
-		version = str2double(res(4));
+		version = str2double(res(end));
 	end
 	if isnan(version)
 		version = 1;
@@ -42,11 +52,23 @@ function jsonToCHeader()
 	end
 	
 	% set version
-	TF = contains(strFile,"- data rev.");
-	strLine = strFile(TF);
-	strLine = sprintf(strLine,version);
-	strFile(TF) = strLine;
+	strArr = replaceStr(strArr,"/*version*/",sprintf("%d",version));
 
+	% set header save define 
+	strArr = replaceStr(strArr,"/*headerSaveDefine*/",headerSaveDefine);
+
+	% set enumerator names 
+	strArr = replaceStr(strArr,"/*addressEnum*/",enumeratorName);
+
+	% split template
+	[strH,strM,strF] = load_hTemplate(strArr);
+
+	strFile = strH;
+	
+	% get Address names
+	AddrNames = string(fieldnames(usvAddress));
+
+	% copy addresses into the enumerator define
 	nTabs = sum(double(char(strH(end)) == sprintf("\t")))+1;
 	Tabs = string(repmat(sprintf("\t"),1,nTabs));
 	for AddrName=AddrNames'
@@ -55,8 +77,10 @@ function jsonToCHeader()
 		appendStrFile(sprintf("%s%s%s= 0x%04X,",Tabs,AddrName,Spaces,C{2}));
 	end
 
+	% append mid segment
 	strFile = [strFile;strM];
 
+	% copy length into the enumerator define
 	nTabs = sum(double(char(strH(end)) == sprintf("\t")))+1;
 	Tabs = string(repmat(sprintf("\t"),1,nTabs));
 	for AddrName=AddrNames'
@@ -65,8 +89,10 @@ function jsonToCHeader()
 		appendStrFile(sprintf("%s%s_len%s= %03d,",Tabs,AddrName,Spaces,C{3}));
 	end
 
+	% append footer segment
 	strFile = [strFile;strF];
 
+	% write file
 	fid = fopen(dataBlockPath,"w");
 	if fid ~=0
 		try
@@ -79,12 +105,7 @@ function jsonToCHeader()
 	
 end
 
-function [strHeader,strMid,strFooter] = load_hTemplate(templateName)
-	try
-		strArr = readlines(templateName,"LineEnding","\r\n");
-	catch err
-		rethrow(err);
-	end
+function [strHeader,strMid,strFooter] = load_hTemplate(strArr)
 	strim = strtrim(strArr);
 	TFaddr = matches(strim,"/*address*/");
 	TFlen = matches(strim,"/*lenght*/");
