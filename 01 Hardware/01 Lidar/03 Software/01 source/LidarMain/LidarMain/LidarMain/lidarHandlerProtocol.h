@@ -103,4 +103,16 @@ enum opModeSelAns{
 	OP_MODE_SEL_ERROR = 0x02//nicht möglich, da Fehler im Lidar
 };
 
+//Datenteil von Antwortprotokoll von MEASURED_DATA_REQ siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30" - S49
+enum measuredDataReqAnsBlockA{
+	MEASURED_DATA_REQ_UNIT_CM = (0x00 << 14),
+	MEASURED_DATA_REQ_UNIT_MM = (0x01 << 14),
+	MEASURED_DATA_REQ_ALL = (0x00 << 13),
+	MEASURED_DATA_REQ_PARTIAL = (0x01 << 13),
+	MEASURED_DATA_REQ_PARTIAL_1_00 = (0x00 << 11),
+	MEASURED_DATA_REQ_PARTIAL_0_25 = (0x01 << 11),
+	MEASURED_DATA_REQ_PARTIAL_0_50 = (0x10 << 11),
+	MEASURED_DATA_REQ_PARTIAL_0_75 = (0x11 << 11),
+};
+
 #endif /* LIDARHANDLERPROTOCOL_H_ */
