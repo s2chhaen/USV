@@ -27,5 +27,4 @@ typedef union{
 	}valBf;
 }reg8Model_t;
 
-
 #endif /* REGISTERMODEL_H_ */
