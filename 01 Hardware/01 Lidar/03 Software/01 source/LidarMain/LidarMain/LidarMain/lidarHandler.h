@@ -155,4 +155,7 @@ typedef union{
 	}dataBf;
 }lidarStatus_t;
 
+/*Definition der in main-verwendete FSM*/
+extern lidar_mainFsmSHandlerFunc_t lidar_mainFsmLookupTable[LIDAR_MAIN_FSM_STATE_NUM];
+
 #endif /* LIDARHANDLER_H_ */
