@@ -55,6 +55,8 @@ USART_SBMODE_t stopbit, bool synchron, bool MPCM, uint8_t address, PORTMUX_USART
 //uint8_t SPIMASTERx_Init(uint8_t number, uint32_t baudrate,...);
 
 void USART_DeInit(uint8_t USARTnumber);
+//MOD added here
+void USART_flushRXFIFO(uint8_t USARTnumber);
 
 bool USART_send_Array(uint8_t USARTnumber ,uint8_t adress, uint8_t data[], uint8_t length);
 void USART_set_Bytes_to_receive(uint8_t USARTnumber, uint8_t Bytes_to_receive);
