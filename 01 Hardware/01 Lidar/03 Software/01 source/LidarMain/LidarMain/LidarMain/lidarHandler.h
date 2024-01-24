@@ -50,4 +50,20 @@ enum lidarMode{
 };
 #define LIDAR_LAST_MODE LIDAR_GETTER_MODE
 #define LIDAR_MODE_NUM (LIDAR_LAST_MODE+1)
+
+/*Byte-Positionen im Protokoll*/
+//Generell
+enum lidarProtocolBytesPos{
+	LIDAR_START_BYTE_POS, //byte 0
+	LIDAR_ADDR_BYTE_POS, //byte 1
+	LIDAR_PROTOCOL_LEN_LBYTE_POS, //byte 2
+	LIDAR_PROTOCOL_LEN_HBYTE_POS, //byte 3
+	LIDAR_PROTOCOL_CMD_BYTE_POS //byte 4
+};
+//Meldung-nach-ON-Protokoll
+enum lidarPromptProtocolDataBytePos{
+	LIDAR_INFO_TYPE_BYTE_POS = 0,
+	LIDAR_INFOR_VER_BYTE_POS = 14
+};
+
 #endif /* LIDARHANDLER_H_ */
