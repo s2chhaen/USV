@@ -123,4 +123,13 @@ enum lidar_mainFsmState{
 //Handler-Funktion-Zeiger-Deklaration
 typedef uint8_t (*const lidar_mainFsmSHandlerFunc_t)();
 
+/*interne Verwaltungsregister*/
+//Generell
+typedef struct{
+	uint8_t init:1;
+	uint8_t syncStatus:1;//0: nicht aktive/fertig, 1: aktive
+	uint8_t rxStatus:1;// 0: nicht aktive/fertig, 1: aktive
+	uint8_t resetStatus:1;//0: nicht aktiv/fertig, 1: aktive
+}lidarMgr_t;
+
 #endif /* LIDARHANDLER_H_ */
