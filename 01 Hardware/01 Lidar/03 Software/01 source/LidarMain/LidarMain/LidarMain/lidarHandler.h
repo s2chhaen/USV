@@ -132,6 +132,12 @@ typedef struct{
 	uint8_t resetStatus:1;//0: nicht aktiv/fertig, 1: aktive
 }lidarMgr_t;
 
+//Prozessverwaltungsregister
+enum lidarStatusRegType{
+	LIDAR_STATUS_MODULE_REG_TYPE,
+	LIDAR_STATUS_SENSOR_REG_TYPE
+};
+
 typedef union{
 	uint16_t reg16;
 	uint8_t  reg8[LIDAR_STATUS_REG_LEN_BYTE];
