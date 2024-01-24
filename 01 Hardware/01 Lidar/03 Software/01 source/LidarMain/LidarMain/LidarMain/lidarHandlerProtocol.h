@@ -11,6 +11,7 @@
 #ifndef LIDARHANDLERPROTOCOL_H_
 #define LIDARHANDLERPROTOCOL_H_
 
+#include "asciiTable.h"
 
 
 #endif /* LIDARHANDLERPROTOCOL_H_ */
