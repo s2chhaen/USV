@@ -560,6 +560,12 @@ void USART_DeInit(uint8_t USARTnumber)
 	FIFO_flush(&USART_TX_FIFO[USARTnumber]);
 }
 
+void USART_flushRXFIFO(uint8_t USARTnumber){
+	USART_bytes_to_receive[USARTnumber] = 0;
+	USART_bytes_received[USARTnumber] = 0;
+	FIFO_flush(&USART_RX_FIFO[USARTnumber]);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // void USART_get_RX_Byte(uint8_t event_id, uint8_t eventdata)
 //	Interne Funktion, der Aufruf erfolgt nur über die ISR()
