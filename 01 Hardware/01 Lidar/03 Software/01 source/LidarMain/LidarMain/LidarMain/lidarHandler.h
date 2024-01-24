@@ -158,4 +158,9 @@ typedef union{
 /*Definition der in main-verwendete FSM*/
 extern lidar_mainFsmSHandlerFunc_t lidar_mainFsmLookupTable[LIDAR_MAIN_FSM_STATE_NUM];
 
+/*Extern verwendeten Funktion*/
+extern uint8_t lidar_initDev(const usartConfig_t* config, uint16_t crc16Polynom, uint8_t* output_p, uint16_t* outLen_p, reg8Model_t* io_p);
+extern const lidarStatus_t* lidar_getStatus();
+extern void lidar_setAddr(uint8_t input);
+
 #endif /* LIDARHANDLER_H_ */
