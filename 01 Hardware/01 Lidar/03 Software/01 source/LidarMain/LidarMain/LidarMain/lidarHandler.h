@@ -119,4 +119,8 @@ enum lidar_mainFsmState{
 };
 #define LIDAR_MAIN_FSM_LAST_STATE LIDAR_MAIN_ERROR_STATE
 #define LIDAR_MAIN_FSM_STATE_NUM (LIDAR_MAIN_FSM_LAST_STATE+1)
+
+//Handler-Funktion-Zeiger-Deklaration
+typedef uint8_t (*const lidar_mainFsmSHandlerFunc_t)();
+
 #endif /* LIDARHANDLER_H_ */
