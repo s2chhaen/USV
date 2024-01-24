@@ -593,12 +593,15 @@ void USART_RXC_Byte(USART_t* const handle, uint8_t number, uint8_t event_id)
 		// prüfe ob Daten vorhanden sind
 		if( fastSTATUS(handle).Register.RXCIF == true )
 		{
-			// prüfe ob Daten in den FIFO geschrieben werden können
-			if(FIFO_chk_for_writedata(&USART_RX_FIFO[number]))
+			// lese Byte aus dem Buffer
+			/* Mod hier*/
+			Buffer = handle->RXDATAL;
+			uint8_t check = (USART_bytes_to_receive[number] != 0) &&\
+							FIFO_chk_for_writedata(&USART_RX_FIFO[number]);// prüfe ob Daten in den FIFO geschrieben werden können
+			/* Ende vom Mod*/
+			if(check)
 			{
-				// lese Byte aus dem Buffer
-				Buffer = handle->RXDATAL;
-				
+				//Mod here: verschieben die Lesen immer nach oben
 				// schreibe Byte in den FIFO
 				FIFO_writebyte(&USART_RX_FIFO[number], Buffer);
 				
