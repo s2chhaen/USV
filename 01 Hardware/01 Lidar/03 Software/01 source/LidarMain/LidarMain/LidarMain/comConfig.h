@@ -13,6 +13,9 @@
 
 #include <stdint.h>
 
+//IO-Bit-Position
+#define STREAM_LIDAR_STATUS_BIT_POS 0
+#define STREAM_LIDAR_DATA_BIT_POS 1
 
 /*Struktur für Konfiguration der USART-Einheit*/
 typedef struct{
