@@ -24,4 +24,10 @@
 #define LIDAR_SET_CONFIG_BM ((0x03<<14)|(0x07<<11))
 
 
+//siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30"-S38-39
+enum lidarAns{
+	RESET_ACK = 0x91,
+	NACK_FALSE_CMD = 0x92
+};
+
 #endif /* LIDARHANDLERPROTOCOL_H_ */
