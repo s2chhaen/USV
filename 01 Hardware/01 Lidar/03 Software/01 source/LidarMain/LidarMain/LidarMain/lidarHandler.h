@@ -42,4 +42,12 @@
 //Lidar-Status
 #define LIDAR_STATUS_REG_LEN_BYTE 2
 
+/*enum: Arbeitsmodus vom Lidar*/
+enum lidarMode{
+	LIDAR_PARAM_MODE,
+	LIDAR_RESET_MODE,
+	LIDAR_GETTER_MODE
+};
+#define LIDAR_LAST_MODE LIDAR_GETTER_MODE
+#define LIDAR_MODE_NUM (LIDAR_LAST_MODE+1)
 #endif /* LIDARHANDLER_H_ */
