@@ -23,5 +23,23 @@
 #include "registerModel.h"
 #include "comConfig.h"
 
+/*Lidar-bezogene Parameter Macros*/
+#define LIDAR_PROTOCOL_START_SYM 0x02
+#define LIDAR_PROTOCOL_DEFAULT_ADDR 0x00
+#define LIDAR_PROTOCOL_CANCEL_SYM 0x03
+#define LIDAR_RESET_PROTOCOL_LEN 7
+#define LIDAR_TOLERANCE_MS 20
+#define LIDAR_WRK_TIME_MS 100
+//config 1 Startbit, 8 Databit, 0 Paritybit, 1 Endbit, Baud = 38,4kBaud
+#define LIDAR_TX_TIME_US 261UL
+#define LIDAR_RSP_PROTOCOL_OFFSET 0x80
+#define LIDAR_RSP_ADDR (LIDAR_PROTOCOL_DEFAULT_ADDR + LIDAR_RSP_PROTOCOL_OFFSET)
+#define LIDAR_RSP_CMD(cmd) (cmd+0x80)
+#define LIDAR_REQ_PROTOCOL_MAX_LEN 20
+#define LIDAR_RESET_RSP_LEN 8
+//Zwischenbuffer-Parameter
+#define LIDAR_RX_BUFFER_MAX_LEN 735UL
+//Lidar-Status
+#define LIDAR_STATUS_REG_LEN_BYTE 2
 
 #endif /* LIDARHANDLER_H_ */
