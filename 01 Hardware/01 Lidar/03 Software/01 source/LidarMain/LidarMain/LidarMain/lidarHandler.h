@@ -23,6 +23,10 @@
 #include "registerModel.h"
 #include "comConfig.h"
 
+/*Abkürzungen: wrk: working, rsp: response, Func: Function,
+ *FP: floating-pin, OHD: Overhead, pos: position, len: length,
+ *Prot:protocol, REQ: Request, fnc: functionality, bf: Bitfield
+ */
 /*Lidar-bezogene Parameter Macros*/
 #define LIDAR_PROTOCOL_START_SYM 0x02
 #define LIDAR_PROTOCOL_DEFAULT_ADDR 0x00
