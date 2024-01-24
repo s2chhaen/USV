@@ -102,4 +102,7 @@ enum lidar_getterFsmState{
 #define LIDAR_GETTER_FSM_LAST_STATE LIDAR_GETTER_FSM_END_STATE
 #define LIDAR_GETTER_FSM_STATE_NUM (LIDAR_GETTER_FSM_LAST_STATE+1)
 
+//Handler-Funktion-Zeiger-Deklaration
+typedef uint8_t (*const lidar_fsmStateHandlerFunc_t)();
+
 #endif /* LIDARHANDLER_H_ */
