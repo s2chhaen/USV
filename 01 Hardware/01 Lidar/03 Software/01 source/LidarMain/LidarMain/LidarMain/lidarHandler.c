@@ -133,3 +133,25 @@ lidar_mainFsmSHandlerFunc_t lidar_mainFsmLookupTable[LIDAR_MAIN_FSM_STATE_NUM] =
 	&lidar_mainErrorSHandler
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//interne verwendete Funktionen
+
+uint16_t lidar_checksum16(uint8_t* input, uint16_t length){
+	/* siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30"
+	 * für weitere Informationen*/
+	uint16_t uCrc16=0;
+	uint8_t temp[]={0,0};
+	for (uint32_t i=0;i<length;i++){
+		temp[1]=temp[0];
+		temp[0]=input[i];
+		if (uCrc16&0x8000){
+			uCrc16 = (uCrc16&0x7fff)<<1;
+			uCrc16 ^= lidar_checksumPolynom;
+		} else {
+			uCrc16<<=1;
+		}
+		uCrc16 ^= (temp[0]|(temp[1]<<8));
+	}
+	return uCrc16;
+}
+
