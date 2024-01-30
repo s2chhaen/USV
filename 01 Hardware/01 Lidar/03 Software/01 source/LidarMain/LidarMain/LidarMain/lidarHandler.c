@@ -71,3 +71,22 @@ lidar_fsmStateHandlerFunc_t lidar_paramtCbTable[LIDAR_PARAM_FSM_STATE_NUM] = {
 	&lidar_paramEndSHandlerFunc
 };
 	
+//FSM-Getter
+static uint8_t lidar_getterStartSHandlerFunc();
+static uint8_t lidar_getterTXSHandlerFunc();
+static uint8_t lidar_getterRX1stCheckSHandlerFunc();
+static uint8_t lidar_getterRX2ndCheckSHandlerFunc();
+static uint8_t lidar_getterRXDataSHandlerFunc();
+static uint8_t lidar_getterRX3rdSHandlerFunc();
+static uint8_t lidar_getterEndSHandlerFunc();
+
+lidar_fsmStateHandlerFunc_t lidar_getterCbTable[LIDAR_GETTER_FSM_STATE_NUM] = {
+	&lidar_getterStartSHandlerFunc,
+	&lidar_getterTXSHandlerFunc,
+	&lidar_getterRX1stCheckSHandlerFunc,
+	&lidar_getterRX2ndCheckSHandlerFunc,
+	&lidar_getterRXDataSHandlerFunc,
+	&lidar_getterRX3rdSHandlerFunc,
+	&lidar_getterEndSHandlerFunc
+};
+
