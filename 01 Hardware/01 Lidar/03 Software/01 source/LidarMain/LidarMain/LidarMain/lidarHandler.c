@@ -108,3 +108,28 @@ lidar_fsmStateHandlerFunc_t* lidar_allFsmLookuptable[LIDAR_MODE_NUM] = {
 	(lidar_fsmStateHandlerFunc_t*)&lidar_resetCbTable,
 	(lidar_fsmStateHandlerFunc_t*)&lidar_getterCbTable
 };
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//externe FSM- Deklaration
+static uint8_t lidar_mainSyncSHandler();
+static uint8_t lidar_mainSyncPollingSHandler();
+static uint8_t lidar_mainSyncSignalCheckSHandler();
+static uint8_t lidar_mainDataReqSHandler();
+static uint8_t lidar_mainRspPollingSHandler();
+static uint8_t lidar_mainDataCheckSHandler();
+static uint8_t lidar_mainResetSHandler();
+static uint8_t lidar_mainResetPollingSHandler();
+static uint8_t lidar_mainErrorSHandler();
+
+lidar_mainFsmSHandlerFunc_t lidar_mainFsmLookupTable[LIDAR_MAIN_FSM_STATE_NUM] = {
+	&lidar_mainSyncSHandler,
+	&lidar_mainSyncPollingSHandler,
+	&lidar_mainSyncSignalCheckSHandler,
+	&lidar_mainDataReqSHandler,
+	&lidar_mainRspPollingSHandler,
+	&lidar_mainDataCheckSHandler,
+	&lidar_mainResetSHandler,
+	&lidar_mainResetPollingSHandler,
+	&lidar_mainErrorSHandler
+};
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
