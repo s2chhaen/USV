@@ -25,3 +25,17 @@ static inline int32_t fil_qFExtend(int32_t input, uint8_t bits){ //qF: Q-Format
 	const int32_t cFactorARM = (1<<bits) - 1;//cFactor: converting factor
 	return (int32_t)((int64_t)input<<bits)/((int64_t)cFactorARM);
 }
+
+uint8_t fil_init(const int16_t* inFilCofs_p, uint8_t inLen, reg8Model_t* io_p){
+	uint8_t result = NO_ERROR;
+	uint8_t check = (inFilCofs_p != NULL) && (io_p != NULL) && (inLen == (FIL_ORDER+1));
+	if (check){
+		for (volatile int i = 0; i < inLen; i++){
+			fil_coffs[i] = fil_qFExtend((int32_t)inFilCofs_p[i],FIXED_POINT_BITS);
+		}
+		fil_mgr.init = 1;
+	} else{
+		result = PROCESS_FAIL;
+	}
+	return result;
+}
