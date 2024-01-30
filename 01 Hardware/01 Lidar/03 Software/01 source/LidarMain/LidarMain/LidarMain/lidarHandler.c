@@ -773,3 +773,20 @@ static uint8_t lidar_mainErrorSHandler(){
 	}
 	return retVal;
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//in ISR zurückgerufte Funktionen
+static bool lidar_callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, uint8_t max_length){
+	lidar_txTempLength = length;
+	lidar_txTempMax_length = max_length;
+	lidar_programPos = COM_PROGRAMM_TX_POS;
+	//FSM-State-Handler 
+	tempState = lidar_fsmState[lidar_mode];
+	lidar_fsmState[lidar_mode] = lidar_allFsmLookuptable[lidar_mode][tempState]();
+	if (lidar_txTempData[0] != NULL){
+		*data = (uint8_t*)lidar_txTempData[0];
+	}
+	lidar_programPos = COM_PROGRAMM_NORMAL_POS;
+	return true;
+}
+
