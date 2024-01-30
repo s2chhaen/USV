@@ -25,5 +25,18 @@
 #define PHASE_SHIFT_SPL_MAX (FIL_ORDER/2 + 1)
 #define DATA_SPL_NUM 361
 #define DATA_BUFFER_LEN (DATA_SPL_NUM+PHASE_SHIFT_SPL_MAX)
+/*Filter-Config*/
+//Bits-Anzahl für Nachkommastelle
+#define FIXED_POINT_BITS 15
+//Umwandlungsfaktor vom "floating-point" zum "fixed-point" Format
+#define CONVERT_FACTOR_INT ((1<<FIXED_POINT_BITS) - 1)
+/*Lidar-Ausgabe-Param*/
+#define LIDAR_OUTPUT_IDEAL_LEN 362
+/*Definition der Max. und Min. Grenzwert UQ7.4 Format*/
+//Max = 80m
+#define MAX_MEASURED_VAL_FP_M 1280UL
+//Min = 0,125m
+#define MIN_MEASURED_VAL_FP_M 2UL
+
 
 #endif /* LIDARFILTER_H_ */
