@@ -308,3 +308,4 @@ static uint8_t lidar_dataGet(uint8_t addr, uint8_t cmd, uint8_t segNum, uint8_t*
 	}
 	return result;
 }
+#pragma GCC pop_options
