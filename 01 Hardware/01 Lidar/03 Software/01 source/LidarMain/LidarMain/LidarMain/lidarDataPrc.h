@@ -18,6 +18,10 @@
 #include "comConfig.h"
 #include "registerModel.h"
 
+/* Abkürzungen: FIL:Filter, SPL: sample, FP:Fixed-point, LEN:length,
+ * idx: Index, Val: value, jmp: jump/jumping, curr:current,
+ * N: And, usml: undersampling
+ */
 /*Lokale Variable Param*/
 #define FIL_ORDER 3U
 #define FIL_OLD_VALUES_BUFFER_LEN_BITS ((FIL_ORDER-1U)/2U + 1U)
