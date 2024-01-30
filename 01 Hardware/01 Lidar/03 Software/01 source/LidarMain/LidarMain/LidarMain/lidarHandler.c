@@ -398,3 +398,42 @@ static uint8_t lidar_paramEndSHandlerFunc(){
 	return LIDAR_PARAM_FSM_END_STATE;
 }
 
+//Reset- Rücksetzen
+static uint8_t lidar_resetStartSHandlerFunc(){
+	uint8_t retVal = LIDAR_RESET_FSM_RX_STATE;
+	uint8_t check = (lidar_programPos == COM_PROGRAMM_TX_POS);
+	if (check){
+		lidar_protocolToHandleBytes = lidar_setProtocol(0x10,0);
+		lidar_sendProtocol();
+	} else{
+		retVal = LIDAR_RESET_FSM_END_STATE;
+		lidar_mgr.resetStatus = 0;
+		lidar_rxBufferIdx = 0;
+	}
+	return retVal;
+}
+
+static uint8_t lidar_resetRxSHandlerFunc(){
+	uint8_t retVal = LIDAR_RESET_FSM_TERMINAL_STATE;
+	uint8_t check = (lidar_programPos == COM_PROGRAMM_TX_POS);
+	if (check){
+		lidar_rxBufferToHandleBytes = LIDAR_RESET_RSP_LEN + 1;
+		lidar_rxRountine();
+	} else{
+		retVal = LIDAR_RESET_FSM_END_STATE;
+		lidar_mgr.resetStatus = 0;
+		lidar_rxBufferIdx = 0;
+	}
+	lidar_txTempData[0] = NULL;
+	return retVal;
+}
+
+static uint8_t lidar_resetTerminalSHandlerFunc(){
+	lidar_mgr.resetStatus = 0;
+	return LIDAR_RESET_FSM_END_STATE;
+}
+
+static uint8_t lidar_resetEndSHandlerFunc(){
+	return LIDAR_RESET_FSM_END_STATE;
+}
+
