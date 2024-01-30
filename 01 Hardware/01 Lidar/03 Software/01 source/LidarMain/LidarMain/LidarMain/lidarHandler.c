@@ -437,3 +437,119 @@ static uint8_t lidar_resetEndSHandlerFunc(){
 	return LIDAR_RESET_FSM_END_STATE;
 }
 
+//Getter-Daten-RX- Datenempfangen
+static uint8_t lidar_getterStartSHandlerFunc(){
+	lidar_mode = LIDAR_GETTER_MODE;
+	lidar_mgr.rxStatus = 1;
+	return LIDAR_GETTER_FSM_TX_STATE;
+}
+
+#pragma GCC push_options
+#pragma GCC optimize("O3")
+static uint8_t lidar_getterTXSHandlerFunc(){
+	uint8_t retVal = LIDAR_GETTER_FSM_TX_STATE;
+	uint8_t check = (lidar_programPos == COM_PROGRAMM_TX_POS);
+	if (check){
+		if (lidar_protocolToHandleBytes){
+			lidar_txTempData[0] = (uint8_t*)&(lidar_protocol[lidar_protocolIdx]);
+			if(lidar_protocolToHandleBytes < lidar_txTempMax_length){
+				*lidar_txTempLength = lidar_protocolToHandleBytes;
+				lidar_protocolToHandleBytes = 0;
+			} else{
+				*lidar_txTempLength = lidar_txTempMax_length;
+				lidar_protocolToHandleBytes -= lidar_txTempMax_length;
+				lidar_protocolIdx += lidar_txTempMax_length;
+			}
+		} else{
+			USART_set_Bytes_to_receive(lidar_comParam.usartNo,1);//Empfangen ACK/NACK Byte
+			lidar_protocolIdx = 0;
+			retVal = LIDAR_GETTER_FSM_RX_CHECK_1_OHD_STATE;
+		}
+	} else{
+		lidar_mgr.rxStatus = 0;
+		lidar_status.dataBf.lineStatus = 1;
+		retVal = LIDAR_GETTER_FSM_END_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t lidar_getterRX1stCheckSHandlerFunc(){
+	uint8_t retVal = LIDAR_GETTER_FSM_RX_CHECK_2_OHD_STATE;
+	uint8_t check = (lidar_programPos == COM_PROGRAMM_RX_POS) && (lidar_rxTempLength == 1) &&\
+					(lidar_rxTempData[0] == ASCII_ACK_CHAR);
+	if (check){
+		//Empfangen STX (1 Byte), ADDR (1 Byte), LEN (2 Byte), CMD (1 Byte)
+		USART_set_Bytes_to_receive(lidar_comParam.usartNo,5);
+	} else{
+		lidar_mgr.rxStatus = 0;
+		lidar_status.dataBf.lineStatus = 1;
+		retVal = LIDAR_GETTER_FSM_END_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t lidar_getterRX2ndCheckSHandlerFunc(){
+	uint8_t retVal = LIDAR_GETTER_FSM_RX_DATA_STATE;
+	uint8_t check = (lidar_programPos == COM_PROGRAMM_RX_POS) && (lidar_rxTempLength == 5);
+	if (check){
+		check = (lidar_rxTempData[LIDAR_START_BYTE_POS] == LIDAR_PROTOCOL_START_SYM) &&\
+				(lidar_rxTempData[LIDAR_ADDR_BYTE_POS] == lidar_rspVal(lidar_addr)) &&\
+				(lidar_rxTempData[LIDAR_PROTOCOL_CMD_BYTE_POS] == lidar_rspVal(lidar_protocol[LIDAR_PROTOCOL_CMD_BYTE_POS]));
+		if (check){
+			memcpy((uint8_t*)&(lidar_rxBuffer[lidar_rxBufferIdx]),(uint8_t*)lidar_rxTempData,lidar_rxTempLength);
+			lidar_rxBufferIdx += lidar_rxTempLength;
+			lidar_rxBufferToHandleBytes = (lidar_rxTempData[LIDAR_PROTOCOL_LEN_LBYTE_POS] |\
+										  (lidar_rxTempData[LIDAR_PROTOCOL_LEN_HBYTE_POS]<<8)) - 1;//CMD-Eklusiv
+			lidar_rxRountine();
+		} else{
+			lidar_mgr.rxStatus = 0;
+			lidar_status.dataBf.lineStatus = 1;
+			retVal = LIDAR_GETTER_FSM_END_STATE;	
+		}
+	} else{
+		lidar_mgr.rxStatus = 0;
+		lidar_status.dataBf.lineStatus = 1;
+		retVal = LIDAR_GETTER_FSM_END_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t lidar_getterRXDataSHandlerFunc(){
+	uint8_t retVal = LIDAR_GETTER_FSM_RX_DATA_STATE;
+	uint8_t check = (lidar_programPos == COM_PROGRAMM_RX_POS) &&\
+					(lidar_expectedRxBytes == lidar_rxTempLength);
+	if (check){
+		lidar_rxBufferToHandleBytes -= lidar_rxTempLength;
+		memcpy((uint8_t*)&lidar_rxBuffer[lidar_rxBufferIdx], (uint8_t*)lidar_rxTempData,\
+			   (uint8_t)lidar_rxTempLength);
+		lidar_rxBufferIdx += lidar_rxTempLength;
+		if (lidar_rxBufferToHandleBytes){
+			lidar_rxRountine();
+		} else{
+			USART_set_Bytes_to_receive(lidar_comParam.usartNo, 2);
+			retVal = LIDAR_GETTER_FSM_RX_3_OHD_STATE;
+		}
+	} else{
+		lidar_mgr.rxStatus = 0;
+		lidar_status.dataBf.lineStatus = 1;
+		retVal = LIDAR_GETTER_FSM_END_STATE;
+	}
+	return retVal;
+} 
+
+static uint8_t lidar_getterRX3rdSHandlerFunc(){
+	uint8_t check = (lidar_programPos == COM_PROGRAMM_RX_POS) && (lidar_rxTempLength == 2);
+	if (check){
+		lidar_tempChecksumVal = (lidar_rxTempData[1]<<8)|lidar_rxTempData[0];
+	} else{
+		lidar_status.dataBf.lineStatus = 1;
+	}
+	lidar_mgr.rxStatus = 0;
+	return LIDAR_GETTER_FSM_END_STATE;
+}
+
+static uint8_t lidar_getterEndSHandlerFunc(){
+	return LIDAR_GETTER_FSM_END_STATE;
+}
+#pragma GCC pop_options
+
