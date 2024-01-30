@@ -38,5 +38,11 @@
 //Min = 0,125m
 #define MIN_MEASURED_VAL_FP_M 2UL
 
+typedef struct{
+	int32_t data[FIL_OLD_VALUES_BUFFER_LEN];
+	uint8_t jmpIdx:FIL_OLD_VALUES_BUFFER_LEN_BITS;
+	uint8_t currIdx:FIL_OLD_VALUES_BUFFER_LEN_BITS;
+}filOldValBuffer;
+
 
 #endif /* LIDARFILTER_H_ */
