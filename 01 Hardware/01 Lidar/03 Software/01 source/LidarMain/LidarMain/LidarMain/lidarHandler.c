@@ -44,3 +44,12 @@ volatile uint8_t lidar_txTempMax_length;
 //für usart RX - callback Funktion angewendet
 volatile uint8_t* lidar_rxTempData;
 volatile uint8_t lidar_rxTempLength;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Interne FSM-Deklaration
+volatile uint8_t lidar_mode = LIDAR_PARAM_MODE;
+volatile uint8_t lidar_fsmState[LIDAR_MODE_NUM] = {
+	LIDAR_PARAM_FSM_END_STATE,
+	LIDAR_RESET_FSM_END_STATE,
+	LIDAR_GETTER_FSM_END_STATE
+};
