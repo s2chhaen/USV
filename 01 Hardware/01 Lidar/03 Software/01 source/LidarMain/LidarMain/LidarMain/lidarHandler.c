@@ -90,3 +90,15 @@ lidar_fsmStateHandlerFunc_t lidar_getterCbTable[LIDAR_GETTER_FSM_STATE_NUM] = {
 	&lidar_getterEndSHandlerFunc
 };
 
+//FSM-Reset
+static uint8_t lidar_resetStartSHandlerFunc();
+static uint8_t lidar_resetRxSHandlerFunc();
+static uint8_t lidar_resetTerminalSHandlerFunc();
+static uint8_t lidar_resetEndSHandlerFunc();
+lidar_fsmStateHandlerFunc_t lidar_resetCbTable[LIDAR_RESET_FSM_STATE_NUM] = {
+	&lidar_resetStartSHandlerFunc,
+	&lidar_resetRxSHandlerFunc,
+	&lidar_resetTerminalSHandlerFunc,
+	&lidar_resetEndSHandlerFunc
+};
+
