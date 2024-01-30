@@ -800,3 +800,36 @@ static bool lidar_callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	lidar_programPos = COM_PROGRAMM_NORMAL_POS;
 	return true;
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//externe Funktionen
+uint8_t lidar_initDev(const usartConfig_t* config, uint16_t crc16Polynom, uint8_t* output_p, uint16_t* outLen_p, reg8Model_t* io_p){
+	uint8_t result = NO_ERROR;
+	uint8_t check = (config!=NULL) && (output_p!=NULL) && (outLen_p!=NULL) && (io_p != NULL) &&\
+					(*outLen_p >= LIDAR_RX_BUFFER_MAX_LEN);
+	if (check){
+		uint8_t temp = config->usartNo;
+		check = check && !USART_init(temp, config->baudrate, config->usartChSize, config->parity,\
+									 config->stopbit, config->sync, config->mpcm, config->address,\
+									 config->portMux);
+		if (check){
+			lidar_mgr.init = 1;
+			lidar_comParam = (*config);
+			lidar_checksumPolynom = crc16Polynom;
+			lidar_rxBuffer = output_p;
+			lidar_rxBufferStrLen = outLen_p;
+			lidar_ioStream = io_p;
+			//Zuweisung der Rückruf vom Lidar
+			USART_set_send_Array_callback_fnc(temp,&lidar_callbackTx);
+			USART_set_receive_Array_callback_fnc(temp,&lidar_callbackRx);
+			*outLen_p = 0;
+			lidar_rxBufferIdx = 0;
+		} else{
+			result = PROCESS_FAIL;
+		}
+	} else{
+		result = PROCESS_FAIL;
+	}
+	return result;
+}
+
