@@ -44,5 +44,10 @@ typedef struct{
 	uint8_t currIdx:FIL_OLD_VALUES_BUFFER_LEN_BITS;
 }filOldValBuffer;
 
+typedef struct{
+	uint8_t init:1;//1: initialisiert, 0: nicht initialisiert
+	uint8_t set:1;//1:Daten bereits, 0:keine Daten
+}filStatus_t;
+
 
 #endif /* LIDARFILTER_H_ */
