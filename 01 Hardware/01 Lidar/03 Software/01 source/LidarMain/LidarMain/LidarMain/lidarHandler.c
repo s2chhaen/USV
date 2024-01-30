@@ -249,3 +249,23 @@ static int16_t lidar_getCmdDataLen(uint8_t cmdNum, uint8_t segNum){
 }
 #pragma GCC pop_options
 
+static inline uint8_t lidar_setProtocol(uint8_t cmd, uint16_t cmdDataLen){
+	uint8_t tempIdx = 0;
+	lidar_protocol[LIDAR_START_BYTE_POS] = LIDAR_PROTOCOL_START_SYM;
+	lidar_protocol[LIDAR_ADDR_BYTE_POS] = lidar_addr;
+	lidar_protocol[LIDAR_PROTOCOL_LEN_LBYTE_POS] = (cmdDataLen+1) & 0xff;
+	lidar_protocol[LIDAR_PROTOCOL_LEN_HBYTE_POS] = (cmdDataLen+1) >> 8;
+	lidar_protocol[LIDAR_PROTOCOL_CMD_BYTE_POS] = cmd;
+	tempIdx = LIDAR_PROTOCOL_CMD_BYTE_POS+1;
+	if (cmdDataLen){
+		memcpy((void*)&(lidar_protocol[tempIdx]),(void*)lidar_txDataBuffer,cmdDataLen);
+		tempIdx += cmdDataLen;
+	}
+	lidar_tempChecksumVal = lidar_checksum16((uint8_t*)lidar_protocol,tempIdx);
+	lidar_protocol[tempIdx] = lidar_tempChecksumVal & 0xff;
+	tempIdx++;
+	lidar_protocol[tempIdx] = lidar_tempChecksumVal >> 8;
+	tempIdx++;
+	return tempIdx;
+}
+
