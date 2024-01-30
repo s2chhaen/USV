@@ -155,3 +155,7 @@ uint16_t lidar_checksum16(uint8_t* input, uint16_t length){
 	return uCrc16;
 }
 
+static inline uint8_t lidar_rspVal(uint8_t cmdOAddr){
+	return (cmdOAddr+0x80);
+}
+
