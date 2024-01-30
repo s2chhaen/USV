@@ -54,3 +54,20 @@ volatile uint8_t lidar_fsmState[LIDAR_MODE_NUM] = {
 	LIDAR_GETTER_FSM_END_STATE
 };
 volatile uint8_t tempState = 0;
+//FSM - Parametrierung
+static uint8_t lidar_paramStartSHandlerFunc();
+static uint8_t lidar_paramFPHandleSHandlerFunc();
+static uint8_t lidar_paramRX1stCheckSHandlerFunc();
+static uint8_t lidar_paramRXSHandlerFunc();
+static uint8_t lidar_paramRX2ndCheckSHandlerFunc();
+static uint8_t lidar_paramEndSHandlerFunc();
+
+lidar_fsmStateHandlerFunc_t lidar_paramtCbTable[LIDAR_PARAM_FSM_STATE_NUM] = {
+	&lidar_paramStartSHandlerFunc,
+	&lidar_paramFPHandleSHandlerFunc,
+	&lidar_paramRX1stCheckSHandlerFunc,
+	&lidar_paramRXSHandlerFunc,
+	&lidar_paramRX2ndCheckSHandlerFunc,
+	&lidar_paramEndSHandlerFunc
+};
+	
