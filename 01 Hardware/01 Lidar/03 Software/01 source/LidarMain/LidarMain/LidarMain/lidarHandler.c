@@ -184,3 +184,68 @@ static uint8_t lidar_dataCheck(uint8_t* input_p, const uint8_t* defaultVal_p, ui
 	return result;
 }
 
+#pragma GCC push_options
+#pragma GCC optimize("O3")
+static int16_t lidar_getCmdDataLen(uint8_t cmdNum, uint8_t segNum){
+	int16_t retVal;//keine Optimierung
+	switch(cmdNum){
+		case LIDAR_INIT_N_RESET:
+			retVal = 0;
+			break;
+		case MEASURED_DATA_REQ:
+			retVal = 1;
+			break;
+		case STATUS_REQ:
+			retVal = 0;
+			break;
+		case ERROR_OR_TEST_TELEGRAM_REQ:
+			retVal = 0;
+			break;
+		case OP_DATA_COUNTER_REQ:
+			retVal = 0;
+			break;
+		case AVG_MEASURED_DATA_REQ:
+			retVal = 1;
+			break;
+		case SEG_MEASURED_DATA_REQ:
+			retVal = 4;
+			break;
+		case LIDAR_TYPE_REQ:
+			retVal = 0;
+			break;
+		case MEASURED_DATA_WITH_FIELD_DATA_REQ:
+			retVal = 4;
+			break;
+		case SEG_AVG_MEASURED_DATA_REQ:
+			retVal = 5;
+			break;
+		case SEG_MEASURED_DATA_AND_REFLECTANCE_REQ:
+			retVal = 4;
+			break;
+		case FIELD_REQ:
+			retVal = 1;
+			break;
+		case FIELDS_STATUS_OUT_REQ:
+			retVal = 0;
+			break;
+		case LIDAR_CONFIG_P1_REQ:
+			retVal = 0;
+			break;
+		case MEASURED_DATA_WITH_REFLECTANCE_REQ:
+			segNum = segNum%2;//Nur 1 bis 2 Bereiche möglich
+			retVal = (segNum?6:10);
+			break;
+		case MEASURED_DATA_IN_XY_COORD_REQ:
+			retVal = 0;
+			break;
+		case LIDAR_CONFIG_P2_REQ:
+			retVal = 0;
+			break;
+		default:
+			retVal = -1;
+			break;
+	}
+	return retVal;
+}
+#pragma GCC pop_options
+
