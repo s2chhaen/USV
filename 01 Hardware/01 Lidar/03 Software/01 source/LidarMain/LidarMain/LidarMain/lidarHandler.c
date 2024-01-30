@@ -833,3 +833,12 @@ uint8_t lidar_initDev(const usartConfig_t* config, uint16_t crc16Polynom, uint8_
 	return result;
 }
 
+const lidarStatus_t* lidar_getStatus(){
+	return (lidarStatus_t*)&lidar_status;
+}
+
+void lidar_setAddr(uint8_t input){
+	lidar_addr = input;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
