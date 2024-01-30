@@ -9,3 +9,5 @@
 
 #include "lidarHandler.h"
 
+/*Konstante Variable von USART-FIFO*/
+static const uint16_t usartFIFOMaxLen = _FIFO_max_def - 2;
