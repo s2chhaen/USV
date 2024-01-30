@@ -9,6 +9,10 @@
 
 #include "lidarHandler.h"
 
+/*Abkürzungen: SHandler: State Handler, Func: Function, O: Or,
+ * FP: floating-pin, OHD: Overhead
+ */
+
 /*Konstante Variable von USART-FIFO*/
 static const uint16_t usartFIFOMaxLen = _FIFO_max_def - 2;
 /*Lokalvariable für Lidar*/
