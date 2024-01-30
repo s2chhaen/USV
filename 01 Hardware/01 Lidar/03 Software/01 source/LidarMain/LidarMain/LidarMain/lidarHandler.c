@@ -159,3 +159,13 @@ static inline uint8_t lidar_rspVal(uint8_t cmdOAddr){
 	return (cmdOAddr+0x80);
 }
 
+static inline void lidar_rxRountine(){
+	if (lidar_rxBufferToHandleBytes <= usartFIFOMaxLen){
+		lidar_expectedRxBytes = lidar_rxBufferToHandleBytes;
+		USART_set_Bytes_to_receive(lidar_comParam.usartNo, lidar_rxBufferToHandleBytes);
+	} else{
+		lidar_expectedRxBytes = (uint8_t)usartFIFOMaxLen;
+		USART_set_Bytes_to_receive(lidar_comParam.usartNo, usartFIFOMaxLen);
+	}	
+}
+
