@@ -53,3 +53,4 @@ volatile uint8_t lidar_fsmState[LIDAR_MODE_NUM] = {
 	LIDAR_RESET_FSM_END_STATE,
 	LIDAR_GETTER_FSM_END_STATE
 };
+volatile uint8_t tempState = 0;
