@@ -56,5 +56,10 @@ enum filUndersamplingType{
 #define UNDERSAMPLING_LAST_TYPE FIL_ODD_TYPE
 #define UNDERSAMPLING_TYPE_NUM (UNDERSAMPLING_LAST_TYPE+1)
 
+extern uint8_t fil_init(const int16_t* inFilCofs_p, uint8_t inLen, reg8Model_t* io_p);
+extern uint8_t fil_setNConvertData(uint8_t* data, uint16_t dataLen);
+extern uint8_t fil_run();
+extern uint8_t fil_compressNReturn(uint8_t* output_p, uint16_t outLen, uint8_t usmlType,\
+uint8_t outFPBit);
 
 #endif /* LIDARFILTER_H_ */
