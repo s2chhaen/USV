@@ -169,3 +169,7 @@ static inline void lidar_rxRountine(){
 	}	
 }
 
+static inline uint8_t lidar_checkRXData(uint8_t* data, uint16_t dataLen, uint16_t rxChecksumValue){
+	return (lidar_checksum16(data,dataLen)==rxChecksumValue);
+}
+
