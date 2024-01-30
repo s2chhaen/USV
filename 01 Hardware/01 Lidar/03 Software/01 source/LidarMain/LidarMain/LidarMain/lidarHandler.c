@@ -37,3 +37,10 @@ volatile reg8Model_t* lidar_ioStream = NULL;
 volatile uint8_t lidar_programPos = COM_PROGRAMM_NORMAL_POS; 
 
 /* temp-Var zum Speichern des Params von der Rückruffunktion */
+//für usart TX - callback Funktion angewendet
+volatile uint8_t* lidar_txTempData[1] = {0};
+volatile uint8_t* lidar_txTempLength;
+volatile uint8_t lidar_txTempMax_length;
+//für usart RX - callback Funktion angewendet
+volatile uint8_t* lidar_rxTempData;
+volatile uint8_t lidar_rxTempLength;
