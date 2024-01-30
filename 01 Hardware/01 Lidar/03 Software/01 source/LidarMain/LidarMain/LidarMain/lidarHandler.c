@@ -553,3 +553,223 @@ static uint8_t lidar_getterEndSHandlerFunc(){
 }
 #pragma GCC pop_options
 
+//externe-FSM-Implementierung
+static uint8_t lidar_mainSyncSHandler(){
+	uint8_t retVal = LIDAR_MAIN_SYNC_STATE;
+	uint8_t check = lidar_mgr.init && lidar_ioStreamStatusAvai() && lidar_ioStreamDataAvai();
+	if (check){
+		//Parameterierung/Sync
+		lidar_mgr.syncStatus = 1;
+		lidar_mode = LIDAR_PARAM_MODE;
+		lidar_fsmState[LIDAR_PARAM_MODE] = lidar_allFsmLookuptable[LIDAR_PARAM_MODE][LIDAR_PARAM_FSM_START_STATE]();
+		//Setzen des Wertes vom timeout
+		lidarTimer_setCounter(60000UL);
+		retVal = LIDAR_MAIN_SYNC_POLLING_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t lidar_mainSyncPollingSHandler(){
+	uint8_t retVal = LIDAR_MAIN_SYNC_POLLING_STATE;
+	if (lidar_mgr.syncStatus){
+		if (lidarTimer_getCounter() < 0){
+			lidarTimer_setState(0);
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+				USART_flushRXFIFO(lidar_comParam.usartNo);
+				lidar_fsmState[LIDAR_PARAM_MODE] = LIDAR_PARAM_FSM_END_STATE;
+			}
+			lidar_status.dataBf.timeOut = 1;
+			lidar_mgr.syncStatus = 0;
+			retVal = LIDAR_MAIN_SYNC_DATA_CHECKING_STATE;
+		}
+	} else{
+		lidarTimer_setState(0);
+		retVal = LIDAR_MAIN_SYNC_DATA_CHECKING_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t lidar_mainSyncSignalCheckSHandler(){
+	uint8_t retVal = LIDAR_MAIN_DATA_REQ_STATE;
+	if (lidar_status.dataBf.lineStatus || lidar_status.dataBf.timeOut){
+		retVal = LIDAR_MAIN_SYNC_STATE;
+	} else{
+		uint8_t checksum = lidar_checkRXData((uint8_t*)lidar_rxBuffer,lidar_rxBufferIdx,\
+											 lidar_tempChecksumVal);
+		if (checksum){
+			lidar_status.dataBf.lidarStatus = lidar_rxBuffer[lidar_rxBufferIdx-1];
+			memmove((uint8_t*)lidar_rxBuffer,(uint8_t*)&(lidar_rxBuffer[LIDAR_PROTOCOL_CMD_BYTE_POS+1]),\
+					lidar_rxBufferIdx-6);//Status-Byte Exklusiv
+			//siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30" S29
+			uint8_t checkType= lidar_dataCheck((uint8_t*)&lidar_rxBuffer[LIDAR_INFO_TYPE_BYTE_POS],\
+											   (const uint8_t*)LIDAR_TYPE_STR, LIDAR_TYPE_STR_LEN);
+			uint8_t checkVer = lidar_dataCheck((uint8_t*)&lidar_rxBuffer[LIDAR_INFOR_VER_BYTE_POS],\
+											   (const uint8_t*)LIDAR_VER_STR, LIDAR_VER_STR_LEN);
+			//siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30" S106
+			uint8_t savedStatusByte = lidar_status.dataBf.lidarStatus;
+			uint8_t checkError = (savedStatusByte & 0x07) < 3;
+			if (checkType&&checkVer&&checkError){
+				//wenn erfolgreich synchronisiert dann wird die Flaggen zurückgesetzt wird
+				lidar_status.reg8[LIDAR_STATUS_MODULE_REG_TYPE] = 0x01;
+			} else{
+				lidar_status.dataBf.fmwDevStatus = !(checkType&&checkVer);
+				lidar_status.dataBf.devStatus = !checkError;
+				retVal = LIDAR_MAIN_SYNC_STATE;
+			}
+		} else{
+			lidar_status.dataBf.lineStatus = 1;
+			retVal = LIDAR_MAIN_SYNC_STATE;
+		}
+	}
+	if (lidar_ioStreamStatusAvai()){
+		lidar_ioStream->val = (1<<STREAM_LIDAR_STATUS_BIT_POS);
+	}
+	lidar_rxBufferIdx = 0;
+	return retVal;
+}
+
+static uint8_t lidar_mainDataReqSHandler(){
+	uint8_t retVal = LIDAR_MAIN_RSP_POLLING_STATE;
+	uint8_t check = lidar_ioStreamStatusAvai() && lidar_ioStreamDataAvai() && lidar_mgr.init;
+	if (check){
+		lidar_mgr.rxStatus = 1;
+		lidar_status.reg8[LIDAR_STATUS_MODULE_REG_TYPE] = 0x01;
+		static uint8_t dataContent = 0x01;//Subcommand Senden aller Werte
+		uint16_t dataLen = LIDAR_RX_BUFFER_MAX_LEN + 8;/* magic number: Länge der
+														  Anfrageprotokoll */
+		lidarTimer_setCounter(LIDAR_TX_TIME_US*dataLen/1000 + LIDAR_WRK_TIME_MS +\
+							  LIDAR_TOLERANCE_MS);
+		lidar_dataGet(0,MEASURED_DATA_REQ,1,(uint8_t*)&dataContent,1);/* magic num: Länge der
+																		 Dateninhalt */
+		lidarTimer_setState(1);
+	} else{
+		retVal = LIDAR_MAIN_DATA_REQ_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t lidar_mainRspPollingSHandler(){
+	uint8_t retVal = LIDAR_MAIN_RSP_POLLING_STATE;
+	if (lidar_mgr.rxStatus){
+		if (lidarTimer_getCounter() < 0){
+			lidarTimer_setState(0);
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+				USART_flushRXFIFO(lidar_comParam.usartNo);
+				lidar_fsmState[LIDAR_GETTER_MODE] = LIDAR_GETTER_FSM_END_STATE;
+			}
+			lidar_mgr.rxStatus = 0;
+			lidar_status.dataBf.timeOut = 1;
+			retVal = LIDAR_MAIN_DATA_CHECK_STATE;
+		}
+	} else{
+		lidarTimer_setState(0);
+		retVal = LIDAR_MAIN_DATA_CHECK_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t lidar_mainDataCheckSHandler(){
+	uint8_t retVal = LIDAR_MAIN_DATA_REQ_STATE;
+	static uint8_t checkData = 0;
+	static uint8_t checkFcn = 0;
+	uint8_t check = lidar_status.dataBf.lineStatus || lidar_status.dataBf.timeOut;
+	if (check){
+		lidar_status.dataBf.lidarStatus = 0;
+		retVal = LIDAR_MAIN_ERROR_STATE;
+	} else {
+		//Werte von Bit 1->3,7 gespeichert
+		uint8_t savedLidarState = lidar_status.dataBf.lidarStatus;
+		checkData = !(savedLidarState&0x80);//bit 7: Daten plausibel
+		checkFcn = (savedLidarState&0x07)<3;//bit 1->3: Lidar-Funktionailität
+		check = lidar_checkRXData((uint8_t*)lidar_rxBuffer, lidar_rxBufferIdx,\
+								  lidar_tempChecksumVal);
+		if (check&&checkData&&checkFcn){
+			uint16_t configData = (lidar_rxBuffer[LIDAR_PROTOCOL_CMD_BYTE_POS + 1]) |\
+								  (lidar_rxBuffer[LIDAR_PROTOCOL_CMD_BYTE_POS+2] << 8);
+			check = ((configData&LIDAR_SET_CONFIG_BM) == LIDAR_SET_CONFIG);
+			if (check){
+				/* STX (1 Byte), Addr (1 Byte), Len (2 Bytes), CMD (1 Byte), DataConfig (2 Bytes),
+				 * Status (1 Byte)*/
+				(*lidar_rxBufferStrLen) = lidar_rxBufferIdx - 6 - 2;
+				lidar_status.dataBf.lidarStatus = lidar_rxBuffer[lidar_rxBufferIdx-1];
+				//Status-Byte Exklusiv
+				memmove((uint8_t*)lidar_rxBuffer,(uint8_t*)&(lidar_rxBuffer[LIDAR_PROTOCOL_CMD_BYTE_POS+1+2]),\
+						lidar_rxBufferIdx-6-2);
+			} else{
+				USART_flushRXFIFO(lidar_comParam.usartNo);
+				retVal = LIDAR_MAIN_SYNC_STATE;
+				(*lidar_rxBufferStrLen) = 0;
+				lidar_status.dataBf.configStatus = 1;
+			}
+		} else{
+			(*lidar_rxBufferStrLen) = 0;
+			lidar_status.dataBf.lineStatus = !check;
+			lidar_status.dataBf.devStatus = !(checkData&&checkFcn);
+			retVal = LIDAR_MAIN_ERROR_STATE;
+		}
+	}
+	if (lidar_ioStreamStatusAvai()){
+		lidar_ioStream->val |= (1<<STREAM_LIDAR_STATUS_BIT_POS);
+	}
+	lidar_rxBufferIdx = 0;
+	return retVal;
+}
+
+static uint8_t lidar_mainResetSHandler(){
+	uint8_t retVal = LIDAR_MAIN_RESET_STATE;
+	uint8_t check = lidar_ioStreamStatusAvai() && lidar_ioStreamDataAvai() && lidar_mgr.init;
+	if (check){
+		lidar_mgr.resetStatus = 1;
+		uint8_t cancelCMD = ASCII_ETX_CHAR;
+		lidar_mode = LIDAR_RESET_MODE;
+		lidar_fsmState[LIDAR_RESET_MODE] = LIDAR_RESET_FSM_START_STATE;
+		uint8_t txNRxBytes = 7 + 8;
+		lidarTimer_setCounter(LIDAR_WRK_TIME_MS+LIDAR_TX_TIME_US*txNRxBytes*3/2+LIDAR_TOLERANCE_MS);
+		lidarTimer_setState(1);
+		USART_send_Array(lidar_comParam.usartNo,0,&cancelCMD,1);//Stoppen aller Übertragung
+		retVal = LIDAR_MAIN_RESET_POLLING_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t lidar_mainResetPollingSHandler(){
+	uint8_t retVal = LIDAR_MAIN_RESET_POLLING_STATE;
+	if (lidar_mgr.resetStatus){
+		if (lidarTimer_getCounter() < 0){
+			lidarTimer_setState(0);
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+				USART_flushRXFIFO(lidar_comParam.usartNo);
+				lidar_fsmState[LIDAR_RESET_MODE] = LIDAR_RESET_FSM_END_STATE;
+			}
+			lidar_mgr.resetStatus = 0;
+			if (lidar_ioStreamStatusAvai()){
+				lidar_ioStream->val |= (1<<STREAM_LIDAR_STATUS_BIT_POS);
+			}
+			retVal = LIDAR_MAIN_SYNC_STATE;
+			lidar_status.reg8[LIDAR_STATUS_MODULE_REG_TYPE] = (1 << 5);
+			lidar_rxBufferIdx = 0;
+		}
+	} else{
+		lidarTimer_setState(0);
+		if (lidar_ioStreamStatusAvai()){
+			lidar_ioStream->val |= (1<<STREAM_LIDAR_STATUS_BIT_POS);
+		}
+		retVal = LIDAR_MAIN_SYNC_STATE;
+		lidar_status.reg8[LIDAR_STATUS_MODULE_REG_TYPE] = 0;
+		lidar_rxBufferIdx = 0;
+	}
+	return retVal;
+}
+
+static uint8_t lidar_mainErrorSHandler(){
+	uint8_t retVal = LIDAR_MAIN_DATA_REQ_STATE;
+	lidar_tryTime--;
+	if (lidar_tryTime < 0){
+		lidar_tryTime = 1;
+		retVal = LIDAR_MAIN_RESET_STATE;
+	}
+	if (lidar_ioStreamStatusAvai()){
+		lidar_ioStream->val |= (1<<STREAM_LIDAR_STATUS_BIT_POS);
+	}
+	return retVal;
+}
