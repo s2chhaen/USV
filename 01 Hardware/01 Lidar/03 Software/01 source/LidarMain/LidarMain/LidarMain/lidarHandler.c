@@ -173,3 +173,14 @@ static inline uint8_t lidar_checkRXData(uint8_t* data, uint16_t dataLen, uint16_
 	return (lidar_checksum16(data,dataLen)==rxChecksumValue);
 }
 
+static uint8_t lidar_dataCheck(uint8_t* input_p, const uint8_t* defaultVal_p, uint8_t defaultValLen){
+	uint8_t result = 1;
+	for (volatile uint8_t i = 0; i < defaultValLen; i++){
+		if (input_p[i] != defaultVal_p[i]){
+			result = 0;
+			break;
+		}
+	}
+	return result;
+}
+
