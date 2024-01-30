@@ -269,3 +269,17 @@ static inline uint8_t lidar_setProtocol(uint8_t cmd, uint16_t cmdDataLen){
 	return tempIdx;
 }
 
+static inline void lidar_sendProtocol(){
+	uint8_t temp1 = 0;
+	lidar_protocolIdx = 0;
+	if (lidar_protocolToHandleBytes < usartFIFOMaxLen){
+		temp1 = lidar_protocolToHandleBytes;
+		lidar_protocolToHandleBytes = 0;
+		USART_send_Array(lidar_comParam.usartNo,0,(uint8_t*)lidar_protocol,temp1);
+	} else{
+		lidar_protocolToHandleBytes -= usartFIFOMaxLen;
+		lidar_protocolIdx = usartFIFOMaxLen;
+		USART_send_Array(lidar_comParam.usartNo,0,(uint8_t*)lidar_protocol,usartFIFOMaxLen);
+	}
+}
+
