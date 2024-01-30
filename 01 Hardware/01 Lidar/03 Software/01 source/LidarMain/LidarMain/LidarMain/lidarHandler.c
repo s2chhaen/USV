@@ -283,3 +283,11 @@ static inline void lidar_sendProtocol(){
 	}
 }
 
+static inline uint8_t lidar_ioStreamStatusAvai(){
+	return !(lidar_ioStream->val & (1 << STREAM_LIDAR_STATUS_BIT_POS));
+}
+
+static inline uint8_t lidar_ioStreamDataAvai(){
+	return !(lidar_ioStream->val & (1 << STREAM_LIDAR_DATA_BIT_POS));
+}
+
