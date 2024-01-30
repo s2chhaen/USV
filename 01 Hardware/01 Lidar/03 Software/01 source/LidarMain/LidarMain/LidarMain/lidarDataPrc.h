@@ -49,5 +49,12 @@ typedef struct{
 	uint8_t set:1;//1:Daten bereits, 0:keine Daten
 }filStatus_t;
 
+enum filUndersamplingType{
+	FIL_EVEN_TYPE,
+	FIL_ODD_TYPE
+};
+#define UNDERSAMPLING_LAST_TYPE FIL_ODD_TYPE
+#define UNDERSAMPLING_TYPE_NUM (UNDERSAMPLING_LAST_TYPE+1)
+
 
 #endif /* LIDARFILTER_H_ */
