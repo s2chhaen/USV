@@ -790,3 +790,13 @@ static bool lidar_callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, 
 	return true;
 }
 
+static bool lidar_callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
+	lidar_rxTempLength = length;
+	lidar_rxTempData = data;
+	lidar_programPos = COM_PROGRAMM_RX_POS;
+	//FSM-State-Handler 
+	tempState = lidar_fsmState[lidar_mode];
+	lidar_fsmState[lidar_mode] = lidar_allFsmLookuptable[lidar_mode][tempState]();
+	lidar_programPos = COM_PROGRAMM_NORMAL_POS;
+	return true;
+}
