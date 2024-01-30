@@ -102,3 +102,9 @@ lidar_fsmStateHandlerFunc_t lidar_resetCbTable[LIDAR_RESET_FSM_STATE_NUM] = {
 	&lidar_resetEndSHandlerFunc
 };
 
+//Gesamte Look-up-Tabelle für Zustand-Handler-Routinen vom allen FSM
+lidar_fsmStateHandlerFunc_t* lidar_allFsmLookuptable[LIDAR_MODE_NUM] = {
+	(lidar_fsmStateHandlerFunc_t*)&lidar_paramtCbTable,
+	(lidar_fsmStateHandlerFunc_t*)&lidar_resetCbTable,
+	(lidar_fsmStateHandlerFunc_t*)&lidar_getterCbTable
+};
