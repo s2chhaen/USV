@@ -46,3 +46,27 @@ static inline void fil_setData(uint8_t* data, uint16_t dataLen){
 		fil_dataBuffer[i] = (int64_t)(data[2*i]|(data[2*i+1] << 8)) & 0x1FFF;
 	}	
 }
+
+static inline void fil_convertData(){
+	//Umwandlung in Q(32-FIXED_POINT_BITS).(FIXED_POINT_BITS) Format
+	for (int i = 0; i < DATA_SPL_NUM; i++){
+		fil_dataBuffer[i] <<= FIXED_POINT_BITS;
+	}
+}
+
+uint8_t fil_setNConvertData(uint8_t* data, uint16_t dataLen){
+	/*Kopieren der Eingabe im internen Buffer und Umwandlung im passenden Format*/
+	uint8_t result = NO_ERROR;
+	uint16_t tempLen = dataLen/2;
+	uint8_t check = (data!=NULL) && (dataLen > 0) && (tempLen <= DATA_SPL_NUM);
+	if (check){
+		fil_dataBufferLen = tempLen;
+		fil_setData(data, 2*tempLen);
+		fil_convertData();
+		fil_mgr.set = 1;
+	} else{
+		fil_dataBufferLen = 0;
+		result = PROCESS_FAIL;
+	}
+	return result;
+}
