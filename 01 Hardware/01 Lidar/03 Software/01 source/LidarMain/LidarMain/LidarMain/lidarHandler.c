@@ -291,3 +291,20 @@ static inline uint8_t lidar_ioStreamDataAvai(){
 	return !(lidar_ioStream->val & (1 << STREAM_LIDAR_DATA_BIT_POS));
 }
 
+#pragma GCC push_options
+#pragma GCC optimize("O2")
+static uint8_t lidar_dataGet(uint8_t addr, uint8_t cmd, uint8_t segNum, uint8_t* input_p, uint8_t inputLen){
+	uint8_t result = NO_ERROR;
+	lidar_addr = addr;
+	int16_t cmdDataLen;
+	cmdDataLen = lidar_getCmdDataLen(cmd,segNum);
+	if (cmdDataLen!=-1){
+		lidar_fsmState[LIDAR_GETTER_MODE] = lidar_allFsmLookuptable[LIDAR_GETTER_MODE][LIDAR_GETTER_FSM_START_STATE]();
+		memcpy((void*)lidar_txDataBuffer,(void*)input_p,inputLen);
+		lidar_protocolToHandleBytes = lidar_setProtocol(cmd, (uint16_t)cmdDataLen);
+		lidar_sendProtocol();
+	} else{
+		result = PROCESS_FAIL;
+	}
+	return result;
+}
