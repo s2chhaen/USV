@@ -9,6 +9,8 @@
 
 #include "usvDataHandler.h"
 
+//Speichern der Max. Elementen vom USART-FIFO
+const uint16_t usartFIFOMaxLen = _FIFO_max_def - 1;
 
 
 
