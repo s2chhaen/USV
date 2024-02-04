@@ -317,6 +317,24 @@ static uint8_t fsm_setterEndSHandlerFunc(){
 	return USV_FSM_SETTER_END_STATE;
 }
 
+//externe-FSM-Implementierung
+static uint8_t usv_mainFsmStartSHandlerFunc(){
+	uint8_t retVal = USV_MAIN_FSM_START_STATE;
+	uint8_t checkStatus = usv_ioStreamStatusAvai();
+	uint8_t checkData = usv_ioStreamDataAvai();
+	uint8_t check = (usv_mgr.init) && (checkStatus || checkData);
+	usv_errorSrc = USV_NO_SRC;
+	if (check){
+		if (checkStatus){
+			retVal = USV_MAIN_FSM_STATUS_TX_STATE;
+		}
+		if (checkData && (!checkStatus)){
+			retVal = USV_MAIN_FSM_DATA_TX_STATE;
+		}
+	}
+	return retVal;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //in ISR zurückgerufte Funktionen
