@@ -94,3 +94,14 @@ const int16_t usvTimer_getCounter(){
 	return usvTimer_stepCounter;
 }
 
+//Funktion zum Steuern des Timers für Lidar
+void lidarTimer_setState(uint8_t state){
+	if (timer_status.init){
+		if (state){
+			TCB1.CTRLA |= TCB_ENABLE_bm;
+		} else{
+			TCB1.CTRLA &= ~TCB_ENABLE_bm;
+		}
+	}
+}
+
