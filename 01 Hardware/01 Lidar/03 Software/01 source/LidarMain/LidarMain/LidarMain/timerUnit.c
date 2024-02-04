@@ -110,3 +110,7 @@ void lidarTimer_setCounter(uint32_t value){
 	TCB1.CNT = 0;
 }
 
+const int16_t lidarTimer_getCounter(){
+	return lidarTimer_stepCounter;
+}
+
