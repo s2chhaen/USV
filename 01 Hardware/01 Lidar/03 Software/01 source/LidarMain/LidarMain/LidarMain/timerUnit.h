@@ -17,6 +17,7 @@
 #include "./ATMegaXX09/ATMegaXX09Clock.h"
 #include "ATMegaXX09/USART/USART.h"
 #include "Math/MinMax.h"
+#include "errorList.h"
 
 
 #endif /* TIMERUNIT_H_ */
