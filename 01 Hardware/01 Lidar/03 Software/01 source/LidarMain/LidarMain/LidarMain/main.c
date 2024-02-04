@@ -37,5 +37,19 @@ int main(void){
 	/**** Initialisierung der Module ****/
 	//CPU-CLK
 	init_Core_CLK(INTERN_CLK,1);//magic number prescaler
+	//Timer
+	timer_init(REZ_MS,timerRes_ms,timerRes_ms);
+	//IO-Pin
+	PORTD.DIR |= (1<<2);//PD2 als Output, die anderen als Input (Default)
+	//Lidar-Interpretator
+	lidar_initDev((const usartConfig_t*)&config, LIDAR_CHECKSUM_POLYNOM, (uint8_t*)lidarOutput,\
+	(uint16_t*)&lidarOutputLen, (reg8Model_t*)&mainStream);
+	//USVData
+	config.usartNo = iUSART1;
+	config.baudrate = 250000;
+	config.parity = USART_PMODE_ODD_gc;
+	usv_initDev((const usartConfig_t*)&config, USV_CHECKSUM_POLYNOM,(reg8Model_t*)&mainStream,\
+	(const uint8_t*)usvDataBuffer, (const uint16_t*)&usvDataBufferLen,\
+	(const uint8_t*)lidarFlag_p->reg8, (uint8_t*)&lidarFlagLen);
 }
 
