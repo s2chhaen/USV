@@ -379,6 +379,18 @@ static uint8_t usv_mainFsmStatusRspCheckSHandlerFunc(){
 	return retVal;
 }
 
+static uint8_t usv_mainFsmDataTxSHandlerFunc(){
+	uint16_t regAdd = SB8_ADD;
+	uint16_t regLen = *usv_dataBufferLen;
+	uint8_t usvAddr = usv_mgr.usvAddr;
+	uint32_t timeOut_ms = (USV_BYTE_TRANSFER_TIME_US*(regLen+1)+USV_DST_PROG_WORK_TIME_US)/1000 +\
+						   USV_TOLERANCE_MS;
+	usvTimer_setCounter(timeOut_ms);
+	usv_setRegister(usvAddr,regAdd,usv_dataBuffer,regLen);
+	usvTimer_setState(1);
+	return USV_MAIN_FSM_DATA_RSP_POLLING_STATE;
+}
+
 static uint8_t usv_mainFsmDataRspPollSHandlerFunc(){
 	uint8_t retVal = USV_MAIN_FSM_DATA_RSP_POLLING_STATE;
 	if (usv_mgr.write){
