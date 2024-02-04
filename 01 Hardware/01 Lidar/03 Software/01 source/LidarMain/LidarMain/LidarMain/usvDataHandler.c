@@ -9,6 +9,10 @@
 
 #include "usvDataHandler.h"
 
+/* Abkürzungen: Idx: Index, def: Definition,
+ * Rsp: Response, Func: Function, Poll: Polling
+ */
+
 //Speichern der Max. Elementen vom USART-FIFO
 const uint16_t usartFIFOMaxLen = _FIFO_max_def - 1;
 //Protocolbereich
