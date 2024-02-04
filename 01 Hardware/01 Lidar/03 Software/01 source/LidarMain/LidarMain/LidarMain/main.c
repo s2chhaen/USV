@@ -25,5 +25,14 @@ int main(void){
 	volatile uint8_t usvDataBuffer[LIDAR_OUTPUT_IDEAL_LEN] = {0};
 	volatile uint16_t usvDataBufferLen = sizeof(usvDataBuffer)/sizeof(uint8_t);
 	volatile uint8_t usvDataFSMState = USV_MAIN_FSM_START_STATE;
+	/*temp-Variable*/
+	usartConfig_t config = {
+		.usartNo = iUSART0, .baudrate = 38400,
+		.usartChSize = USART_CHSIZE_8BIT_gc, .parity = USART_PMODE_DISABLED_gc,
+		.stopbit = USART_SBMODE_1BIT_gc, .sync = false,
+		.mpcm = false, .address = 0, .portMux = PORTMUX_USARTx_DEFAULT_gc,
+	};
+	uint8_t timerRes_ms = 10;
+	
 }
 
