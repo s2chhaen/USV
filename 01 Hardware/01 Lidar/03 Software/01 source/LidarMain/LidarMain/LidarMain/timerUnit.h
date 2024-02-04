@@ -11,6 +11,9 @@
 #ifndef TIMERUNIT_H_
 #define TIMERUNIT_H_
 
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <util/atomic.h>
 
 
 #endif /* TIMERUNIT_H_ */
