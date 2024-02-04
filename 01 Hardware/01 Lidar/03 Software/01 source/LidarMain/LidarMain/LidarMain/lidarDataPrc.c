@@ -70,3 +70,12 @@ uint8_t fil_setNConvertData(uint8_t* data, uint16_t dataLen){
 	}
 	return result;
 }
+
+static inline void redundacyAdd(int64_t tempVal){
+	//Hinzufüge des letzten Wertes "PHASE_SHIFT_SPL_MAX"-Mal für spätere Phasen-Kompensation
+	tempVal = fil_dataBuffer[fil_dataBufferLen-1];
+	for (volatile uint8_t i = 0; i < PHASE_SHIFT_SPL_MAX; i++){
+		fil_dataBuffer[fil_dataBufferLen+i] = tempVal;
+	}
+	fil_dataBufferLen += PHASE_SHIFT_SPL_MAX;
+}
