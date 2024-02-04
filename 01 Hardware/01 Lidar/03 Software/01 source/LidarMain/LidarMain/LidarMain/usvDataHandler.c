@@ -175,6 +175,10 @@ static inline bool checkRxData(uint8_t* data,uint8_t dataLen, uint8_t rxChecksum
 	return crc8CodeGen(data,(uint16_t)dataLen)==rxChecksumValue;
 }
 
+static inline uint8_t usv_ioStreamStatusAvai(){
+	return usv_ioStream->val & (1 << STREAM_LIDAR_STATUS_BIT_POS);
+}
+
 
 
 
