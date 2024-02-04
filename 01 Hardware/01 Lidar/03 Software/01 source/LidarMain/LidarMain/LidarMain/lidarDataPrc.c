@@ -106,3 +106,17 @@ static inline void shiftPhaseCompensation(){
 	 *für die Phasen-Verschiebung-Kompensation*/
 	fil_dataBufferIdx = PHASE_SHIFT_SPL_MAX;
 }
+
+uint8_t fil_run(){
+	uint8_t result = NO_ERROR;
+	if (fil_mgr.init && fil_mgr.set){
+		int64_t tempVal=0;
+		redundacyAdd(tempVal);
+		filtering(tempVal);
+		shiftPhaseCompensation();
+		fil_mgr.set = 0;
+	} else{
+		result = PROCESS_FAIL;
+	}
+	return result;
+}
