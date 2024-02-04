@@ -142,4 +142,12 @@ enum usvErrorSource{
 	USV_DATA_TX_SRC
 };
 
+typedef struct{
+	uint8_t init:1;
+	uint8_t usvAddr:2;
+	uint8_t errorSource:2;//0: nicht aktiv, 1: Fehler vom Zustand-Tx, 2: Fehler vom Daten-Tx
+	uint8_t write:1;//0: nicht aktiv, 1: Register-Schreiben im Prozess
+	uint8_t res:1;//0: kein Fehler, 1: Fehler
+}usvMgr_t;
+
 #endif /* USVDATAHANDLER_H_ */
