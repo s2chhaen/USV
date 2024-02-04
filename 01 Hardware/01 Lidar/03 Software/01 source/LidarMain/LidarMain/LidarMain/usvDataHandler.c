@@ -465,6 +465,53 @@ static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	usv_programPos = COM_PROGRAMM_NORMAL_POS;
 	return true;
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//externe Funktionen
+
+/**
+ * \brief Initalisierung des Handlers
+ * 
+ * \param dev_p Zeiger zum zu initalisierenden Handler 
+ * \param inputRxFunc_p der Zeiger zur Datenempfangen Funktion
+ * \param inputTxFunc_p der Zeiger zur Datensenden Funktion
+ * \param inputWaitFunc_p der Zeiger zur Warte Funktion
+ * \param inputCrc8 der Checksum-CRC8 Polynom
+ * 
+ * \return uint8_t 0: keinen Fehler, sonst Fehler
+ */
+uint8_t usv_initDev(const usartConfig_t* config, uint8_t crc8Polynom, reg8Model_t* io_p,\
+					const uint8_t* dataBuffer_p, const uint16_t* dataBufferLen_p,\
+					const uint8_t* statusBuffer_p, const uint8_t* statusBufferLen_p){
+	uint8_t result = NO_ERROR;
+	uint8_t check = (config != NULL) && (io_p != NULL) && (dataBuffer_p != NULL) &&\
+					(dataBufferLen_p != NULL) && (statusBuffer_p != NULL) &&\
+					(statusBufferLen_p != NULL);
+	if (check){
+		uint8_t temp = config->usartNo;
+		check = check && !USART_init(temp,config->baudrate, config->usartChSize, config->parity,\
+									 config->stopbit, config->sync, config->mpcm, config->address,\
+									 config->portMux);
+		if (check){
+			usv_mgr.init = 1;
+			usv_comParam = (*config);
+			usv_checksumPolynom = crc8Polynom;
+			usv_ioStream = io_p;
+			usv_dataBuffer = dataBuffer_p;
+			usv_dataBufferLen = dataBufferLen_p;
+			usv_statusBuffer = statusBuffer_p;
+			usv_statusBufferLen = statusBufferLen_p;
+			crc8Init(crc8Polynom);
+			USART_set_send_Array_callback_fnc(temp,&usartCallbackTx);
+			USART_set_receive_Array_callback_fnc(temp,&usartCallbackRx);
+		} else{
+			result = PROCESS_FAIL;
+		}
+	} else{
+		result = PROCESS_FAIL;
+	}
+	return result;
+}
 
 
 
