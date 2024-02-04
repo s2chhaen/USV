@@ -30,6 +30,11 @@ typedef struct{
 	uint8_t portMux:2;
 }usartConfig_t;
 
+enum comProgrammPos{
+	COM_PROGRAMM_NORMAL_POS, //nicht in interrupt
+	COM_PROGRAMM_TX_POS,//in USART-ISR von TX
+	COM_PROGRAMM_RX_POS,//in USART-ISR von RX
+};
 
 
 #endif /* COMCONFIG_H_ */
