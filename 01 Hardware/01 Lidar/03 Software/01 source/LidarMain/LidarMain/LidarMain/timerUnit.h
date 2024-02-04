@@ -39,5 +39,9 @@ typedef struct{
 }timerStatus_t;
 
 extern uint8_t timer_init(uint8_t rezConfig, uint16_t resUSV, uint16_t resLidar);
+//Funktion zum Steuern des Timers für USVData
+extern void usvTimer_setState(uint8_t state);
+extern void usvTimer_setCounter(uint32_t value);
+extern const int16_t usvTimer_getCounter();
 
 #endif /* TIMERUNIT_H_ */
