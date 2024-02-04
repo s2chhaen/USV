@@ -313,6 +313,134 @@ static uint8_t fsm_setterEndSHandlerFunc(){
 	return USV_FSM_SETTER_END_STATE;
 }
 
+//externe-FSM-Implementierung
+static uint8_t usv_mainFsmStartSHandlerFunc(){
+	uint8_t retVal = USV_MAIN_FSM_START_STATE;
+	uint8_t checkStatus = usv_ioStreamStatusAvai();
+	uint8_t checkData = usv_ioStreamDataAvai();
+	uint8_t check = (usv_mgr.init) && (checkStatus || checkData);
+	usv_errorSrc = USV_NO_SRC;
+	
+	if (check){
+		if (checkStatus){
+			retVal = USV_MAIN_FSM_STATUS_TX_STATE;
+		}
+		if (checkData && (!checkStatus)){
+			retVal = USV_MAIN_FSM_DATA_TX_STATE;
+		}
+	}
+	return retVal;
+}
+
+static uint8_t usv_mainFsmStatusTxSHandlerFunc(){
+	uint16_t regAdd = ER4_ADD;
+	uint8_t regLen = *usv_statusBufferLen;
+	uint8_t usvAddr = usv_mgr.usvAddr;
+	usv_setRegister(usvAddr,regAdd,usv_statusBuffer,regLen);
+	uint32_t timeOut_ms = (USV_BYTE_TRANSFER_TIME_US*(regLen+1)+USV_DST_PROG_WORK_TIME_US)/1000 +\
+						  USV_TOLERANCE_MS;
+	usvTimer_setCounter(timeOut_ms);
+	usvTimer_setState(1);
+	return USV_MAIN_FSM_STATUS_RSP_POLLING_STATE;
+}
+
+static uint8_t usv_mainFsmStatusRspPollSHandlerFunc(){
+	uint8_t retVal = USV_MAIN_FSM_STATUS_RSP_POLLING_STATE;
+	if (usv_mgr.write){
+		if (usvTimer_getCounter() < 0){
+			usvTimer_setState(0);
+			usv_mgr.write = 0;
+			usv_mgr.res = 1;
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+				USART_flushRXFIFO(usv_comParam.usartNo);
+				usv_setterFsmState = USV_FSM_SETTER_END_STATE;
+			}
+			retVal = USV_MAIN_FSM_STATUS_RSP_CHECK_STATE;
+		}
+	} else{
+		usvTimer_setState(0);
+		retVal = USV_MAIN_FSM_STATUS_RSP_CHECK_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t usv_mainFsmStatusRspCheckSHandlerFunc(){
+	uint8_t retVal = USV_MAIN_FSM_START_STATE;
+	if (usv_mgr.res){
+		usv_errorSrc = USV_STATUS_TX_SRC;
+		retVal = USV_MAIN_FSM_ERROR_STATE;
+	} else{
+		PORTD.OUT &= ~(1<<2);//auschalten PD2, da Daten erfolgreich gesendet sind
+		usv_ioStream->val &= ~(1<<STREAM_LIDAR_STATUS_BIT_POS);
+	}
+	return retVal;
+}
+
+static uint8_t usv_mainFsmDataTxSHandlerFunc(){
+	uint16_t regAdd = ES1_ADD;
+	uint16_t regLen = *usv_dataBufferLen;
+	uint8_t usvAddr = usv_mgr.usvAddr;
+	uint32_t timeOut_ms = (USV_BYTE_TRANSFER_TIME_US*(regLen+1)+USV_DST_PROG_WORK_TIME_US)/1000 +\
+						  USV_TOLERANCE_MS;
+	usvTimer_setCounter(timeOut_ms);
+	usv_setRegister(usvAddr,regAdd,usv_dataBuffer,regLen);
+	usvTimer_setState(1);
+	return USV_MAIN_FSM_DATA_RSP_POLLING_STATE;
+}
+
+static uint8_t usv_mainFsmDataRspPollSHandlerFunc(){
+	uint8_t retVal = USV_MAIN_FSM_DATA_RSP_POLLING_STATE;
+	if (usv_mgr.write){
+		if (usvTimer_getCounter() < 0){
+			usvTimer_setState(0);
+			usv_mgr.write = 0;
+			usv_mgr.res = 1;
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+				USART_flushRXFIFO(usv_comParam.usartNo);
+				usv_setterFsmState = USV_FSM_SETTER_END_STATE;
+			}
+			retVal = USV_MAIN_FSM_DATA_RSP_CHECK_STATE;
+		}
+	} else{
+		usvTimer_setState(0);
+		retVal = USV_MAIN_FSM_DATA_RSP_CHECK_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t usv_mainFsmDataRspCheckStateFunc(){
+	uint8_t retVal = USV_MAIN_FSM_START_STATE;
+	if (usv_mgr.res){
+		usv_errorSrc = USV_DATA_TX_SRC;
+		retVal = USV_MAIN_FSM_ERROR_STATE;
+	} else{
+		PORTD.OUT &= ~(1<<2);//auschalten PD2, da Daten erfolgreich gesendet sind
+		usv_ioStream->val &= ~(1<<STREAM_LIDAR_DATA_BIT_POS);
+	}
+	return retVal;
+}
+
+static uint8_t usv_mainFsmErrorSHandlerFunc(){
+	usv_mgr.res = 0;
+	usv_tryTime--;
+	if (usv_tryTime < 0){
+		usv_tryTime = USV_RETRY_TIME_MAX;
+		PORTD.OUT |= (1<<2);//Fehler-Leitung
+	}
+	switch (usv_errorSrc){
+		case USV_NO_SRC:
+			break;
+		case USV_STATUS_TX_SRC:
+			usv_ioStream->val &= ~(1<<STREAM_LIDAR_STATUS_BIT_POS);
+			break;
+		case USV_DATA_TX_SRC:
+			usv_ioStream->val &= ~(1<<STREAM_LIDAR_DATA_BIT_POS);
+			break;
+		default:
+			break;
+	}
+	return USV_MAIN_FSM_START_STATE;
+}
 
 
 
