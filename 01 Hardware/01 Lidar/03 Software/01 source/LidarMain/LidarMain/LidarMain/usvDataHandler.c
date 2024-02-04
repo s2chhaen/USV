@@ -82,6 +82,95 @@ usv_mainFsmStateHandlerFunc_t usv_mainFsmLookupTable[USV_MAIN_FSM_STATE_NUM] = {
 	&usv_mainFsmDataRspCheckStateFunc,
 	&usv_mainFsmErrorSHandlerFunc,
 };
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//interne verwendete Funktionen
+/**
+ * \brief die Position des Registers in der Liste suchen
+ * 
+ * \param reg die Adresse des Registers
+ * 
+ * \return int8_t -1: kein gefunden, sonst: die Position in der Liste
+ */
+static inline int16_t getRegLen(uint16_t reg){
+	int16_t result = 0;
+	switch(reg){
+		//Sensorblock
+		case SB1_ADD:
+			result = 1;//0
+			break;
+		case SB2_ADD:
+			result = 4;//1
+			break;
+		case SB3_ADD:
+			result = 4;//2
+			break;
+		case SB4_ADD:
+			result = 1;//3
+			break;
+		case SB5_ADD:
+			result = 2;//4
+			break;
+		case SB6_ADD:
+			result = 2;//5
+			break;
+		case SB7_ADD:
+			result = 3;//6
+			break;
+		//Radar
+		case SB8_ADD:
+			result = 1;//7
+			break;
+		case SB9_ADD:
+			result = 2;//8
+			break;
+		//Führungsgrößen der Antriebsregelung
+		case AF1_ADD:
+			result = 8;//9
+			break;
+		case AF2_ADD:
+			result = 8;//10
+			break;
+		case AF3_ADD:
+			result = 2;//11
+			break;
+		case AF4_ADD:
+			result = 2;//12
+			break;
+		//Stellgrößen der Antriebsregelung
+		case AS1_ADD:
+			result = 2;//13
+			break;
+		case AS2_ADD:
+			result = 2;//14
+			break;
+		//lokaler Error Block
+		case ER1_ADD:
+			result = 1;//15
+			break;
+		case ER2_ADD:
+			result = 1;//16
+			break;
+		case ER3_ADD:
+			result = 1;//17
+			break;
+		case ER4_ADD:
+			result = 2;//18
+			break;
+		case ER5_ADD:
+			result = 1;//19
+			break;
+		//Lidar
+		case ES1_ADD:
+			result = 362;//20
+			break;
+		default:
+			result = -1;
+			break;
+	}
+	return result;
+}
+
 
 
 
