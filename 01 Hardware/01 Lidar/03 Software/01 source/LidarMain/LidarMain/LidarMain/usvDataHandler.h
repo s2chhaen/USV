@@ -134,4 +134,6 @@ enum usv_mainFsmState{
 #define USV_MAIN_FSM_LAST_STATE USV_MAIN_FSM_ERROR_STATE
 #define USV_MAIN_FSM_STATE_NUM (USV_MAIN_FSM_LAST_STATE+1)
 
+typedef uint8_t (*const usv_mainFsmStateHandlerFunc_t)();
+
 #endif /* USVDATAHANDLER_H_ */
