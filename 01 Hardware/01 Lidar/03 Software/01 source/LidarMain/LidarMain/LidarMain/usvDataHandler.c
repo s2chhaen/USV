@@ -238,6 +238,81 @@ static uint8_t usv_setRegister(uint8_t add, uint16_t reg, const uint8_t* input_p
 	return retVal;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//interne-FSM-Zustand-Handler-Implementierung
+//Info-Senden(Setter)-FSM
+static uint8_t fsm_setterStartStateHandlerFunc(){
+	return USV_FSM_SETTER_TX_STATE;
+}
+
+static uint8_t fsm_setterTxStateHandlerFunc(){
+	uint8_t retVal = USV_FSM_SETTER_TX_STATE;
+	if (usv_programPos == COM_PROGRAMM_TX_POS){
+		if (usv_protocolToHandleBytes){
+			usv_txTempData[0] = (uint8_t*)&(protocol[usv_protocolIdx]);
+			if (usv_protocolToHandleBytes < usv_txTempMax_length){
+				*usv_txTempLength =  usv_protocolToHandleBytes;
+				usv_protocolToHandleBytes = 0;
+			} else{
+				*usv_txTempLength = usv_txTempMax_length;
+				usv_protocolToHandleBytes -= usv_txTempMax_length;
+				usv_protocolIdx += usv_txTempMax_length;
+			}
+		} else{
+			usv_protocolIdx = 0;
+			retVal = USV_FSM_SETTER_RX_STATE;
+			USART_set_Bytes_to_receive(usv_comParam.usartNo,1);
+		}
+	} else{
+		usv_mgr.write = 0;
+		usv_mgr.res = 1;
+		retVal = USV_FSM_SETTER_END_STATE;
+	}
+	usv_rxTempLength = 0;
+	return retVal;
+}
+
+static uint8_t fsm_setterRxStateHandlerFunc(){
+	uint8_t retVal = USV_FSM_SETTER_END_STATE;
+	uint8_t check = (usv_programPos == COM_PROGRAMM_RX_POS) && (usv_rxTempLength == 1) &&\
+					(usv_rxTempData[0] == USV_PROTOCOL_ACK_BYTE);
+	if (check){
+		if (usv_tempBufferToHandleBytes){
+			if (usv_tempBufferToHandleBytes < PROTOCOL_PAYLOAD_PER_FRAME){
+				usv_protocolToHandleBytes = usv_setProtocol(usv_savedAddr, usv_nextReg,\
+															(uint8_t*) (&usv_tempBuffer[usv_tempBufferIdx]),\
+															usv_tempBufferToHandleBytes, USV_PROTOCOL_W_REQ);
+				usv_tempBufferToHandleBytes = 0;
+				usv_tempBufferIdx = 0;
+			} else{
+				usv_protocolToHandleBytes = usv_setProtocol(usv_savedAddr, usv_nextReg,\
+															(uint8_t*) (&usv_tempBuffer[usv_tempBufferIdx]),\
+															PROTOCOL_PAYLOAD_PER_FRAME,USV_PROTOCOL_W_REQ);
+				usv_nextReg += PROTOCOL_PAYLOAD_PER_FRAME;
+				usv_tempBufferIdx += PROTOCOL_PAYLOAD_PER_FRAME;
+				usv_tempBufferToHandleBytes -= PROTOCOL_PAYLOAD_PER_FRAME;		
+			}
+			retVal = USV_FSM_SETTER_TX_STATE;
+			usv_sendProtocol();
+		} else{
+			usv_mgr.write = 0;
+			usv_mgr.res = 0;
+		}
+	} else{
+		usv_mgr.write = 0;
+		usv_mgr.res = 1;
+		usv_tempBufferToHandleBytes = 0;
+		usv_protocolToHandleBytes = 0;
+	}
+	usv_rxTempLength = 0;
+	return retVal;
+}
+
+static uint8_t fsm_setterEndSHandlerFunc(){
+	return USV_FSM_SETTER_END_STATE;
+}
+
 
 
 
