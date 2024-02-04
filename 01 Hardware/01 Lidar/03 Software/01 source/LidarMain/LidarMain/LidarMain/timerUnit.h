@@ -19,5 +19,7 @@
 #include "Math/MinMax.h"
 #include "errorList.h"
 
+#define CONVERT_FACTOR_S_2_MS 1000UL
+#define CONVERT_FACTOR_S_2_US 1000000UL
 
 #endif /* TIMERUNIT_H_ */
