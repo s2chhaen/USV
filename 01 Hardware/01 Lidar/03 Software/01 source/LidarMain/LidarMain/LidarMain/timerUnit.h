@@ -43,5 +43,9 @@ extern uint8_t timer_init(uint8_t rezConfig, uint16_t resUSV, uint16_t resLidar)
 extern void usvTimer_setState(uint8_t state);
 extern void usvTimer_setCounter(uint32_t value);
 extern const int16_t usvTimer_getCounter();
+//Funktion zum Steuern des Timers für Lidar
+extern void lidarTimer_setState(uint8_t state);
+extern void lidarTimer_setCounter(uint32_t value);
+extern const int16_t lidarTimer_getCounter();
 
 #endif /* TIMERUNIT_H_ */
