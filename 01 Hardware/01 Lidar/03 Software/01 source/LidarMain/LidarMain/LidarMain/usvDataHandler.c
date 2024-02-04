@@ -513,6 +513,9 @@ uint8_t usv_initDev(const usartConfig_t* config, uint8_t crc8Polynom, reg8Model_
 	return result;
 }
 
+extern void usv_setAddr(uint8_t addr){
+	usv_mgr.usvAddr = addr;
+}
 
 
 
