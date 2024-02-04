@@ -17,6 +17,10 @@
 #include "Math/checksum.h"
 #include "ATMegaXX09/ATMegaXX09Clock.h"
 #include "ATMegaXX09/USART/USART.h"
+#include "timerUnit.h"
+#include "lidarHandler.h"
+#include "lidarDataPrc.h"
+#include "usvDataHandler.h"
 
 
 #endif /* MAIN_H_ */
