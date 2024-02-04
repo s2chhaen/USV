@@ -9,6 +9,9 @@
 
 #include "timerUnit.h"
 
+/*Abkürzungen: Res/REZ = resolution, W: with,
+ * CLK: clock
+ */
 
 volatile timerStatus_t timer_status = {0};
 static uint16_t lidarTimer_res = 0;
