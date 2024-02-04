@@ -457,6 +457,14 @@ static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, u
 	return true;
 }
 
+static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
+	usv_rxTempLength = length;
+	usv_rxTempData = data;
+	usv_programPos = COM_PROGRAMM_RX_POS;
+	usv_setterFsmState = usv_setterLookupTable[usv_setterFsmState]();
+	usv_programPos = COM_PROGRAMM_NORMAL_POS;
+	return true;
+}
 
 
 
