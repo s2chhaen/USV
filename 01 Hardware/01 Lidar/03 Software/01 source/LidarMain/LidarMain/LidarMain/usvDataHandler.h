@@ -136,4 +136,10 @@ enum usv_mainFsmState{
 
 typedef uint8_t (*const usv_mainFsmStateHandlerFunc_t)();
 
+enum usvErrorSource{
+	USV_NO_SRC,
+	USV_STATUS_TX_SRC,
+	USV_DATA_TX_SRC
+};
+
 #endif /* USVDATAHANDLER_H_ */
