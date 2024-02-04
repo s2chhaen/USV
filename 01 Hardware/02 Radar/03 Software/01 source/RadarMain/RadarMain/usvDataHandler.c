@@ -411,6 +411,18 @@ static uint8_t usv_mainFsmDataRspPollSHandlerFunc(){
 	return retVal;
 }
 
+static uint8_t usv_mainFsmDataRspCheckStateFunc(){
+	uint8_t retVal = USV_MAIN_FSM_START_STATE;
+	if (usv_mgr.res){
+		usv_errorSrc = USV_DATA_TX_SRC;
+		retVal = USV_MAIN_FSM_ERROR_STATE;
+	} else{
+		PORTD.OUT &= ~(1<<2);//auschalten PD2, da Daten erfolgreich gesendet sind
+		usv_ioStream->val &= ~(1<<STREAM_RADAR_DATA_BIT_POS);
+	}
+	return retVal;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //in ISR zurückgerufte Funktionen
