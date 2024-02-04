@@ -29,8 +29,6 @@ void fir_init(int16_t* inputFFCofs, uint16_t ffLen){
             ffCofsFloat[i] = inputFFCofs[i]*1.0000/CONVERT_FACTOR_INT;
         }
         init = 1;
-        old.beginIdx = 0;
-        old.endIdx = FIR_FILTER_ORDER-1;
         oldFLoat.beginIdx = 0;
         oldFLoat.endIdx = FIR_FILTER_ORDER-1;
     }
@@ -60,14 +58,25 @@ void fir_runFiP(int32_t* data, int64_t* output, uint16_t len){
     len += phaseShift_sample;
     for(int i = 0; i < len; i++)
     {
-        idxPtr = old.endIdx;
         tempOut[i] = ((int64_t)ffCofs[0])*((int64_t)tempBuff[i])>>FIXED_POINT_BITS;
+//#define FIR_TEMP_VAR_P
+#ifdef FIR_TEMP_VAR_P
+        idxPtr = old.endIdx;//P1
+#else
+        old.beginIdx = old.endIdx;//P2
+#endif // FIR_TEMP_VAR_P
         for(int j = 1; j <= FIR_FILTER_ORDER; j++)
         {
+
+#ifdef FIR_TEMP_VAR_P
             tempOut[i] += ((int64_t)ffCofs[j])*((int64_t)old.data[(idxPtr-j+1+bufferLen)%bufferLen])>>FIXED_POINT_BITS;///OK
+#else
+            tempOut[i] += ((int64_t)ffCofs[j])*((int64_t)old.data[old.beginIdx])>>FIXED_POINT_BITS;///OK
+            old.beginIdx--;
+#endif // FIR_TEMP_VAR_P
         }
         //Aktualisieren der alten Werte
-        old.beginIdx++;
+        //old.beginIdx++;
         old.endIdx++;
         old.data[old.endIdx] = tempBuff[i];
     }
