@@ -19,6 +19,9 @@
 #include "Math/MinMax.h"
 #include "errorList.h"
 
+/*Abkürzungen: Res/REZ = resolution
+*/
+
 #define CONVERT_FACTOR_S_2_MS 1000UL
 #define CONVERT_FACTOR_S_2_US 1000000UL
 #define TIMER_MAX_REZ_MS 3276
