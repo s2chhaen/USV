@@ -43,5 +43,8 @@
 //Empfangen Byte
 #define USV_1ST_RX_LEN 1
 #define USV_2ND_RX_LEN 4
+//Anzahl der Probe
+#define USV_RETRY_TIME_MAX 1
+
 
 #endif /* USVDATAHANDLER_H_ */
