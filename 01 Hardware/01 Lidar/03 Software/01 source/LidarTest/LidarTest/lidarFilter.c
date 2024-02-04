@@ -36,7 +36,7 @@ uint8_t fil_init(const int16_t* inFilCofs_p, uint8_t inLen){
 
 static inline void fil_setData(uint8_t* data, uint16_t dataLen){
 	for (volatile uint16_t i = 0; i < dataLen/2; i++){
-		fil_dataBuffer[i] = (int64_t)(data[2*i]|(data[2*i+1] << 8));
+		fil_dataBuffer[i] = (int64_t)(data[2*i]|(data[2*i+1] << 8)) & 0x1FFF;//TODO dokument here: get only 13 of 16 Bits
 	}	
 }
 

@@ -10,6 +10,8 @@
 
 static uint8_t crc8Polynom = 0;
 volatile uint8_t crc8LookupTable[ASCII_MAX_LEN] = {0};
+volatile uint16_t crc16Polynom = 0;
+volatile uint16_t crc16LookupTable[ASCII_MAX_LEN];
 
 void crc8Init(uint8_t polynom){
 	uint8_t temp;
@@ -17,8 +19,8 @@ void crc8Init(uint8_t polynom){
 	for (volatile int i = ASCII_MAX_LEN; i; i--){
 		temp = ASCII_MAX_LEN - i;
 		for (volatile uint8_t j = 8; j; j--){
-			if (temp&0x80){
-				temp = (temp<<1) ^ crc8Polynom;
+			if (temp & 0x80){
+				temp = (temp << 1) ^ crc8Polynom;
 			} else{
 				temp = temp << 1;
 			}
@@ -26,10 +28,6 @@ void crc8Init(uint8_t polynom){
 		}
 		crc8LookupTable[ASCII_MAX_LEN-i] = temp;
 	}
-}
-
-static inline uint8_t crc8OneByte(uint8_t input){
-	return crc8LookupTable[input];
 }
 
 uint8_t crc8CodeGen(uint8_t *data, uint16_t len){
@@ -44,19 +42,11 @@ uint8_t crc8CodeGen(uint8_t *data, uint16_t len){
 	return retVal;
 }
 
-uint16_t crc16(uint8_t* input, uint16_t length, uint16_t polynom){
-	uint16_t uCrc16=0;
-	uint8_t temp[]={0,0};
-	for (uint32_t i=0;i<length;i++){
-		temp[1]=temp[0];
-		temp[0]=input[i];
-		if (uCrc16&0x8000){
-			uCrc16 = (uCrc16&0x7fff)<<1;
-			uCrc16 ^= polynom;
-		} else{
-			uCrc16<<=1;
-		}
-		uCrc16 ^= (temp[0]|(temp[1]<<8));
-	}
-	return uCrc16;
+uint16_t reserver(uint16_t value){
+	value = ((value & 0xAAAA) >> 1) | ((value & 0x5555) << 1);
+	value = ((value & 0xCCCC) >> 2) | ((value & 0x3333) << 2);
+	value = ((value & 0xF0F0) >> 4) | ((value & 0x0F0F) << 4);
+	value = (value >> 8) | (value << 8);
+	return value;
 }
+

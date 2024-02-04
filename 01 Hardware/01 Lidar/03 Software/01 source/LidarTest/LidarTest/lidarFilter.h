@@ -26,7 +26,6 @@
 #define FIXED_POINT_BITS 15
 #define FIXED_POINT_MAX_BITS 20
 #define CONVERT_FACTOR_INT ((1<<FIXED_POINT_BITS) - 1)
-#define OUTPUT_MAX_LEN 512
 
 typedef struct{ //idx: Index, Val :value, jmp: jump/jumping, curr:current
 	int32_t data[FIL_OLD_VALUES_BUFFER_LEN];

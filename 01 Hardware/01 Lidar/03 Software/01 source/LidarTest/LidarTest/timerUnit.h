@@ -42,6 +42,7 @@ extern uint8_t timerInit(uint8_t rezConfig, uint16_t resolution);
 extern void timer_setState(uint8_t state);
 extern void timer_setCounter(uint32_t value);
 extern const int16_t timer_getCounter();
+extern void timer_counterIncrement();
 extern void timer_stopWatch(uint16_t val);
 
 #endif /* TIMERUNIT_H_ */

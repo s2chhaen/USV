@@ -10,7 +10,7 @@
 #include "timerUnit.h"
 
 volatile timerStatus_t timer_status = { .init = 0, .rez = REZ_MS, .state = 0};
-volatile int16_t timer_stepCounter[REZ_MODE_NO] = {0};
+volatile int16_t timer_stepCounter = 0;
 static uint16_t timer_res = 0;
 
 uint8_t timerInit(uint8_t rezConfig, uint16_t resolution){
@@ -22,11 +22,11 @@ uint8_t timerInit(uint8_t rezConfig, uint16_t resolution){
 	switch(rezConfig){
 		case REZ_S:
 			config |= TCA_SINGLE_CLKSEL_DIV1024_gc;
-			prescalerWConvertFactor = 1024;
+			prescalerWConvertFactor = 1024UL;
 			break;
 		case REZ_MS:
-			config |= TCA_SINGLE_CLKSEL_DIV1_gc;
-			prescalerWConvertFactor = CONVERT_FACTOR_S_2_MS;
+			config |= TCA_SINGLE_CLKSEL_DIV1024_gc;
+			prescalerWConvertFactor = 1024UL*CONVERT_FACTOR_S_2_MS;
 			break;
 		case REZ_US:
 			config |= TCA_SINGLE_CLKSEL_DIV1_gc;
@@ -40,7 +40,7 @@ uint8_t timerInit(uint8_t rezConfig, uint16_t resolution){
 	if (result==NO_ERROR){
 		timer_status.rez = rezConfig;
 		timer_status.init = 1;
-		TCA0.SINGLE.PER = (uint16_t)(CLK_CPU/prescalerWConvertFactor*resolution);//Res = resolution
+		TCA0.SINGLE.PER = (uint16_t)(CLK_CPU*10/prescalerWConvertFactor*resolution/10);//Res = resolution
 		timer_res = resolution;
 		TCA0.SINGLE.INTCTRL |= TCA_SINGLE_OVF_bm;//Aktivieren des OVF - Interrupt
 		TCA0.SINGLE.CTRLA = config;
@@ -51,8 +51,8 @@ uint8_t timerInit(uint8_t rezConfig, uint16_t resolution){
 }
 
 void timer_setState(uint8_t state){
-	timer_status.state = state;
-	if (state){
+	//timer_status.state = state; //TODO to test that
+	if (state && timer_status.init){
 		TCA0.SINGLE.CTRLA |= TCA_SINGLE_ENABLE_bm;
 	} else{
 		TCA0.SINGLE.CTRLA &= ~TCA_SINGLE_ENABLE_bm;
@@ -60,12 +60,12 @@ void timer_setState(uint8_t state){
 }
 
 void timer_setCounter(uint32_t value){
-	timer_stepCounter[timer_status.rez] = (int16_t)(value/(uint32_t)timer_res);
+	timer_stepCounter = (int16_t)(value/(uint32_t)timer_res) + ((value%(uint32_t)timer_res)?1:0);
 	TCA0.SINGLE.CNT = 0;
 }
 
 const int16_t timer_getCounter(){
-	return timer_stepCounter[timer_status.rez];
+	return timer_stepCounter;
 }
 
 /**
@@ -76,11 +76,14 @@ const int16_t timer_getCounter(){
  * \return void
  */
 extern void timer_stopWatch(uint16_t val){
-	uint8_t mode = timer_status.rez;
 	timer_status.state = 1;
-	timer_stepCounter[mode] = val;
+	timer_stepCounter = val;
 	timer_status.state = 1;
-	while (timer_stepCounter[mode]);
+	while (timer_stepCounter >= 1);
+}
+
+void timer_counterIncrement(){
+	timer_stepCounter++;
 }
 
 /**
@@ -89,6 +92,6 @@ extern void timer_stopWatch(uint16_t val){
  *  bis zum 0.
  */
 ISR(TCA0_OVF_vect){
-	timer_stepCounter[timer_status.rez]--;
+	timer_stepCounter--;
 	TCA0.SINGLE.INTFLAGS = TCA_SINGLE_OVF_bm;//Loeschen von Interrupt-Flag
 }
