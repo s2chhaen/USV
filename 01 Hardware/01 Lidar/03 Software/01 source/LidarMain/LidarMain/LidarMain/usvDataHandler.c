@@ -209,6 +209,35 @@ static inline void usv_sendProtocol(){//trigger send new protocol
 	}
 }
 
+static uint8_t usv_setRegister(uint8_t add, uint16_t reg, const uint8_t* input_p, uint16_t length){//Nur Protokoll senden
+	uint8_t retVal = NO_ERROR;
+	const uint16_t maxLen = getRegLen(USV_LAST_DATA_BLOCK_ADDR) + USV_LAST_DATA_BLOCK_ADDR;
+	int16_t regLen = getRegLen(reg);
+	uint8_t check = (length != 0) && ((reg+length) <= maxLen) && (regLen > 0);
+	if (check){ //TODO test again
+		usv_setterFsmState = usv_setterLookupTable[USV_FSM_SETTER_START_STATE]();
+		usv_mgr.write = 1;
+		usv_protocolIdx = 0;
+		usv_savedAddr = add;
+		memcpy((uint8_t*)usv_tempBuffer,input_p,length);
+		if (length > PROTOCOL_PAYLOAD_PER_FRAME){
+			usv_nextReg = reg + PROTOCOL_PAYLOAD_PER_FRAME;
+			usv_protocolToHandleBytes = usv_setProtocol(add,reg,(uint8_t*)usv_tempBuffer,PROTOCOL_PAYLOAD_PER_FRAME,USV_PROTOCOL_W_REQ);
+			usv_tempBufferIdx += PROTOCOL_PAYLOAD_PER_FRAME;
+			usv_tempBufferToHandleBytes = length - PROTOCOL_PAYLOAD_PER_FRAME;
+			} else{
+			usv_nextReg = 0;
+			usv_protocolToHandleBytes = usv_setProtocol(add,reg,(uint8_t*)usv_tempBuffer,length,USV_PROTOCOL_W_REQ);
+			usv_tempBufferIdx = 0;
+			usv_tempBufferToHandleBytes = 0;
+		}
+		usv_sendProtocol();
+		} else{
+		retVal = PROCESS_FAIL;
+	}
+	return retVal;
+}
+
 
 
 
