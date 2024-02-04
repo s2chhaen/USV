@@ -15,6 +15,10 @@ const uint16_t usartFIFOMaxLen = _FIFO_max_def - 1;
 volatile uint8_t protocol[MAX_FRAME_LEN] = {0};
 volatile uint8_t usv_protocolToHandleBytes = 0;
 volatile uint8_t usv_protocolIdx = 0;
+//Temp-Buffer zum Speichern der noch nicht gesendeten Daten
+volatile uint8_t usv_tempBuffer[370] = {0};
+volatile uint16_t usv_tempBufferToHandleBytes = 0;
+volatile uint16_t usv_tempBufferIdx = 0; 
 
 
 
