@@ -74,3 +74,14 @@ uint8_t timer_init(uint8_t rezConfig, uint16_t resUSV, uint16_t resLidar){
 	return result;
 }
 
+//Funktion zum Steuern des Timers für USVData
+void usvTimer_setState(uint8_t state){
+	if (timer_status.init){
+		if (state){
+			TCB0.CTRLA |= TCB_ENABLE_bm;
+		} else{
+			TCB0.CTRLA &= ~TCB_ENABLE_bm;
+		}
+	}
+}
+
