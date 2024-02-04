@@ -79,3 +79,24 @@ static inline void redundacyAdd(int64_t tempVal){
 	}
 	fil_dataBufferLen += PHASE_SHIFT_SPL_MAX;
 }
+
+static inline void filtering(int64_t tempVal){
+	/* Formel: y(n) = a0*x(n) + a1*x(n-1) + ... + aM*x(n-M)
+	 * x(n<0) = 0, M: Ordnung des Filters
+	 */
+	for (volatile int i = 0; i < fil_dataBufferLen; i++){
+		tempVal = ((int64_t)fil_coffs[0]) * ((int64_t)fil_dataBuffer[i]) >> FIXED_POINT_BITS;
+		/*Aktualisierung der jmpIdx*/
+		fil_oldVal.jmpIdx = fil_oldVal.currIdx;
+		for (volatile uint8_t j = 1; j <= FIL_ORDER; j++){
+			tempVal += ((int64_t)fil_coffs[j]) * ((int64_t)fil_oldVal.data[fil_oldVal.jmpIdx]) >> FIXED_POINT_BITS;
+			fil_oldVal.jmpIdx--;
+		}
+		/*Kopieren des Wertes in old-Data-Buffer */
+		fil_oldVal.currIdx++;
+		fil_oldVal.data[fil_oldVal.currIdx] = fil_dataBuffer[i];
+		//Kopieren des gefilterten Wertes an Daten-Buffer
+		fil_dataBuffer[i] = tempVal;
+	}
+	fil_dataBufferLen -= PHASE_SHIFT_SPL_MAX;
+}
