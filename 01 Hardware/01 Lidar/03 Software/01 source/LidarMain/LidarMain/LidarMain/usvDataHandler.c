@@ -11,6 +11,10 @@
 
 //Speichern der Max. Elementen vom USART-FIFO
 const uint16_t usartFIFOMaxLen = _FIFO_max_def - 1;
+//Protocolbereich
+volatile uint8_t protocol[MAX_FRAME_LEN] = {0};
+volatile uint8_t usv_protocolToHandleBytes = 0;
+volatile uint8_t usv_protocolIdx = 0;
 
 
 
