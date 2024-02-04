@@ -54,5 +54,21 @@ int main(void){
 	//Filter
 	fil_init(wr_num,(uint8_t)wr_numLen,(reg8Model_t*)&mainStream);
 	sei();
+	while (1){
+		/**** Lidar-FSM ****/
+		lidarFSMState = lidar_mainFsmLookupTable[lidarFSMState]();
+		/**** USV-FSM ****/
+		usvDataFSMState = usv_mainFsmLookupTable[usvDataFSMState]();
+		usvDataFSMState = usv_mainFsmLookupTable[usvDataFSMState]();
+		/**** Daten-Filter ****/
+		if (lidarOutputLen){
+			fil_setNConvertData((uint8_t*)lidarOutput, (uint16_t)lidarOutputLen);//Kopieren
+			fil_run();//Filterung
+			fil_compressNReturn((uint8_t*)usvDataBuffer, usvDataBufferLen, FIL_EVEN_TYPE,\
+			FIL_OUTPUT_DATA_FP_LEN_BIT);//Ausgabe
+			lidarOutputLen = 0;
+			mainStream.val |= (1<<STREAM_LIDAR_DATA_BIT_POS);
+		}
+	}
 }
 
