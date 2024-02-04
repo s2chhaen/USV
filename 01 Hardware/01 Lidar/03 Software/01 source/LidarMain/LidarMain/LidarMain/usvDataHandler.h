@@ -150,4 +150,7 @@ typedef struct{
 	uint8_t res:1;//0: kein Fehler, 1: Fehler
 }usvMgr_t;
 
+/*Definition der in main-verwendete FSM*/
+extern usv_mainFsmStateHandlerFunc_t usv_mainFsmLookupTable[USV_MAIN_FSM_STATE_NUM];
+
 #endif /* USVDATAHANDLER_H_ */
