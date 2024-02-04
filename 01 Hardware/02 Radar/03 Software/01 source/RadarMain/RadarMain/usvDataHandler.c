@@ -179,6 +179,10 @@ static inline bool checkRxData(uint8_t* data,uint8_t dataLen, uint8_t rxChecksum
 	return crc8CodeGen(data,(uint16_t)dataLen)==rxChecksumValue;
 }
 
+static inline uint8_t usv_ioStreamStatusAvai(){
+	return usv_ioStream->val & (1 << STREAM_RADAR_STATUS_BIT_POS);
+}
+
 static inline uint8_t usv_setProtocol(uint8_t add, uint16_t reg, uint8_t* input_p, uint8_t length, uint8_t wr){
 	protocol[USV_START_BYTE_POS] = USV_PROTOCOL_START_BYTE;
 	protocol[USV_OBJ_ID_BYTE_POS] = add;
