@@ -14,6 +14,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include "ATMegaXX09/USART/USART.h"
+#include "ATMegaXX09/FIFO/FIFO.h"
+#include "Math/checksum.h"
 
 
 #endif /* USVDATAHANDLER_H_ */
