@@ -105,3 +105,8 @@ void lidarTimer_setState(uint8_t state){
 	}
 }
 
+void lidarTimer_setCounter(uint32_t value){
+	lidarTimer_stepCounter = (int16_t)(value/(uint32_t)lidarTimer_res);
+	TCB1.CNT = 0;
+}
+
