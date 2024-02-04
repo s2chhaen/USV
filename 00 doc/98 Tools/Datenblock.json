@@ -1,0 +1,29 @@
+[
+    {
+        "Adresse;Byte;Bezeichner": "0;1;SB1"
+    },
+    {
+        "Adresse;Byte;Bezeichner": "1;4;SB2"
+    },
+    {
+        "Adresse;Byte;Bezeichner": "5;4;SB3"
+    },
+    {
+        "Adresse;Byte;Bezeichner": "9;1;SB4"
+    },
+    {
+        "Adresse;Byte;Bezeichner": "A;2;SB5"
+    },
+    {
+        "Adresse;Byte;Bezeichner": "C;2;SB6"
+    },
+    {
+        "Adresse;Byte;Bezeichner": "E;3;SB7"
+    },
+    {
+        "Adresse;Byte;Bezeichner": "12;2;SB8"
+    },
+    {
+        "Adresse;Byte;Bezeichner": "14;1;SB9"
+    }
+]
