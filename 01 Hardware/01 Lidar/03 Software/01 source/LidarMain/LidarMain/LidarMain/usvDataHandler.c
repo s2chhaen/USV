@@ -179,6 +179,10 @@ static inline uint8_t usv_ioStreamStatusAvai(){
 	return usv_ioStream->val & (1 << STREAM_LIDAR_STATUS_BIT_POS);
 }
 
+static inline uint8_t usv_ioStreamDataAvai(){
+	return usv_ioStream->val & (1 << STREAM_LIDAR_DATA_BIT_POS);
+}
+
 
 
 
