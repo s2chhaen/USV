@@ -11,6 +11,7 @@
 #ifndef COMCONFIG_H_
 #define COMCONFIG_H_
 
+#include <stdint.h>
 
 
 
