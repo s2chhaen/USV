@@ -38,5 +38,6 @@ typedef struct{
 	uint8_t init:1;
 }timerStatus_t;
 
+extern uint8_t timer_init(uint8_t rezConfig, uint16_t resUSV, uint16_t resLidar);
 
 #endif /* TIMERUNIT_H_ */
