@@ -335,6 +335,18 @@ static uint8_t usv_mainFsmStartSHandlerFunc(){
 	return retVal;
 }
 
+static uint8_t usv_mainFsmStatusTxSHandlerFunc(){
+	uint16_t regAdd = ER5_ADD;
+	uint8_t regLen = *usv_statusBufferLen;
+	uint8_t usvAddr = usv_mgr.usvAddr;
+	usv_setRegister(usvAddr,regAdd,usv_statusBuffer,regLen);
+	uint32_t timeOut_ms = (USV_BYTE_TRANSFER_TIME_US*(regLen+1)+USV_DST_PROG_WORK_TIME_US)/1000 +\
+						   USV_TOLERANCE_MS;
+	usvTimer_setCounter(timeOut_ms);
+	usvTimer_setState(1);
+	return USV_MAIN_FSM_STATUS_RSP_POLLING_STATE;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //in ISR zurückgerufte Funktionen
