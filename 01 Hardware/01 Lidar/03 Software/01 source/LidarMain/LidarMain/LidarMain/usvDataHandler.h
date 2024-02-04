@@ -118,5 +118,7 @@ enum usv_fsmStateGetter{
 #define USV_FSM_GETTER_LAST_STATE USV_FSM_GETTER_END_STATE
 #define USV_FSM_GETTER_STATE_NUM (USV_FSM_GETTER_LAST_STATE+1)
 
+typedef uint8_t (*const usv_fsmStateHandlerFunc_t)();
+
 
 #endif /* USVDATAHANDLER_H_ */
