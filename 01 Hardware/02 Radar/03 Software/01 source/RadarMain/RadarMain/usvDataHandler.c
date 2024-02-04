@@ -347,6 +347,26 @@ static uint8_t usv_mainFsmStatusTxSHandlerFunc(){
 	return USV_MAIN_FSM_STATUS_RSP_POLLING_STATE;
 }
 
+static uint8_t usv_mainFsmStatusRspPollSHandlerFunc(){
+	uint8_t retVal = USV_MAIN_FSM_STATUS_RSP_POLLING_STATE;
+	if (usv_mgr.write){
+		if (usvTimer_getCounter() < 0){
+			usvTimer_setState(0);
+			usv_mgr.write = 0;
+			usv_mgr.res = 1;
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+				USART_flushRXFIFO(usv_comParam.usartNo);
+				usv_setterFsmState = USV_FSM_SETTER_END_STATE;
+			}
+			retVal = USV_MAIN_FSM_STATUS_RSP_CHECK_STATE;
+		}
+	} else{
+		usvTimer_setState(0);
+		retVal = USV_MAIN_FSM_STATUS_RSP_CHECK_STATE;
+	}
+	return retVal;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //in ISR zurückgerufte Funktionen
