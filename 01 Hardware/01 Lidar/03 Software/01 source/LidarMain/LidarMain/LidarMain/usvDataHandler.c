@@ -61,6 +61,27 @@ usv_fsmStateHandlerFunc_t usv_setterLookupTable[USV_FSM_STATE_NUM] = {
 	&fsm_setterEndSHandlerFunc
 };
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Externe FSM-Deklaration
+static uint8_t usv_mainFsmStartSHandlerFunc();
+static uint8_t usv_mainFsmStatusTxSHandlerFunc();
+static uint8_t usv_mainFsmStatusRspPollSHandlerFunc();
+static uint8_t usv_mainFsmStatusRspCheckSHandlerFunc();
+static uint8_t usv_mainFsmDataTxSHandlerFunc();
+static uint8_t usv_mainFsmDataRspPollSHandlerFunc();
+static uint8_t usv_mainFsmDataRspCheckStateFunc();
+static uint8_t usv_mainFsmErrorSHandlerFunc();
+usv_mainFsmStateHandlerFunc_t usv_mainFsmLookupTable[USV_MAIN_FSM_STATE_NUM] = {
+	&usv_mainFsmStartSHandlerFunc,
+	&usv_mainFsmStatusTxSHandlerFunc,
+	&usv_mainFsmStatusRspPollSHandlerFunc,
+	&usv_mainFsmStatusRspCheckSHandlerFunc,
+	&usv_mainFsmDataTxSHandlerFunc,
+	&usv_mainFsmDataRspPollSHandlerFunc,
+	&usv_mainFsmDataRspCheckStateFunc,
+	&usv_mainFsmErrorSHandlerFunc,
+};
 
 
 
