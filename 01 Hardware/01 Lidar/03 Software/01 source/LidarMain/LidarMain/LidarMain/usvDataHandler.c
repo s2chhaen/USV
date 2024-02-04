@@ -19,6 +19,12 @@ volatile uint8_t usv_protocolIdx = 0;
 volatile uint8_t usv_tempBuffer[370] = {0};
 volatile uint16_t usv_tempBufferToHandleBytes = 0;
 volatile uint16_t usv_tempBufferIdx = 0; 
+//Zeiger zu den externen Daten and dem Status-Register
+static const uint8_t* usv_dataBuffer = NULL;
+static const uint16_t* usv_dataBufferLen = NULL;
+static const uint8_t* usv_statusBuffer = NULL;
+static const uint8_t* usv_statusBufferLen = NULL;
+
 
 
 
