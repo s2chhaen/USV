@@ -14,6 +14,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "importedFiles/wr_qFormFilterCof.h"
+#include "Math/checksum.h"
+#include "ATMegaXX09/ATMegaXX09Clock.h"
+#include "ATMegaXX09/USART/USART.h"
 
 
 #endif /* MAIN_H_ */
