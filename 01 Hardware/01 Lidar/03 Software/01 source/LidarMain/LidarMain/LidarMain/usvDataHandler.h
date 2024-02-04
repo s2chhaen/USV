@@ -10,6 +10,10 @@
 #ifndef USVDATAHANDLER_H_
 #define USVDATAHANDLER_H_
 
+#include <util/atomic.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
 
 
 #endif /* USVDATAHANDLER_H_ */
