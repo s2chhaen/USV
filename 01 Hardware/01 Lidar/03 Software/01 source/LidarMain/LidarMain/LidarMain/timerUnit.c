@@ -10,3 +10,9 @@
 #include "timerUnit.h"
 
 
+volatile timerStatus_t timer_status = {0};
+static uint16_t lidarTimer_res = 0;
+static uint16_t usvTimer_res = 0;
+volatile int16_t lidarTimer_stepCounter = 0;
+volatile int16_t usvTimer_stepCounter = 0;
+
