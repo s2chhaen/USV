@@ -114,3 +114,14 @@ const int16_t lidarTimer_getCounter(){
 	return lidarTimer_stepCounter;
 }
 
+//ISR
+/**
+ * \brief Interrupt-Service-Routine für Overflow-Interrupt von TCB0
+ * \detailed beim Stopuhr: Nach einer Zeit von resolutionUs wird der Wert vom Counter dekrementiert
+ *  bis zum 0.
+ */
+ISR(TCB0_INT_vect){
+	usvTimer_stepCounter--;
+	TCB0.INTFLAGS |= TCB_CAPT_bm;//Loeschen von Interrupt-Flag
+}
+
