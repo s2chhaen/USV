@@ -9,6 +9,8 @@
 
 #include "main.h"
 
+EMPTY_INTERRUPT(BADISR_vect);
+
 int main(void){
 	while(1){}
 }
