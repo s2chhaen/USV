@@ -17,6 +17,19 @@
 #define STREAM_RADAR_STATUS_BIT_POS 0
 #define STREAM_RADAR_DATA_BIT_POS 1
 
+/*Struktur für Konfiguration der USART-Einheit*/
+typedef struct{
+	uint8_t usartNo:2;
+	uint32_t baudrate;
+	uint8_t usartChSize;
+	uint8_t parity;
+	uint8_t stopbit;
+	uint8_t sync:1;
+	uint8_t mpcm:1;
+	uint8_t address;
+	uint8_t portMux:2;
+}usartConfig_t;
+
 
 
 #endif /* COMCONFIG_H_ */
