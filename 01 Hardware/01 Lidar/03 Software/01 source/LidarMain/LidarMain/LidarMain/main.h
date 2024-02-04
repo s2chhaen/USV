@@ -22,5 +22,7 @@
 #include "lidarDataPrc.h"
 #include "usvDataHandler.h"
 
+#define LIDAR_CHECKSUM_POLYNOM 0x8005
+#define USV_CHECKSUM_POLYNOM 0xD5
 
 #endif /* MAIN_H_ */
