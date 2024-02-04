@@ -34,5 +34,9 @@ enum timerResolution{
 	REZ_S
 };
 
+typedef struct{
+	uint8_t init:1;
+}timerStatus_t;
+
 
 #endif /* TIMERUNIT_H_ */
