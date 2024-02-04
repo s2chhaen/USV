@@ -46,5 +46,36 @@
 //Anzahl der Probe
 #define USV_RETRY_TIME_MAX 1
 
+typedef enum {
+	//Sensorblock
+	SB1_ADD = 0x00,//00-SB1
+	SB2_ADD = 0x01,//01-SB2
+	SB3_ADD = 0x05,//02-SB3
+	SB4_ADD = 0x09,//03-SB4
+	SB5_ADD = 0x0A,//04-SB5
+	SB6_ADD = 0x0C,//05-SB6
+	SB7_ADD = 0x0E,//06-SB7
+	//Radar
+	SB8_ADD = 0x12,//07-SB8
+	SB9_ADD = 0x14,//08-SB9
+	//Führungsgrößen der Antriebsregelung
+	AF1_ADD = 0x100,//09-AF1
+	AF2_ADD = 0x108,//10-AF2
+	AF3_ADD = 0x110,//11-AF3
+	AF4_ADD = 0x112,//12-AF4
+	//Stellgrößen der Antriebsregelung
+	AS1_ADD = 0x120,//13-AS1
+	AS2_ADD = 0x122,//14-AS2
+	//lokaler Error Block
+	ER1_ADD = 0x200,//15-ER1
+	ER2_ADD = 0x201,//16-ER2
+	ER3_ADD = 0x202,//17-ER3
+	ER4_ADD = 0x203,//18-ER4 noch zu aktualisieren im USV-Dokument
+	ER5_ADD = 0x205,//19-ER5 noch zu aktualisieren im USV-Dokument
+	//Lidar
+	ES1_ADD =0x220//20-ES1
+}usvRegAdd_t;
+#define USV_LAST_DATA_BLOCK_ADDR ES1_ADD
+
 
 #endif /* USVDATAHANDLER_H_ */
