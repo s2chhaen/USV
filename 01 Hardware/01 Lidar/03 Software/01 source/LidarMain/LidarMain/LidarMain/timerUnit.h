@@ -25,5 +25,11 @@
 #define TIMER_MAX_REZ_S 3
 #define TIMER_MIN_REZ_US 1000UL
 
+enum timerResolution{
+	REZ_US,
+	REZ_MS,
+	REZ_S
+};
+
 
 #endif /* TIMERUNIT_H_ */
