@@ -153,4 +153,9 @@ typedef struct{
 /*Definition der in main-verwendete FSM*/
 extern usv_mainFsmStateHandlerFunc_t usv_mainFsmLookupTable[USV_MAIN_FSM_STATE_NUM];
 
+extern uint8_t usv_initDev(const usartConfig_t* config, uint8_t crc8Polynom, reg8Model_t* io_p,\
+						   const uint8_t* dataBuffer_p, const uint16_t* dataBufferLen_p,\
+						   const uint8_t* statusBuffer_p, const uint8_t* statusBufferLen_p);
+extern void usv_setAddr(uint8_t addr);
+
 #endif /* USVDATAHANDLER_H_ */
