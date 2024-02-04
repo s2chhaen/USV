@@ -44,6 +44,23 @@ volatile uint8_t usv_txTempMax_length;
 //für usart RX - callback Funktion angewendet
 volatile uint8_t* usv_rxTempData; 
 volatile uint8_t usv_rxTempLength;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Interne FSM-Deklaration
+
+//Info-Senden(Setter)-FSM
+static uint8_t fsm_setterStartStateHandlerFunc();
+static uint8_t fsm_setterTxStateHandlerFunc();
+static uint8_t fsm_setterRxStateHandlerFunc();
+static uint8_t fsm_setterEndSHandlerFunc();
+volatile uint8_t usv_setterFsmState = USV_FSM_SETTER_START_STATE;
+usv_fsmStateHandlerFunc_t usv_setterLookupTable[USV_FSM_STATE_NUM] = {
+	&fsm_setterStartStateHandlerFunc,
+	&fsm_setterTxStateHandlerFunc,
+	&fsm_setterRxStateHandlerFunc,
+	&fsm_setterEndSHandlerFunc
+};
+
 
 
 
