@@ -183,6 +183,18 @@ static inline uint8_t usv_ioStreamDataAvai(){
 	return usv_ioStream->val & (1 << STREAM_LIDAR_DATA_BIT_POS);
 }
 
+static inline uint8_t usv_setProtocol(uint8_t add, uint16_t reg, uint8_t* input_p, uint8_t length, uint8_t wr){
+	protocol[USV_START_BYTE_POS] = USV_PROTOCOL_START_BYTE;
+	protocol[USV_OBJ_ID_BYTE_POS] = add;
+	protocol[USV_REG_ADDR_AND_WR_LBYTE_POS] = USV_PROTOCOL_SET_SLAVE_ADD_LOW(reg);
+	protocol[USV_REG_ADDR_AND_WR_HBYTE_POS] = USV_PROTOCOL_SET_SLAVE_ADD_HIGH(reg,wr);
+	protocol[USV_FRAME_LEN_BYTE_POS] = length+PROTOCOL_OVERHEAD_LEN;
+	memcpy((uint8_t*)&(protocol[USV_DATA_BEGIN_POS]),input_p,length);
+	protocol[USV_DATA_BEGIN_POS+length] = crc8CodeGen(input_p,(uint16_t)length);
+	protocol[USV_DATA_BEGIN_POS+1+length] = USV_PROTOCOL_END_BYTE;
+	return USV_DATA_BEGIN_POS+1+length+1;//begin bei 0
+}
+
 
 
 
