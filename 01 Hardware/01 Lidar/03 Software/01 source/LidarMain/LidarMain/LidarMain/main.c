@@ -12,6 +12,8 @@
 EMPTY_INTERRUPT(BADISR_vect);
 
 int main(void){
-	while(1){}
+	/**** Deklaration der Variablen ****/
+	/* io-stream für Lidar-Handler, Data-Processing, USVData-Handler*/
+	volatile reg8Model_t mainStream = {0};
 }
 
