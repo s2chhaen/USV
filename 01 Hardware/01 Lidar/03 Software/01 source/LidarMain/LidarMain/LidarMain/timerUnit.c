@@ -85,3 +85,8 @@ void usvTimer_setState(uint8_t state){
 	}
 }
 
+void usvTimer_setCounter(uint32_t value){
+	usvTimer_stepCounter = (int16_t)(value/(uint32_t)usvTimer_res);
+	TCB0.CNT = 0;
+}
+
