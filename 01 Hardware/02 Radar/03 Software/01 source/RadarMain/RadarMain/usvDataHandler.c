@@ -423,6 +423,27 @@ static uint8_t usv_mainFsmDataRspCheckStateFunc(){
 	return retVal;
 }
 
+static uint8_t usv_mainFsmErrorSHandlerFunc(){
+	usv_mgr.res = 0;
+	usv_tryTime--;
+	if (usv_tryTime < 0){
+		usv_tryTime = USV_RETRY_TIME_MAX;
+		PORTD.OUT |= (1<<2);//Fehler-Leitung
+	}
+	switch (usv_errorSrc){
+		case USV_NO_SRC:
+			break;
+		case USV_STATUS_TX_SRC:
+			usv_ioStream->val &= ~(1<<STREAM_RADAR_STATUS_BIT_POS);
+			break;
+		case USV_DATA_TX_SRC:
+			usv_ioStream->val &= ~(1<<STREAM_RADAR_DATA_BIT_POS);
+			break;
+		default:
+			break;
+	}
+	return USV_MAIN_FSM_START_STATE;
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //in ISR zurückgerufte Funktionen
