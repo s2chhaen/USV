@@ -125,3 +125,12 @@ ISR(TCB0_INT_vect){
 	TCB0.INTFLAGS |= TCB_CAPT_bm;//Loeschen von Interrupt-Flag
 }
 
+/**
+ * \brief Interrupt-Service-Routine für Overflow-Interrupt von TCB1
+ * \detailed beim Stopuhr: Nach einer Zeit von resolutionUs wird der Wert vom Counter dekrementiert
+ *  bis zum 0.
+ */
+ISR(TCB1_INT_vect){
+	lidarTimer_stepCounter--;
+	TCB1.INTFLAGS |= TCB_CAPT_bm;//Loeschen von Interrupt-Flag
+}
