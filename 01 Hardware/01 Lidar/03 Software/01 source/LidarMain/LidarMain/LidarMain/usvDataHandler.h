@@ -86,5 +86,13 @@ enum usvBytesPosInProtocolHeader{
 	USV_DATA_BEGIN_POS
 };
 
+/*Arbeitsmodus vom USV*/
+enum usvMode{
+	USV_GETTER_MODE,
+	USV_SETTER_MODE
+};//Nur Setter implementiert, da getter in diesem Modul nicht notwendig ist
+#define USV_LAST_MODE USV_SETTER_MODE
+#define USV_MODE_NUM (USV_LAST_MODE+1)
+
 
 #endif /* USVDATAHANDLER_H_ */
