@@ -36,6 +36,14 @@ static int8_t usv_tryTime = USV_RETRY_TIME_MAX;
 static uint8_t usv_errorSrc = USV_NO_SRC;
 volatile uint8_t usv_programPos = COM_PROGRAMM_NORMAL_POS; 
 
+//temp-Var used to saved the param of callback function and bestimmen in welcher Art des Interruptes sind die FSM
+//für usart TX - callback Funktion angewendet
+volatile uint8_t* usv_txTempData[1] = {0}; 
+volatile uint8_t* usv_txTempLength; 
+volatile uint8_t usv_txTempMax_length;
+//für usart RX - callback Funktion angewendet
+volatile uint8_t* usv_rxTempData; 
+volatile uint8_t usv_rxTempLength;
 
 
 
