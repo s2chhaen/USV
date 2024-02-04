@@ -441,6 +441,22 @@ static uint8_t usv_mainFsmErrorSHandlerFunc(){
 	}
 	return USV_MAIN_FSM_START_STATE;
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//in ISR zurückgerufte Funktionen
+static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, uint8_t max_length){
+	usv_txTempLength = length;
+	usv_txTempMax_length = max_length;
+	usv_programPos = COM_PROGRAMM_TX_POS;
+	usv_setterFsmState = usv_setterLookupTable[usv_setterFsmState]();
+	if (usv_txTempData[0]!=NULL){
+		*data = (uint8_t*)usv_txTempData[0];
+	}
+	
+	usv_programPos = COM_PROGRAMM_NORMAL_POS;
+	return true;
+}
+
 
 
 
