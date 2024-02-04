@@ -90,3 +90,7 @@ void usvTimer_setCounter(uint32_t value){
 	TCB0.CNT = 0;
 }
 
+const int16_t usvTimer_getCounter(){
+	return usvTimer_stepCounter;
+}
+
