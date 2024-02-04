@@ -17,6 +17,9 @@
 #include "ATMegaXX09/USART/USART.h"
 #include "ATMegaXX09/FIFO/FIFO.h"
 #include "Math/checksum.h"
+#include "timerUnit.h"
+#include "comConfig.h"
+#include "registerModel.h"
 
 
 #endif /* USVDATAHANDLER_H_ */
