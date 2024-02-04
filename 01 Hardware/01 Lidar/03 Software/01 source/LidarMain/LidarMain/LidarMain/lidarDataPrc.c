@@ -120,3 +120,36 @@ uint8_t fil_run(){
 	}
 	return result;
 }
+
+uint8_t fil_compressNReturn(uint8_t* output_p, uint16_t outLen, uint8_t usmlType, uint8_t outFPBit){
+	uint8_t result = NO_ERROR;
+	uint8_t check = (output_p != NULL) && (outLen == LIDAR_OUTPUT_IDEAL_LEN);
+	usmlType = usmlType%UNDERSAMPLING_TYPE_NUM;
+	if (check){
+		/*Convertierung in m mit UQ7.4 -> Begrenzung -> Ausgabe*/
+		//0° wird seperat behandelt
+		volatile uint16_t temp = 0;
+		temp = (uint16_t)((fil_dataBuffer[0]/100L) >> (FIXED_POINT_BITS - outFPBit));
+		if (temp < MIN_MEASURED_VAL_FP_M){
+			temp = MIN_MEASURED_VAL_FP_M;
+		} else if(temp > MAX_MEASURED_VAL_FP_M){
+			temp = MAX_MEASURED_VAL_FP_M;
+		}
+		output_p[0] = temp & 0xff;
+		output_p[1] = (temp >> 8) & 0xff;
+		//Für Messwerte in anderen Bereichen (entweder gerader oder ungerader Bereich)
+		for (volatile uint16_t i = 1; i < LIDAR_OUTPUT_IDEAL_LEN/2; i++){
+			temp = (uint16_t)((fil_dataBuffer[2*i-usmlType]/100L) >> (FIXED_POINT_BITS - outFPBit));
+			if (temp < MIN_MEASURED_VAL_FP_M){
+				temp = MIN_MEASURED_VAL_FP_M;
+			} else if(temp > MAX_MEASURED_VAL_FP_M){
+				temp = MAX_MEASURED_VAL_FP_M;
+			}
+			output_p[2*i] = temp & 0xff;
+			output_p[2*i+1] = (temp >> 8) & 0xff;
+		}
+	} else{
+		result = PROCESS_FAIL;
+	}
+	return result;
+}
