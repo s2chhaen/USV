@@ -25,6 +25,17 @@ static const uint16_t* usv_dataBufferLen = NULL;
 static const uint8_t* usv_statusBuffer = NULL;
 static const uint8_t* usv_statusBufferLen = NULL;
 
+//Verwaltungsbereich
+volatile usvMgr_t usv_mgr = {0};
+volatile usartConfig_t usv_comParam = {0};
+volatile uint8_t usv_checksumPolynom = 0;
+volatile uint16_t usv_nextReg = 0;
+volatile uint8_t usv_savedAddr = 0;
+volatile reg8Model_t* usv_ioStream = NULL;
+static int8_t usv_tryTime = USV_RETRY_TIME_MAX;
+static uint8_t usv_errorSrc = USV_NO_SRC;
+volatile uint8_t usv_programPos = COM_PROGRAMM_NORMAL_POS; 
+
 
 
 
