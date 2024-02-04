@@ -13,6 +13,10 @@
 
 #include <stdint.h>
 
+//IO-Bit-Position
+#define STREAM_RADAR_STATUS_BIT_POS 0
+#define STREAM_RADAR_DATA_BIT_POS 1
+
 
 
 #endif /* COMCONFIG_H_ */
