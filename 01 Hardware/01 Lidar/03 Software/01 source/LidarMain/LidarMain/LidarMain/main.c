@@ -51,5 +51,8 @@ int main(void){
 	usv_initDev((const usartConfig_t*)&config, USV_CHECKSUM_POLYNOM,(reg8Model_t*)&mainStream,\
 	(const uint8_t*)usvDataBuffer, (const uint16_t*)&usvDataBufferLen,\
 	(const uint8_t*)lidarFlag_p->reg8, (uint8_t*)&lidarFlagLen);
+	//Filter
+	fil_init(wr_num,(uint8_t)wr_numLen,(reg8Model_t*)&mainStream);
+	sei();
 }
 
