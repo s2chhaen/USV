@@ -183,6 +183,10 @@ static inline uint8_t usv_ioStreamStatusAvai(){
 	return usv_ioStream->val & (1 << STREAM_RADAR_STATUS_BIT_POS);
 }
 
+static inline uint8_t usv_ioStreamDataAvai(){
+	return usv_ioStream->val & (1 << STREAM_RADAR_DATA_BIT_POS);
+}
+
 static inline uint8_t usv_setProtocol(uint8_t add, uint16_t reg, uint8_t* input_p, uint8_t length, uint8_t wr){
 	protocol[USV_START_BYTE_POS] = USV_PROTOCOL_START_BYTE;
 	protocol[USV_OBJ_ID_BYTE_POS] = add;
