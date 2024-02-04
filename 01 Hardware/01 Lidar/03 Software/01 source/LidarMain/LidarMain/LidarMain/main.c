@@ -34,5 +34,8 @@ int main(void){
 	};
 	uint8_t timerRes_ms = 10;
 	
+	/**** Initialisierung der Module ****/
+	//CPU-CLK
+	init_Core_CLK(INTERN_CLK,1);//magic number prescaler
 }
 
