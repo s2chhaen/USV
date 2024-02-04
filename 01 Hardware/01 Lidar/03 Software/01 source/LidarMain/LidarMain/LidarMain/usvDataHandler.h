@@ -21,6 +21,11 @@
 #include "comConfig.h"
 #include "registerModel.h"
 
+/* Abkürzungen: DST: destination, PROG: Programm,
+ * ADD: Address, Pos: Position, Func: Function,
+ * SRC: source, res: result, Mgr: Manager
+ */
+
 //Protocol-Parameter
 #define USV_PROTOCOL_W_REQ 8
 #define USV_PROTOCOL_R_REQ 4
