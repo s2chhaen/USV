@@ -1,4 +1,4 @@
-% Beschreibung: Implementation vom Test 1 in der Dokumentation
+% Beschreibung: Implementation vom Test 1 in der Dokumentation (5.2.1)
 
 %% Signalerzeugung %%
 % Erzeugen des Signals mit Gauß-Rauschen, Nebenbedingung: alle Werte von 
