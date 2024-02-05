@@ -1,3 +1,6 @@
+% Beschreibung: Implementation vom Test 3 in der Dokumentation
+
+%% Signalerzeugung %%
 midVal = 400;
 repeatedTimeValMid = 150;%Ton = 2*repeatedTimeValMid
 tVal = 0:0.5:180;
@@ -23,8 +26,9 @@ if draw == 1
     ylabel('Radius/dB');
 end
 
-% Mit dem Maximally-Flat-Methode-entworfenen Filter
+%% Berechnung der Wirkung des Filters %%
 draw = 0;
+% Das vom Maximally-Flat-Methode-entworfene Filter
 phase = 1;
 filterObj = filterMaximallyFlatFIR_p4;
 output = filterIIR(xnVal, tVal, filterObj, draw, phase, figureNo);
@@ -32,7 +36,7 @@ if draw == 1
     figureNo = figureNo + 1;
 end
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
 lostedPointEnd = 1;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
@@ -41,7 +45,7 @@ diff_mf = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onInterva
 diff_mf = 20.*log(diff_mf);
 diff_mf = rms(diff_mf);
 
-% Mit dem Window-Kaiser-Methode-entworfenen Filter
+% Das vom Window-Kaiser-Methode-entworfene Filter
 draw = 0;
 phase = 2;
 filterObj = filterWindowKaiser_p10;
@@ -59,7 +63,7 @@ diff_wk = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onInterva
 diff_wk = 20.*log(diff_wk);
 diff_wk = rms(diff_wk);
 
-% Mit dem Least-Squares-Methode-entworfenen Filter
+% Das vom Least-Squares-Methode-entworfene Filter
 draw = 0;
 phase = 2;
 filterObj = filterLeastSquares_p11;
@@ -77,7 +81,7 @@ diff_lsq = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onInterv
 diff_lsq = 20.*log(diff_lsq);
 diff_lsq = rms(diff_lsq);
 
-% Mit dem Equiripple-Methode-entworfenen Filter
+% Das vom Equiripple-Methode-entworfenen Filter
 draw = 0;
 phase = 2;
 filterObj = filterEquiripple_p3;
@@ -95,7 +99,7 @@ diff_eq = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onInterva
 diff_eq = 20.*log(diff_eq);
 diff_eq = rms(diff_eq);
 
-% Mit dem Window-Bartlett-Methode-entworfenen Filter
+% Das vom Window-Bartlett-Methode-entworfene Filter
 draw = 0;
 phase = 2;
 filterObj = filterWindowBarlett_p2;
@@ -113,7 +117,7 @@ diff_wb = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onInterva
 diff_wb = 20.*log(diff_wb);
 diff_wb = rms(diff_wb);
 
-% Mit dem Window-Rectangular-Methode-entworfenen Filter
+% Das vom Window-Rectangular-Methode-entworfenen Filter
 draw = 0;
 phase = 2;
 filterObj = filterWindowRectangular_p3;
@@ -131,7 +135,7 @@ diff_wr = output(onIntervalBegin:onIntervalEnd)./xnVal(onIntervalBegin:onInterva
 diff_wr = 20.*log(diff_wr);
 diff_wr = rms(diff_wr);
 
-% Mit dem Window-Triangular-Methode-entworfenen Filter
+% Das vom Window-Triangular-Methode-entworfenen Filter
 draw = 0;
 phase = 2;
 filterObj = filterWindowTriangular_p1;
