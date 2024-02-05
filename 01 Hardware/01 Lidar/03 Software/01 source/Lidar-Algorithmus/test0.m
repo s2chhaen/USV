@@ -1,3 +1,6 @@
+% Beschreibung: Versuch 0: Testen der Filtern in folgenden Fall:
+% Ein Buch liegt im Bereich vom 30° zum 60° vom Lidar
+
 LidarDataExtract; %Ausführung der LidarDataExtract.m Skript
 lenRA = size(dataOutputRA);
 rCol = 1;%Radius
