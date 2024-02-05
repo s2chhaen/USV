@@ -25,6 +25,11 @@
 #include "registerModel.h"
 #include "comConfig.h"
 
+/* Abkürzungen: msg: message, Req: Request,
+ * CMD: Command, LEN: length, Sync: Synchronisation,
+ * wrk: working, Prep: preparation, Func: Function,
+ * Vel: Velocity, Dis: Distance, Bf: bitfield
+ */
 //Radar-bezogene Parameter
 #define RADAR_SYNC_MSG "{\"Reset\":\"Board was reset.\x20\x20\'?R\' returns details\x22}\r\n"
 #define RADAR_PROTOCOL_MAX_LEN 3
