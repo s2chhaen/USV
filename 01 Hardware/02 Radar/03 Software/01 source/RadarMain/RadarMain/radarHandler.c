@@ -68,3 +68,20 @@ radar_fsmStateHandlerFunc_t radar_syncCbTable[RADAR_SYNC_FSM_STATE_NUM] = {
 	&radar_syncDataMsgRxSHandlerFunc,
 	&radar_syncEndSHandlerFunc,
 };
+
+//Getter(Datenempfangen)-FSM
+static uint8_t radar_dataStartSHandlerFunc();
+static uint8_t radar_dataRXPrepSHandlerFunc();
+static uint8_t radar_dataRXBeginSHandlerFunc();
+static uint8_t radar_dataRXSHandlerFunc();
+static uint8_t radar_dataRXTerminalSHandlerFunc();
+static uint8_t radar_dataEndSHandlerFunc();
+
+radar_fsmStateHandlerFunc_t radar_dataCbTable[RADAR_DATA_FSM_STATE_NUM] = {
+	&radar_dataStartSHandlerFunc,
+	&radar_dataRXPrepSHandlerFunc,
+	&radar_dataRXBeginSHandlerFunc,
+	&radar_dataRXSHandlerFunc,
+	&radar_dataRXTerminalSHandlerFunc,
+	&radar_dataEndSHandlerFunc
+};
