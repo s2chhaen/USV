@@ -602,3 +602,36 @@ static bool radar_callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	radar_programPos = COM_PROGRAMM_NORMAL_POS;
 	return true;
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Extern
+uint8_t radar_initDev(const usartConfig_t* config, float* outVel_p, float* outDis_p,\
+					  uint8_t* outDataState_p, reg8Model_t* io_p){
+	uint8_t result = NO_ERROR;
+	uint8_t check = (config!= NULL) && (outVel_p != NULL) && ( outDis_p != NULL) &&\
+					(outDataState_p != NULL) && (io_p != NULL);
+	if (check){
+		uint8_t temp = config->usartNo;
+		check = check && !USART_init(temp, config->baudrate, config->usartChSize, config->parity,\
+									 config->stopbit, config->sync, config->mpcm, config->address,\
+									 config->portMux);
+		if (check){
+			radar_mgr.init = 1;
+			radar_comParam = (*config);
+			radar_velData = outVel_p;
+			radar_disData = outDis_p;
+			radar_dataUpdated = outDataState_p;
+			radar_ioStream = io_p;
+			//Zuweisung der Rückruf vom Lidar
+			USART_set_send_Array_callback_fnc(temp,&radar_callbackTx);
+			USART_set_receive_Array_callback_fnc(temp,&radar_callbackRx);
+		} else{
+			result = PROCESS_FAIL;
+		}
+		} else{
+		result = PROCESS_FAIL;
+	}
+	return result;
+}
+
+}
