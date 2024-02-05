@@ -17,6 +17,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <ctype.h>
+#include "ATMegaXX09/USART/USART.h"
+#include "ATMegaXX09/FIFO/FIFO.h"
 
 
 #endif /* RADARHANDLER_H_ */
