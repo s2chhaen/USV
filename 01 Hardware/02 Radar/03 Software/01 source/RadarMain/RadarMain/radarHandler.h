@@ -98,4 +98,7 @@ enum radar_mainFsmState{
 #define RADAR_MAIN_FSM_LAST_STATE RADAR_MAIN_FSM_ERROR_STATE
 #define RADAR_MAIN_FSM_STATE_NUM (RADAR_MAIN_FSM_LAST_STATE+1)
 
+//Handler-Funktion-Zeiger-Deklaration
+typedef uint8_t (*const radar_mainFsmSHandlerFunc_t)();
+
 #endif /* RADARHANDLER_H_ */
