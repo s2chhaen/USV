@@ -14,6 +14,10 @@
 #include <stdint.h>
 #include <string.h>
 
+/* Abkürzungen: PRC: Processing, VEL:velocity,
+ * Dis: Distance
+ */
+
 //Nachkomma (Fraction-Part)-Param
 #define VEL_FIXED_POINT_BIT 4
 #define DIS_FIXED_POINT_BIT 4
