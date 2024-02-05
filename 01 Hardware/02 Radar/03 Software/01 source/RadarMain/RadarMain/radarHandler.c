@@ -576,3 +576,18 @@ static uint8_t radar_mainErrorSHandlerFunc(){
 	return retVal;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//in ISR zurückgerufte Funktionen
+static bool radar_callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, uint8_t max_length){
+	radar_txTempLength = length;
+	radar_txTempMax_length = max_length;
+	radar_programPos = COM_PROGRAMM_TX_POS;
+	//FSM-State-Handler
+	radar_tempState = radar_fsmState[radar_mode];
+	radar_fsmState[radar_mode] = radar_allFsmLookuptable[radar_mode][radar_tempState]();
+	if (radar_txTempData[0] != NULL){
+		*data = (uint8_t*)radar_txTempData[0];
+	}
+	radar_programPos = COM_PROGRAMM_NORMAL_POS;
+	return true;
+}
