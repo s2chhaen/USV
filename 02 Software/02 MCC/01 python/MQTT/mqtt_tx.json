@@ -6,8 +6,8 @@
     "password": " "
   },
   "topics": {
-    "USV/Position/Longitude": "13.4247",
-    "USV/Position/Latitude": "54.1683",
+    "USV/Position/Longitude": "13.708937444731157",
+    "USV/Position/Latitude": "54.2805379546876",
     "USV/Position/Geschwindigkeit": "11.1",
     "USV/Position/Kurswinkel": "293",
 	"USV/Antrieb/Schub": "0",

@@ -46,7 +46,7 @@ def main():
     for topic, value in config["topics"].items():
         print(f"Sende Wert {value} an Topic {topic}")
         client.publish(topic, value)
-        sleep(1)  # Kurze Pause zwischen den Veröffentlichungen
+        sleep(3)  # Kurze Pause zwischen den Veröffentlichungen
 
     # Programm in einer Endlosschleife halten, um die Verbindung aufrechtzuerhalten
     #client.loop_forever()
