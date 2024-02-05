@@ -1,7 +1,7 @@
 % Beschreibung: Implementation vom Test 1 in der Dokumentation
 
 %% Signalerzeugung %%
-% Erzeugen des Signals mit Gauß-Geräusch, Nebenbedingung: alle Werte von 
+% Erzeugen des Signals mit Gauß-Rauschen, Nebenbedingung: alle Werte von 
 % Geräusch ist großer als 0
 snr_dB = 7;
 signalPowerConfig = 'measured';
@@ -30,8 +30,7 @@ end
 % slopeO: Steigung des Originalzustandes, slopeF: Steigung nach dem Filtern,
 % diff_x: Wirkung des Filters auf einen Bereich
 
-% Mit dem Maximally-Flat-Methode-entworfenen Filter
-draw = 0;
+% Das vom Maximally-Flat-Methode-entworfene Filter
 phase = 1;
 filterObj = filterMaximallyFlatFIR_p4;
 output = filterIIR(xnVal, tVal, filterObj, draw, phase, figureNo);
@@ -54,8 +53,7 @@ slopeO = rms(slopeO);
 slopeF = rms(slopeF);
 diff_mf = 20.*log10(slopeF./slopeO);
 
-%Mit dem Window-Kaiser-Methode-entworfenen Filter
-draw = 0;
+% Das vom Window-Kaiser-Methode-entworfene Filter
 phase = 2;
 filterObj = filterWindowKaiser_p10;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
@@ -78,8 +76,7 @@ slopeO = rms(slopeO);
 slopeF = rms(slopeF);
 diff_wk = 20.*log10(slopeF./slopeO);
 
-% Mit dem Least-Squares-Methode-entworfenen Filter
-draw = 0;
+% Das vom Least-Squares-Methode-entworfene Filter
 phase = 2;
 filterObj = filterLeastSquares_p11;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
@@ -102,8 +99,7 @@ slopeO = rms(slopeO);
 slopeF = rms(slopeF);
 diff_lsq = 20.*log10(slopeF./slopeO);
 
-% Mit dem Equiripple-Methode-entworfenen Filter
-draw = 0;
+% Das vom Equiripple-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterEquiripple_p3;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
@@ -126,8 +122,7 @@ slopeO = rms(slopeO);
 slopeF = rms(slopeF);
 diff_eq = 20.*log10(slopeF./slopeO);
 
-% Mit dem Window-Bartlett-Methode-entworfenen Filter
-draw = 0;
+% Das vom Window-Bartlett-Methode-entworfene Filter
 phase = 2;
 filterObj = filterWindowBarlett_p2;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
@@ -150,8 +145,7 @@ slopeO = rms(slopeO);
 slopeF = rms(slopeF);
 diff_wb = 20.*log10(slopeF./slopeO);
 
-% Mit dem Window-Rectangular-Methode-entworfenen Filter
-draw = 0;
+% Das vom Window-Rectangular-Methode-entworfene Filter
 phase = 2;
 filterObj = filterWindowRectangular_p3;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
@@ -174,8 +168,7 @@ slopeO = rms(slopeO);
 slopeF = rms(slopeF);
 diff_wr = 20.*log10(slopeF./slopeO);
 
-% Mit dem Window-Triangular-Methode-entworfenen Filter
-draw = 0;
+% Das vom Window-Triangular-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterWindowTriangular_p1;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
