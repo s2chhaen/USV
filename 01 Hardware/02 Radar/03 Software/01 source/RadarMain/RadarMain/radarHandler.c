@@ -634,4 +634,6 @@ uint8_t radar_initDev(const usartConfig_t* config, float* outVel_p, float* outDi
 	return result;
 }
 
+const radarStatus_t* radar_getStatus(){
+	return (const radarStatus_t*)&radar_status;
 }
