@@ -148,3 +148,7 @@ static inline uint8_t getFIFOFreeSpace(){//TODO test again
 static inline uint8_t radar_ioStreamStatusAvai(){
 	return !(radar_ioStream->val & (1 << STREAM_RADAR_STATUS_BIT_POS));
 }
+
+static inline uint8_t radar_ioStreamDataAvai(){
+	return !(radar_ioStream->val & (1 << STREAM_RADAR_DATA_BIT_POS));
+}
