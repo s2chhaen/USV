@@ -12,7 +12,6 @@ plot(tVal,xVal,'-o');
 xlabel('Winkel/Grad');
 ylabel('Radius/dB');
 
-figureNo = 1;
 %% Erstellung des Diagramms zur Bestimmung der Verlustpunkte %%
 draw = 1;
 % Das Ergebnis-Signal, das von folgenden Filter gefiltert wird
@@ -21,40 +20,33 @@ draw = 1;
 phase = 1;
 filterObj = filterMaximallyFlatFIR_p4;
 filterIIR(xVal, tVal, filterObj, draw, phase, figureNo);
-figureNo = figureNo + 1;
 draw = 1;
 % vom Window-Kaiser-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterWindowKaiser_p10;
 filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
-figureNo = figureNo + 1;
 draw = 1;
 % vom Least-Squares-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterLeastSquares_p11;
 filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
-figureNo = figureNo + 1;
 draw = 1;
 % vom Equiripple-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterEquiripple_p3;
 filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
-figureNo = figureNo + 1;
 draw = 1;
 % vom Window-Bartlett-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterWindowBarlett_p2;
 filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
-figureNo = figureNo + 1;
 draw = 1;
 % vom Window-Rectangular-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterWindowRectangular_p3;
 filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
-figureNo = figureNo + 1;
 draw = 1;
 % vom Window-Triangular-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterWindowTriangular_p1;
 filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
-figureNo = figureNo + 1;
