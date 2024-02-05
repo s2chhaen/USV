@@ -47,7 +47,7 @@ filterObj = filterWindowKaiser_p10;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
     'Window Kaiser Methode-Filterergebnis');
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
 lostedPointEnd = 2;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
@@ -62,7 +62,7 @@ filterObj = filterLeastSquares_p11;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
     'Least Squares Methode-Filterergebnis');
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
 lostedPointEnd = 2;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
@@ -77,7 +77,7 @@ filterObj = filterEquiripple_p3;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
     'Equiripple Methode-Filterergebnis');
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
 lostedPointEnd = 2;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
@@ -92,7 +92,7 @@ filterObj = filterWindowBarlett_p2;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
     'Window Bartlett Methode-Filterergebnis');
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
 lostedPointBegin = 0;
 lostedPointEnd = 1;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
@@ -107,7 +107,7 @@ filterObj = filterWindowRectangular_p3;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
     'Window Rectangular Methode-Filterergebnis');
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
 lostedPointEnd = 2;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
@@ -122,7 +122,7 @@ filterObj = filterWindowTriangular_p1;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
     'Window Triangular Methode-Filterergebnis');
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
-% neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
+% neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
 lostedPointEnd = 2;
 onIntervalBegin = onIntervalBegin + lostedPointBegin;
