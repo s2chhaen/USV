@@ -114,4 +114,18 @@ typedef struct{
 	uint8_t empty:1;
 }radarRxDataFIFO_t;
 
+typedef union{
+	uint8_t reg8;
+	struct{
+		uint8_t sync:1;//bit 0 => 0: nicht sync, 1: sync
+		uint8_t fmwDevStatus:1;//bit 1 => 0: Gerät oder Firmware stimmt, 1: stimmt das Gerät und Firmware nicht
+		uint8_t lineStatus:1;// bit 2 => 0: kein Fehler, 1: Fehler bei der Kommunikation
+		uint8_t timeOut:1;// bit 3 => 0: kein Timeout-Fehler, 1: Timeout-Fehler
+		uint8_t :1;// bit 4
+		uint8_t :1;// bit 5
+		uint8_t :1;// bit 6
+		uint8_t :1;// bit 7
+	}dataBf;
+}radarStatus_t;
+
 #endif /* RADARHANDLER_H_ */
