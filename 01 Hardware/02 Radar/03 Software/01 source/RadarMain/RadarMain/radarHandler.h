@@ -25,5 +25,20 @@
 #include "registerModel.h"
 #include "comConfig.h"
 
+//Radar-bezogene Parameter
+#define RADAR_SYNC_MSG "{\"Reset\":\"Board was reset.\x20\x20\'?R\' returns details\x22}\r\n"
+#define RADAR_PROTOCOL_MAX_LEN 3
+#define RADAR_DATA_REQ_CMD "PP"
+#define RADAR_REQ_PROTOCOL_LEN (sizeof(RADAR_DATA_REQ_CMD)/sizeof(uint8_t) - 1)
+#define RADAR_RESET_CMD "P!"
+#define RADAR_RESET_PROTOCOL_LEN (sizeof(RADAR_RESET_CMD)/sizeof(uint8_t) - 1)
+#define RADAR_DATA_REQ_MAX_PACK 2
+#define RADAR_SYNC_PROTOCOL_START_SYM 0x7b
+#define RADAR_DATA_PROTOCOL_START_SYM 0x22
+#define RADAR_DATA_PROTOCOL_NEAR_END_SYM 0x0D
+#define RADAR_PROTOCOL_END_SYM 0x0a
+
+#define RADAR_VEL_RSP_LEN 11
+#define RADAR_DIS_RSP_LEN 9
 
 #endif /* RADARHANDLER_H_ */
