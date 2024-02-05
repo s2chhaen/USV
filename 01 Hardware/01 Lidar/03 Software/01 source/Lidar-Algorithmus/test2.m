@@ -31,19 +31,12 @@ end
 % Das vom Maximally-Flat-Methode-entworfene Filter
 phase = 1;
 filterObj = filterMaximallyFlatFIR_p4;
-output = filterIIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+output = filterIIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Maximally Flat Methode-Filterergebnis');
 slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
-draw = 0;
-if draw == 1
-    figure(figureNo);
-    hVal = [1:numel(slopeF)];
-    plot(hVal,slopeO,'-',hVal,slopeF,'-');
-    legend('Original','gefilterten-Signal','Location','northeastoutside');
-    figureNo = figureNo + 1;
-end
 slopeO = rms(slopeO);
 slopeF = rms(slopeF);
 diff_mf = 20.*log10(slopeF./slopeO);
@@ -57,14 +50,6 @@ slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
-draw = 0;
-if draw == 1
-    figure(figureNo);
-    hVal = [1:numel(slopeF)];
-    plot(hVal,slopeO,'-',hVal,slopeF,'-');
-    legend('Original','gefilterten-Signal','Location','northeastoutside');
-    figureNo = figureNo + 1;
-end
 slopeO = rms(slopeO);
 slopeF = rms(slopeF);
 diff_wk = 20.*log10(slopeF./slopeO);
@@ -78,14 +63,6 @@ slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
-draw = 0;
-if draw == 1
-    figure(figureNo);
-    hVal = [1:numel(slopeF)];
-    plot(hVal,slopeO,'-',hVal,slopeF,'-');
-    legend('Original','gefilterten-Signal','Location','northeastoutside');
-    figureNo = figureNo + 1;
-end
 slopeO = rms(slopeO);
 slopeF = rms(slopeF);
 diff_lsq = 20.*log10(slopeF./slopeO);
@@ -99,14 +76,6 @@ slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
-draw = 0;
-if draw == 1
-    figure(figureNo);
-    hVal = [1:numel(slopeF)];
-    plot(hVal,slopeO,'-',hVal,slopeF,'-');
-    legend('Original','gefilterten-Signal','Location','northeastoutside');
-    figureNo = figureNo + 1;
-end
 slopeO = rms(slopeO);
 slopeF = rms(slopeF);
 diff_eq = 20.*log10(slopeF./slopeO);
@@ -120,14 +89,6 @@ slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
-draw = 0;
-if draw == 1
-    figure(figureNo);
-    hVal = [1:numel(slopeF)];
-    plot(hVal,slopeO,'-',hVal,slopeF,'-');
-    legend('Original','gefilterten-Signal','Location','northeastoutside');
-    figureNo = figureNo + 1;
-end
 slopeO = rms(slopeO);
 slopeF = rms(slopeF);
 diff_wb = 20.*log10(slopeF./slopeO);
@@ -141,14 +102,6 @@ slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
-draw = 0;
-if draw == 1
-    figure(figureNo);
-    hVal = [1:numel(slopeF)];
-    plot(hVal,slopeO,'-',hVal,slopeF,'-');
-    legend('Original','gefilterten-Signal','Location','northeastoutside');
-    figureNo = figureNo + 1;
-end
 slopeO = rms(slopeO);
 slopeF = rms(slopeF);
 diff_wr = 20.*log10(slopeF./slopeO);
@@ -162,14 +115,8 @@ slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
-draw = 0;
-if draw == 1
-    figure(figureNo);
-    hVal = [1:numel(slopeF)];
-    plot(hVal,slopeO,'-',hVal,slopeF,'-');
-    legend('Original','gefilterten-Signal','Location','northeastoutside');
-    figureNo = figureNo + 1;
-end
 slopeO = rms(slopeO);
 slopeF = rms(slopeF);
 diff_wt = 20.*log10(slopeF./slopeO);
+
+clear slopeO slopeF
