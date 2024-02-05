@@ -1,4 +1,4 @@
-function outputVal = filterIIR(inputVal, inputTi, filterObj, draw, phase, figureNo)
+function outputVal = filterIIR(inputVal, inputTi, filterObj, draw, phase, figureName)
 [b,a] = sos2tf(filterObj.sosMatrix);
 
 temp0 = [inputVal ones(1,phase)*inputVal(end)];
@@ -7,7 +7,7 @@ temp0 = temp0((phase+1):end);
 outputVal = temp0;
 
 if draw == 1
-    figure(figureNo);
+    figure('Name',figureName);
 
     ax(1) = subplot(2,1,1);
     plot(inputTi,inputVal,'-o',inputTi,outputVal,'-o');
