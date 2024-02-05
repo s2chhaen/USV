@@ -21,5 +21,6 @@
 #include "radarDataPrc.h"
 #include "comConfig.h"
 
+#define USV_CHECKSUM_POLYNOM 0xD5
 
 #endif /* MAIN_H_ */
