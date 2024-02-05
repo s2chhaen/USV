@@ -101,4 +101,17 @@ enum radar_mainFsmState{
 //Handler-Funktion-Zeiger-Deklaration
 typedef uint8_t (*const radar_mainFsmSHandlerFunc_t)();
 
+//Daten-Buffer von Radar
+#define RADAR_RX_STR_FIFO_LEN_BITS 1
+#define RADAR_RX_STR_FIFO_LEN (1<<RADAR_RX_STR_FIFO_LEN_BITS)
+#define RADAR_RX_STR_MAX_LEN 53
+typedef struct{
+	uint8_t data[RADAR_RX_STR_FIFO_LEN][RADAR_RX_STR_MAX_LEN];
+	uint8_t dataStrIdx[RADAR_RX_STR_FIFO_LEN];
+	uint8_t rPtr:RADAR_RX_STR_FIFO_LEN_BITS;
+	uint8_t wPtr:RADAR_RX_STR_FIFO_LEN_BITS;
+	uint8_t full:1;
+	uint8_t empty:1;
+}radarRxDataFIFO_t;
+
 #endif /* RADARHANDLER_H_ */
