@@ -9,7 +9,7 @@ clc;
 format shortG
 
 % 0. Versuch: Überblick über die ausgewählten Filter-Entwurf-Methode
-test0_active = 1;
+test0_active = 0;
 % 1. Versuch: Zur Untersuchung des Effektes von Filtern 
 test1_active = 0;
 % 2. Versuch: Zur Bestimmung der Verlustpunkte am Rand
@@ -19,6 +19,15 @@ test2_active = 0;
 test3_active = 0;
 % 5. Versuche: Anwendung des ausgewählten Filters
 test5_active = 0;
+
+lidarMinRange = 6.25;
+lidarMaxRange = 8000;
+lidarMaxAngleRange = 180;
+lidarResoluation = 0.5;
+wf = 1;
+
+order = filterOrder(lidarMinRange,lidarMaxRange);
+fs = wf*lidarMaxAngleRange/lidarResoluation;
 
 if test0_active == 1
     test0
