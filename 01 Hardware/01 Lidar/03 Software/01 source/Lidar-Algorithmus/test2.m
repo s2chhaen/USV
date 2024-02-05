@@ -17,7 +17,7 @@ ampCoef = 0.2;
 noise = mod(noise,midVal*ampCoef);
 xnVal = [xVal(1:onIntervalBegin-1) noise xVal(onIntervalEnd+1:end)];
 xnVal = xnVal + xVal;
-draw = 0;
+draw = 1;
 figureNo = 1;
 if draw == 1
     figure(figureNo);
