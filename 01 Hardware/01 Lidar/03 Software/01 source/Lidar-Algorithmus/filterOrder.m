@@ -13,7 +13,7 @@ function order = filterOrder(minIn,maxIn)
         end
 
         if maxIn >= minIn
-            order = floor(logn(10,maxIn/minIn)+1);
+            order = floor(logn(10,maxIn/minIn));
         end
     end
 end
