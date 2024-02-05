@@ -1,4 +1,7 @@
-% Erzeugen des Signals mit Geräusch, Nebenbedingung: alle Werte von
+% Beschreibung: Implementation vom Test 1 in der Dokumentation
+
+%% Signalerzeugung %%
+% Erzeugen des Signals mit Gauß-Geräusch, Nebenbedingung: alle Werte von 
 % Geräusch ist großer als 0
 snr_dB = 7;
 signalPowerConfig = 'measured';
