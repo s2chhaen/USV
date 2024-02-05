@@ -29,7 +29,8 @@ draw = 0;
 % Das vom Maximally-Flat-Methode-entworfene Filter
 phase = 1;
 filterObj = filterMaximallyFlatFIR_p4;
-output = filterIIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+output = filterIIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Maximally Flat Methode-Filterergebnis');
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
 % neuen Bereich: von Diagramm aus dem 2. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
@@ -43,7 +44,8 @@ diff_mf = rms(diff_mf);
 % Das vom Window-Kaiser-Methode-entworfene Filter
 phase = 2;
 filterObj = filterWindowKaiser_p10;
-output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Window Kaiser Methode-Filterergebnis');
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
 % neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
@@ -57,7 +59,8 @@ diff_wk = rms(diff_wk);
 % Das vom Least-Squares-Methode-entworfene Filter
 phase = 2;
 filterObj = filterLeastSquares_p11;
-output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Least Squares Methode-Filterergebnis');
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
 % neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
@@ -71,7 +74,8 @@ diff_lsq = rms(diff_lsq);
 % Das vom Equiripple-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterEquiripple_p3;
-output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Equiripple Methode-Filterergebnis');
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
 % neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
@@ -85,7 +89,8 @@ diff_eq = rms(diff_eq);
 % Das vom Window-Bartlett-Methode-entworfene Filter
 phase = 2;
 filterObj = filterWindowBarlett_p2;
-output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Window Bartlett Methode-Filterergebnis');
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
 % neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
 lostedPointBegin = 0;
@@ -99,7 +104,8 @@ diff_wb = rms(diff_wb);
 % Das vom Window-Rectangular-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterWindowRectangular_p3;
-output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Window Rectangular Methode-Filterergebnis');
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
 % neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
@@ -113,7 +119,8 @@ diff_wr = rms(diff_wr);
 % Das vom Window-Triangular-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterWindowTriangular_p1;
-output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
+output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Window Triangular Methode-Filterergebnis');
 % verlorene Punkte aufgrund der Steigung von einem Bereich zu einem
 % neuen Bereich: von Diagramm aus dem 3. Versuch (Test2) abgelesen
 lostedPointBegin = 1;
