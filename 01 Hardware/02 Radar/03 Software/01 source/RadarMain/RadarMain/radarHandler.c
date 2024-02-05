@@ -85,3 +85,9 @@ radar_fsmStateHandlerFunc_t radar_dataCbTable[RADAR_DATA_FSM_STATE_NUM] = {
 	&radar_dataRXTerminalSHandlerFunc,
 	&radar_dataEndSHandlerFunc
 };
+
+//Gesamten-Look-up-Tabelle der Zustand-Handler-Funktionen
+radar_fsmStateHandlerFunc_t* radar_allFsmLookuptable[] = {
+	(radar_fsmStateHandlerFunc_t*)&radar_syncCbTable,
+	(radar_fsmStateHandlerFunc_t*)&radar_dataCbTable
+};
