@@ -9,6 +9,11 @@
 
 #include "radarHandler.h"
 
+/* Abkürzungen: vel: velocity, dis:distance,
+ * Len: Length, SHandler:State-Handler,
+ * Sync: Synchronisation
+ */
+
 //Lokalvariable für Radar
 //USART-Modul-FIFO-Max-Len
 static const uint16_t usartFIFOMaxLen = _FIFO_max_def - 1;
