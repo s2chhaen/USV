@@ -46,7 +46,6 @@ diff_mf = 20.*log(diff_mf);
 diff_mf = rms(diff_mf);
 
 % Das vom Window-Kaiser-Methode-entworfene Filter
-draw = 0;
 phase = 2;
 filterObj = filterWindowKaiser_p10;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
@@ -64,7 +63,6 @@ diff_wk = 20.*log(diff_wk);
 diff_wk = rms(diff_wk);
 
 % Das vom Least-Squares-Methode-entworfene Filter
-draw = 0;
 phase = 2;
 filterObj = filterLeastSquares_p11;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
@@ -82,7 +80,6 @@ diff_lsq = 20.*log(diff_lsq);
 diff_lsq = rms(diff_lsq);
 
 % Das vom Equiripple-Methode-entworfenen Filter
-draw = 0;
 phase = 2;
 filterObj = filterEquiripple_p3;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
@@ -100,7 +97,6 @@ diff_eq = 20.*log(diff_eq);
 diff_eq = rms(diff_eq);
 
 % Das vom Window-Bartlett-Methode-entworfene Filter
-draw = 0;
 phase = 2;
 filterObj = filterWindowBarlett_p2;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
@@ -118,7 +114,6 @@ diff_wb = 20.*log(diff_wb);
 diff_wb = rms(diff_wb);
 
 % Das vom Window-Rectangular-Methode-entworfenen Filter
-draw = 0;
 phase = 2;
 filterObj = filterWindowRectangular_p3;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
@@ -136,7 +131,6 @@ diff_wr = 20.*log(diff_wr);
 diff_wr = rms(diff_wr);
 
 % Das vom Window-Triangular-Methode-entworfenen Filter
-draw = 0;
 phase = 2;
 filterObj = filterWindowTriangular_p1;
 output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
