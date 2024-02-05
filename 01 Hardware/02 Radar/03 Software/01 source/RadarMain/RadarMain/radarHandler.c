@@ -383,3 +383,196 @@ static uint8_t radar_dataRXTerminalSHandlerFunc(){
 static uint8_t radar_dataEndSHandlerFunc(){
 	return RADAR_DATA_FSM_END_STATE;
 }
+
+//Externe-FSM
+static uint8_t radar_mainSyncHandlerFunc(){
+	uint8_t retVal = RADAR_MAIN_FSM_SYNC_STATE;
+	uint8_t check = radar_mgr.init && radar_ioStreamStatusAvai() && radar_ioStreamDataAvai();
+	if (check){
+		radar_mode = RADAR_SYNC_MODE;
+		radar_fsmState[RADAR_SYNC_MODE] = radar_allFsmLookuptable[RADAR_SYNC_MODE][RADAR_SYNC_FSM_START_STATE]();
+		//Set timeout
+		radarTimer_setCounter(5000UL);
+		retVal = RADAR_MAIN_FSM_SYNC_POLLING_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t radar_mainSyncPollingSHandlerFunc(){
+	uint8_t retVal = RADAR_MAIN_FSM_SYNC_POLLING_STATE;
+	if (radar_mgr.syncStatus){
+		if (radarTimer_getCounter() < 0){
+			radarTimer_setState(0);
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+				USART_flushRXFIFO(radar_comParam.usartNo);
+				radar_fsmState[RADAR_SYNC_MODE] = RADAR_SYNC_FSM_END_STATE;
+			}
+			radar_status.dataBf.timeOut = 1;
+			radar_mgr.syncStatus = 0;
+			retVal = RADAR_MAIN_FSM_SYNC_DATA_CHECK_STATE;
+		}
+	} else{
+		radarTimer_setState(0);
+		retVal = RADAR_MAIN_FSM_SYNC_DATA_CHECK_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t radar_mainSyncDataCheckSHandlerFunc(){
+	uint8_t retVal = RADAR_MAIN_FSM_DATA_REQ_STATE;
+	if (radar_status.dataBf.lineStatus || radar_status.dataBf.timeOut){
+		radar_status.dataBf.sync = 0;
+		retVal = RADAR_MAIN_FSM_SYNC_STATE;
+	} else{
+		uint8_t dataNum = getFIFODataNum();
+		static const uint8_t syncMsg[] = RADAR_SYNC_MSG;
+		uint8_t tempRPtr = radar_fifo.rPtr;
+		const char* tempData = (const char*)radar_fifo.data[tempRPtr];
+		uint8_t check = (dataNum == RADAR_DATA_REQ_MAX_PACK) &&\
+						(!strcmp(tempData,(const char*)syncMsg));
+		if (check){
+			radar_fifo.dataStrIdx[tempRPtr] = 0;
+			radar_fifo.rPtr++;
+			tempRPtr = radar_fifo.rPtr;
+			tempData = (const char*)radar_fifo.data[tempRPtr];
+			check = strstr((const char*)tempData,"mps") != NULL;
+			if (check){
+				radar_status.dataBf.sync = 1;
+				uint8_t tempIdx = searchNumFormatInStr((uint8_t*)tempData,radar_fifo.dataStrIdx[tempRPtr]);
+				radar_fifo.dataStrIdx[tempRPtr] = 0;
+				radar_fifo.rPtr++;
+				*radar_velData = (float)strtod(&tempData[tempIdx],NULL);
+				*radar_dataUpdated = 1;
+			} else{
+				radar_status.dataBf.fmwDevStatus = 1;
+				retVal = RADAR_MAIN_FSM_SYNC_STATE;
+			}
+		} else{
+			radar_status.dataBf.fmwDevStatus = 1;
+			retVal = RADAR_MAIN_FSM_SYNC_STATE;
+		}	
+	}
+	if (radar_ioStreamStatusAvai()){
+		radar_ioStream->val |= (1<<STREAM_RADAR_STATUS_BIT_POS);
+	}
+	radar_fifoFlush();
+	return retVal;
+}
+
+static uint8_t radar_mainDataReqSHandlerFunc(){
+	uint8_t retVal = RADAR_MAIN_FSM_DATA_REQ_STATE;
+	uint8_t check = radar_mgr.init && radar_ioStreamStatusAvai() && radar_ioStreamDataAvai();
+	if (check){
+		radar_mgr.rxStatus = 1;
+		radar_status.reg8 = 0x01;
+		radar_fsmState[RADAR_GETTER_MODE] = radar_allFsmLookuptable[RADAR_GETTER_MODE][RADAR_DATA_FSM_START_STATE]();
+		uint8_t dataLen = (RADAR_VEL_RSP_LEN + RADAR_DIS_RSP_LEN + RADAR_REQ_PROTOCOL_LEN);
+		radarTimer_setCounter(RADAR_TX_TIME_US*dataLen/1000 + RADAR_WRK_TIME_MS +\
+							  RADAR_TOLERANCE_MS);
+		memcpy(radar_protocol,RADAR_DATA_REQ_CMD,RADAR_REQ_PROTOCOL_LEN);
+		USART_send_Array(radar_comParam.usartNo,0,radar_protocol,RADAR_REQ_PROTOCOL_LEN);
+		radarTimer_setState(1);
+		retVal = RADAR_MAIN_FSM_RSP_POLLING_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t radar_mainRspPollingSHandlerFunc(){
+	uint8_t retVal = RADAR_MAIN_FSM_RSP_POLLING_STATE;
+	if (radar_mgr.rxStatus){
+		if (radarTimer_getCounter() < 0){
+			radarTimer_setState(0);
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+				USART_flushRXFIFO(radar_comParam.usartNo);
+				radar_fsmState[RADAR_GETTER_MODE] = RADAR_DATA_FSM_END_STATE;
+			}
+			radar_status.dataBf.timeOut = 1;
+			radar_mgr.rxStatus = 0;
+			retVal = RADAR_MAIN_FSM_DATA_CHECK_STATE;
+		}
+	} else{
+		radarTimer_setState(0);
+		retVal = RADAR_MAIN_FSM_DATA_CHECK_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t radar_mainDataCheckSHandlerFunc(){
+	uint8_t retVal = RADAR_MAIN_FSM_DATA_REQ_STATE;
+	uint8_t check = radar_status.dataBf.lineStatus || radar_status.dataBf.timeOut;
+	if (check){
+		retVal = RADAR_MAIN_FSM_ERROR_STATE;
+	} else{
+		volatile uint8_t dataNum = getFIFODataNum();
+		check = (!radar_fifo.empty) && (dataNum == RADAR_DATA_REQ_MAX_PACK);
+		if (check){
+			uint8_t checkVelCmd, checkDisCmd, tempRPtr, tempIdx;
+			volatile uint8_t* tempData;
+			while (dataNum){
+				tempRPtr = radar_fifo.rPtr;
+				tempData = radar_fifo.data[tempRPtr];
+				checkVelCmd = strstr((const char*)tempData,"mps") != NULL;
+				checkDisCmd = strstr((const char*)tempData,"m") != NULL;
+				if (checkVelCmd){
+					tempIdx = searchNumFormatInStr((uint8_t*)tempData,radar_fifo.dataStrIdx[tempRPtr]);
+					*radar_velData = (float)strtod((const char*)&tempData[tempIdx],NULL);
+				} else if(checkDisCmd){
+					tempIdx = searchNumFormatInStr((uint8_t*)tempData,radar_fifo.dataStrIdx[tempRPtr]);
+					*radar_disData = (float)strtod((const char*)&tempData[tempIdx],NULL);
+				} else{
+					break;
+				}
+				radar_fifo.dataStrIdx[tempRPtr] = 0;
+				radar_fifo.rPtr++;
+				dataNum--;
+			}
+			radar_fifo.full = 0;
+			radar_fifo.empty = checkFIFOEmptyState();
+			if (dataNum){
+				radar_status.dataBf.lineStatus = 1;
+				retVal = RADAR_MAIN_FSM_ERROR_STATE;
+			} else {
+				*radar_dataUpdated = 1;
+			}
+		} else{
+			radar_status.dataBf.lineStatus = 1;
+			retVal = RADAR_MAIN_FSM_ERROR_STATE;
+		}
+	}
+	if (radar_ioStreamStatusAvai()){
+		radar_ioStream->val |= (1<<STREAM_RADAR_STATUS_BIT_POS);
+	}
+	return retVal;
+}
+
+static uint8_t radar_mainResetSHandlerFunc(){
+	uint8_t retVal = RADAR_MAIN_FSM_RESET_STATE;
+	uint8_t check = radar_mgr.init && radar_ioStreamStatusAvai() && radar_ioStreamDataAvai();
+	if (check){
+		radar_mode = RADAR_SYNC_MODE;
+		radar_fsmState[RADAR_SYNC_MODE] = RADAR_SYNC_FSM_START_STATE;
+		radar_status.dataBf.sync = 0;
+		uint8_t rxDataLen = (52 + RADAR_DIS_RSP_LEN + RADAR_RESET_PROTOCOL_LEN);
+		radarTimer_setCounter(RADAR_TX_TIME_US*rxDataLen/1000 + RADAR_WRK_TIME_MS +\
+							  RADAR_TOLERANCE_MS);
+		memcpy(radar_protocol,RADAR_RESET_CMD,RADAR_RESET_PROTOCOL_LEN);
+		USART_send_Array(radar_comParam.usartNo, 0, radar_protocol, RADAR_RESET_PROTOCOL_LEN);
+		retVal = RADAR_MAIN_FSM_SYNC_POLLING_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t radar_mainErrorSHandlerFunc(){
+	uint8_t retVal = RADAR_MAIN_FSM_DATA_REQ_STATE;
+	radar_tryTime--;
+	radar_fifoFlush();
+	if (radar_tryTime < 0){
+		retVal = RADAR_MAIN_FSM_RESET_STATE;
+		radar_tryTime = 1;
+	}
+	if (radar_ioStreamStatusAvai()){
+		radar_ioStream->val |= (1<<STREAM_RADAR_STATUS_BIT_POS);
+	}
+	return retVal;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
