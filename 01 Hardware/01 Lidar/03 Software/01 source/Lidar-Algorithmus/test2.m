@@ -1,4 +1,4 @@
-% Beschreibung: Implementation vom Test 2 in der Dokumentation
+% Beschreibung: Implementation vom Test 2 in der Dokumentation (5.2.1)
 
 %% Erzeugung des Testsignals %%
 repeatedTimeValMid = 150;%Ton = 2*repeatedTimeValMid
