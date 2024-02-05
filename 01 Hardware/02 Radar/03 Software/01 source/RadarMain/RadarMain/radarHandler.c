@@ -160,3 +160,19 @@ static inline void radar_fifoFlush(){
 	radar_fifo.full = 0;
 	radar_fifo.empty = 1;
 }
+
+static uint8_t searchNumFormatInStr(uint8_t* input_p, uint8_t inputLen){
+	uint8_t result = 0;
+	if (inputLen < (RADAR_RX_STR_MAX_LEN-1)){
+		uint8_t check;
+		for(volatile int i = 0; i < inputLen; i++){
+			check = ((input_p[i]=='+') || (input_p[i]=='-')) && isdigit(input_p[i+1]);
+			check = check || isdigit(input_p[i]);
+			if (check){
+				result = i;
+				break;
+			}
+		}
+	}
+	return result;
+}
