@@ -12,13 +12,15 @@ ah = 4;% erlaubte Höhenabweichung
 noise = ah*noise;
 xnVal = [xVal(1:onIntervalBegin-1) noise xVal(onIntervalEnd+1:end)];
 xnVal = xnVal + xVal;
-draw = 0;
+draw = 1;
 figureNo = 1;
 if draw == 1
-    figure(figureNo);
+    figure('Name','Das Originalsignal und Signal mit schwächen Rauschen');
     plot(tVal,xVal,'-',tVal,xnVal,'-');
     figureNo = figureNo + 1;
     legend('Original','mit Geräusch','Location','northeastoutside');
+    xlabel('Winkel/Grad');
+    ylabel('Radius/dB');
 end
 
 % Mit dem Maximally-Flat-Methode-entworfenen Filter
