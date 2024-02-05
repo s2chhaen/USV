@@ -19,28 +19,35 @@ draw = 1;
 % vom Maximally-Flat-Methode-entworfenen Filter
 phase = 1;
 filterObj = filterMaximallyFlatFIR_p4;
-filterIIR(xVal, tVal, filterObj, draw, phase, figureNo);
+filterIIR(xVal, tVal, filterObj, draw, phase, ...
+    'Maximally Flat Methode-Filterergebnis');
 % vom Window-Kaiser-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterWindowKaiser_p10;
-filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
+filterFIR(xVal, tVal, filterObj, draw, phase, ...
+    'Window Kaiser Methode-Filterergebnis');
 % vom Least-Squares-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterLeastSquares_p11;
-filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
+filterFIR(xVal, tVal, filterObj, draw, phase, ...
+    'Least Squares Methode-Filterergebnis');
 % vom Equiripple-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterEquiripple_p3;
-filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
+filterFIR(xVal, tVal, filterObj, draw, phase, ...
+    'Equiripple Methode-Filterergebnis');
 % vom Window-Bartlett-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterWindowBarlett_p2;
-filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
+filterFIR(xVal, tVal, filterObj, draw, phase, ...
+    'Window Bartlett Methode-Filterergebnis');
 % vom Window-Rectangular-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterWindowRectangular_p3;
-filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
+filterFIR(xVal, tVal, filterObj, draw, phase, ...
+    'Window Rectangular Methode-Filterergebnis');
 % vom Window-Triangular-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterWindowTriangular_p1;
-filterFIR(xVal, tVal, filterObj, draw, phase, figureNo);
+filterFIR(xVal, tVal, filterObj, draw, phase, ...
+    'Window Triangular Methode-Filterergebnis');
