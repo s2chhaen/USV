@@ -23,3 +23,13 @@ volatile radarRxDataFIFO_t radar_fifo = {
 volatile float* radar_velData;
 volatile float* radar_disData;
 volatile uint8_t* radar_dataUpdated;
+//Verwaltungsbereich
+volatile radarMgr_t radar_mgr = {0};
+volatile radarStatus_t radar_status = {0};
+volatile usartConfig_t radar_comParam = {0};
+volatile uint8_t radar_dataPackRemained = RADAR_DATA_REQ_MAX_PACK;
+volatile int8_t radar_tryTime = 1;
+
+volatile reg8Model_t* radar_ioStream = NULL;
+volatile uint8_t radar_programPos = COM_PROGRAMM_NORMAL_POS;
+	
