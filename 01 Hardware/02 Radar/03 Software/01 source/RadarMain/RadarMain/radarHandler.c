@@ -124,3 +124,13 @@ static inline uint8_t checkFIFOFullState(){//TODO test again
 static inline uint8_t checkFIFOEmptyState(){//TODO test again
 	return (radar_fifo.wPtr==radar_fifo.rPtr) && (!radar_fifo.full);
 }
+
+static inline uint8_t getFIFODataNum(){//TODO test again
+	uint8_t result;
+	if (radar_fifo.full){
+		result = RADAR_RX_STR_FIFO_LEN;
+	} else{
+		result = (RADAR_RX_STR_FIFO_LEN + radar_fifo.wPtr - radar_fifo.rPtr)%RADAR_RX_STR_FIFO_LEN;
+	}
+	return result;
+}
