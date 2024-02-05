@@ -18,11 +18,9 @@ noise = mod(noise,midVal*ampCoef);
 xnVal = [xVal(1:onIntervalBegin-1) noise xVal(onIntervalEnd+1:end)];
 xnVal = xnVal + xVal;
 draw = 1;
-figureNo = 1;
 if draw == 1
-    figure(figureNo);
+    figure('Name','Das Originalsignal und Signal mit Rauschen');
     plot(tVal,xVal,'-o',tVal,xnVal,'-o');
-    figureNo = figureNo + 1;
     legend('Original','mit Geräusch','Location','northeastoutside');
 end
 %% Berechnung der Wirkung des Filters %%
@@ -34,9 +32,6 @@ end
 phase = 1;
 filterObj = filterMaximallyFlatFIR_p4;
 output = filterIIR(xnVal, tVal, filterObj, draw, phase, figureNo);
-if draw == 1
-    figureNo = figureNo + 1;
-end
 slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
@@ -56,10 +51,8 @@ diff_mf = 20.*log10(slopeF./slopeO);
 % Das vom Window-Kaiser-Methode-entworfene Filter
 phase = 2;
 filterObj = filterWindowKaiser_p10;
-output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
-if draw == 1
-    figureNo = figureNo + 1;
-end
+output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Window Kaiser Methode-Filterergebnis');
 slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
@@ -79,10 +72,8 @@ diff_wk = 20.*log10(slopeF./slopeO);
 % Das vom Least-Squares-Methode-entworfene Filter
 phase = 2;
 filterObj = filterLeastSquares_p11;
-output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
-if draw == 1
-    figureNo = figureNo + 1;
-end
+output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Least Squares Methode-Filterergebnis');
 slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
@@ -102,10 +93,8 @@ diff_lsq = 20.*log10(slopeF./slopeO);
 % Das vom Equiripple-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterEquiripple_p3;
-output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
-if draw == 1
-    figureNo = figureNo + 1;
-end
+output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Equiripple Methode-Filterergebnis');
 slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
@@ -125,10 +114,8 @@ diff_eq = 20.*log10(slopeF./slopeO);
 % Das vom Window-Bartlett-Methode-entworfene Filter
 phase = 2;
 filterObj = filterWindowBarlett_p2;
-output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
-if draw == 1
-    figureNo = figureNo + 1;
-end
+output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Window Bartlett Methode-Filterergebnis');
 slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
@@ -148,10 +135,8 @@ diff_wb = 20.*log10(slopeF./slopeO);
 % Das vom Window-Rectangular-Methode-entworfene Filter
 phase = 2;
 filterObj = filterWindowRectangular_p3;
-output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
-if draw == 1
-    figureNo = figureNo + 1;
-end
+output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Window Rectangular Methode-Filterergebnis');
 slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
@@ -171,10 +156,8 @@ diff_wr = 20.*log10(slopeF./slopeO);
 % Das vom Window-Triangular-Methode-entworfenen Filter
 phase = 2;
 filterObj = filterWindowTriangular_p1;
-output = filterFIR(xnVal, tVal, filterObj, draw, phase, figureNo);
-if draw == 1
-    figureNo = figureNo + 1;
-end
+output = filterFIR(xnVal, tVal, filterObj, draw, phase, ...
+    'Window Triangular Methode-Filterergebnis');
 slopeO = slopeArray(xnVal(onIntervalBegin:onIntervalEnd), ...
     tVal(onIntervalBegin:onIntervalEnd));
 slopeF = slopeArray(output(onIntervalBegin:onIntervalEnd), ...
