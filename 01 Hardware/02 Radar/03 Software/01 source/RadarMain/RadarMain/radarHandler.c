@@ -176,3 +176,117 @@ static uint8_t searchNumFormatInStr(uint8_t* input_p, uint8_t inputLen){
 	}
 	return result;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//interne-FSM-Zustand-Handler-Implementierung
+//Sync
+static uint8_t radar_syncStartSHandlerFunc(){
+	uint8_t retVal = RADAR_SYNC_FSM_RESET_MSG_BEGIN_STATE;
+	uint8_t check = (radar_programPos == COM_PROGRAMM_NORMAL_POS) || (radar_programPos == COM_PROGRAMM_TX_POS);
+	if (check){
+		radar_status.dataBf.sync = 0;
+		radar_mgr.syncStatus = 1;
+		USART_set_Bytes_to_receive(radar_comParam.usartNo,1);
+	} else{
+		radar_mgr.syncStatus = 0;
+		radar_status.dataBf.lineStatus = 1;
+		retVal = RADAR_SYNC_FSM_END_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t radar_syncResetMsgBeginSHandlerFunc(){
+	uint8_t retVal = RADAR_SYNC_FSM_RESET_MSG_RX_STATE;
+	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength == 1);
+	if (check){
+		check = (radar_rxTempData[0] == RADAR_SYNC_PROTOCOL_START_SYM);
+		if (check){
+			radar_status.reg8 = 0;
+			radarTimer_setState(1);
+			uint8_t tempStrIdx = radar_fifo.dataStrIdx[0];
+			radar_fifo.data[0][tempStrIdx] = RADAR_SYNC_PROTOCOL_START_SYM;
+			(radar_fifo.dataStrIdx[0])++;
+		} else{
+			retVal = RADAR_SYNC_FSM_RESET_MSG_BEGIN_STATE;
+		}
+		USART_set_Bytes_to_receive(radar_comParam.usartNo,1);
+	} else{
+		radar_mgr.syncStatus = 0;
+		radar_status.dataBf.lineStatus = 1;
+		retVal = RADAR_SYNC_FSM_END_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t radar_syncResetMsgRxSHandlerFunc(){
+	uint8_t retVal = RADAR_SYNC_FSM_RESET_MSG_RX_STATE;
+	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength==1);
+	if (check){
+		uint8_t tempWPtr = radar_fifo.wPtr;
+		uint8_t tempStrIdx = radar_fifo.dataStrIdx[tempWPtr];
+		radar_fifo.data[tempWPtr][tempStrIdx] = radar_rxTempData[0];
+		(radar_fifo.dataStrIdx[tempWPtr])++;
+		if (radar_rxTempData[0]==RADAR_PROTOCOL_END_SYM){
+			//feed NULL char to make string
+			radar_fifo.data[tempWPtr][tempStrIdx+1] = ASCII_NULL_CHAR;
+			radar_fifo.wPtr++;
+			radar_fifo.empty = 0;
+			radar_fifo.full = checkFIFOFullState();
+			retVal = RADAR_SYNC_FSM_DATA_MSG_BEGIN_STATE;
+		}
+		USART_set_Bytes_to_receive(radar_comParam.usartNo,1);
+	} else{
+		radar_mgr.syncStatus = 0;
+		radar_status.dataBf.lineStatus = 1;
+		retVal = RADAR_SYNC_FSM_END_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t radar_syncDataMsgBeginSHandlerFunc(){
+	uint8_t retVal = RADAR_SYNC_FSM_DATA_MSG_RX_STATE;
+	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength==1) &&\
+					(radar_rxTempData[0] == RADAR_DATA_PROTOCOL_START_SYM);
+	if (check){
+		uint8_t tempWPtr = radar_fifo.wPtr;
+		uint8_t tempStrIdx = radar_fifo.dataStrIdx[tempWPtr];
+		radar_fifo.data[tempWPtr][tempStrIdx] = RADAR_DATA_PROTOCOL_START_SYM;
+		(radar_fifo.dataStrIdx[tempWPtr])++;
+		USART_set_Bytes_to_receive(radar_comParam.usartNo,1);
+	} else{
+		radar_mgr.syncStatus = 0;
+		radar_status.dataBf.lineStatus = 1;
+		retVal = RADAR_SYNC_FSM_END_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t radar_syncDataMsgRxSHandlerFunc(){
+	uint8_t retVal = RADAR_SYNC_FSM_DATA_MSG_RX_STATE;
+	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength == 1);
+	if (check){
+		uint8_t tempWPtr = radar_fifo.wPtr;
+		uint8_t tempStrIdx = radar_fifo.dataStrIdx[tempWPtr];
+		radar_fifo.data[tempWPtr][tempStrIdx] = radar_rxTempData[0];
+		(radar_fifo.dataStrIdx[tempWPtr])++;
+		if (radar_rxTempData[0]==RADAR_PROTOCOL_END_SYM){
+			radar_fifo.data[tempWPtr][tempStrIdx+1] = ASCII_NULL_CHAR;//feed NULL char to make string
+			radar_fifo.wPtr++;
+			radar_fifo.empty = 0;
+			radar_fifo.full = checkFIFOFullState();
+			radar_mgr.syncStatus = 0;
+			retVal = RADAR_SYNC_FSM_END_STATE;
+		}
+	} else{
+		radar_mgr.syncStatus = 0;
+		radar_status.dataBf.lineStatus = 1;
+		retVal = RADAR_SYNC_FSM_END_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t radar_syncEndSHandlerFunc(){
+	return RADAR_SYNC_FSM_END_STATE;
+}
