@@ -41,3 +41,13 @@ volatile uint8_t radar_txTempMax_length;
 //für usart RX - callback Funktion angewendet
 volatile uint8_t* radar_rxTempData;
 volatile uint8_t radar_rxTempLength;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Interne FSM-Deklaration
+volatile uint8_t radar_mode = RADAR_SYNC_MODE;
+volatile uint8_t radar_fsmState[RADAR_MODE_NUM] ={
+	RADAR_SYNC_FSM_END_STATE,
+	RADAR_DATA_FSM_END_STATE
+};
+volatile uint8_t radar_tempState = 0;
