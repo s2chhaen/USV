@@ -1,4 +1,4 @@
-% Beschreibung: Implementation vom Test 3 in der Dokumentation
+% Beschreibung: Implementation vom Test 3 in der Dokumentation (5.2.1)
 
 %% Signalerzeugung %%
 midVal = 400;
