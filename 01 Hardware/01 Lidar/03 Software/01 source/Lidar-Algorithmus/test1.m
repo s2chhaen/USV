@@ -22,6 +22,8 @@ if draw == 1
     figure('Name','Das Originalsignal und Signal mit Rauschen');
     plot(tVal,xVal,'-o',tVal,xnVal,'-o');
     legend('Original','mit Geräusch','Location','northeastoutside');
+    xlabel('Winkel/Grad');
+    ylabel('Radius/dB');
 end
 %% Berechnung der Wirkung des Filters %%
 
