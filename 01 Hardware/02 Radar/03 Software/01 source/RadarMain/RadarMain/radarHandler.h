@@ -19,6 +19,11 @@
 #include <ctype.h>
 #include "ATMegaXX09/USART/USART.h"
 #include "ATMegaXX09/FIFO/FIFO.h"
+#include "errorList.h"
+#include "timerUnit.h"
+#include "asciiTable.h"
+#include "registerModel.h"
+#include "comConfig.h"
 
 
 #endif /* RADARHANDLER_H_ */
