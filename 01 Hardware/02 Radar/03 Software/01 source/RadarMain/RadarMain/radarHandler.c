@@ -90,4 +90,27 @@ radar_fsmStateHandlerFunc_t radar_dataCbTable[RADAR_DATA_FSM_STATE_NUM] = {
 radar_fsmStateHandlerFunc_t* radar_allFsmLookuptable[] = {
 	(radar_fsmStateHandlerFunc_t*)&radar_syncCbTable,
 	(radar_fsmStateHandlerFunc_t*)&radar_dataCbTable
+};};
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//externe FSM- Deklaration
+static uint8_t radar_mainSyncHandlerFunc();
+static uint8_t radar_mainSyncPollingSHandlerFunc();
+static uint8_t radar_mainSyncDataCheckSHandlerFunc();
+static uint8_t radar_mainDataReqSHandlerFunc();
+static uint8_t radar_mainRspPollingSHandlerFunc();
+static uint8_t radar_mainDataCheckSHandlerFunc();
+static uint8_t radar_mainResetSHandlerFunc();
+static uint8_t radar_mainErrorSHandlerFunc();
+
+radar_mainFsmSHandlerFunc_t radar_mainFsmLookupTable[RADAR_MAIN_FSM_STATE_NUM] = {
+	&radar_mainSyncHandlerFunc,
+	&radar_mainSyncPollingSHandlerFunc,
+	&radar_mainSyncDataCheckSHandlerFunc,
+	&radar_mainDataReqSHandlerFunc,
+	&radar_mainRspPollingSHandlerFunc,
+	&radar_mainDataCheckSHandlerFunc,
+	&radar_mainResetSHandlerFunc,
+	&radar_mainErrorSHandlerFunc,
 };
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
