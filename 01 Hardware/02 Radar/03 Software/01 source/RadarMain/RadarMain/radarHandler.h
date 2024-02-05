@@ -128,4 +128,10 @@ typedef union{
 	}dataBf;
 }radarStatus_t;
 
+typedef struct{
+	uint8_t init:1;
+	uint8_t syncStatus:1;//0: nicht aktiv/fertig, 1: aktiv
+	uint8_t rxStatus:1;//0: nicht aktiv/fertig, 1: aktiv
+}radarMgr_t;
+
 #endif /* RADARHANDLER_H_ */
