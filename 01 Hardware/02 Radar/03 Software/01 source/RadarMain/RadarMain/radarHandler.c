@@ -51,3 +51,20 @@ volatile uint8_t radar_fsmState[RADAR_MODE_NUM] ={
 	RADAR_DATA_FSM_END_STATE
 };
 volatile uint8_t radar_tempState = 0;
+
+//Sync-FSM 
+static uint8_t radar_syncStartSHandlerFunc();
+static uint8_t radar_syncResetMsgBeginSHandlerFunc();
+static uint8_t radar_syncResetMsgRxSHandlerFunc();
+static uint8_t radar_syncDataMsgBeginSHandlerFunc();
+static uint8_t radar_syncDataMsgRxSHandlerFunc();
+static uint8_t radar_syncEndSHandlerFunc();
+
+radar_fsmStateHandlerFunc_t radar_syncCbTable[RADAR_SYNC_FSM_STATE_NUM] = {
+	&radar_syncStartSHandlerFunc,
+	&radar_syncResetMsgBeginSHandlerFunc,
+	&radar_syncResetMsgRxSHandlerFunc,
+	&radar_syncDataMsgBeginSHandlerFunc,
+	&radar_syncDataMsgRxSHandlerFunc,
+	&radar_syncEndSHandlerFunc,
+};
