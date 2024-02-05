@@ -7,7 +7,10 @@ midVal = 20;
 tVal = 0:0.5:180;
 tComp = 90;
 xVal = midVal*rectpuls(tVal-tComp,repeatedTimeValMid)+1;
-%plot(tVal,xVal,'-o');
+figure('Name', 'Das Originalsignal');
+plot(tVal,xVal,'-o');
+xlabel('Winkel/Grad');
+ylabel('Radius/dB');
 
 figureNo = 1;
 %% Erstellung des Diagramms zur Bestimmung der Verlustpunkte %%
