@@ -21,7 +21,7 @@ draw = 1;
 if draw == 1
     figure('Name','Das Originalsignal und Signal mit Rauschen');
     plot(tVal,xVal,'-o',tVal,xnVal,'-o');
-    legend('Original','mit Geräusch','Location','northeastoutside');
+    legend('Original','mit Rauschen','Location','northeastoutside');
     xlabel('Winkel/Grad');
     ylabel('Radius/dB');
 end
