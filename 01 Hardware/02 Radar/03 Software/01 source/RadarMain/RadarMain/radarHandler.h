@@ -11,6 +11,12 @@
 #ifndef RADARHANDLER_H_
 #define RADARHANDLER_H_
 
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdio.h>
+#include <ctype.h>
 
 
 #endif /* RADARHANDLER_H_ */
