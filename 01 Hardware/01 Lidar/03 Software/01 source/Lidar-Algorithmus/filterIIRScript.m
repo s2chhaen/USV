@@ -3,7 +3,7 @@ rMin = min(rSample);
 
 %Filter param
 order = filterOrder(rMin,rMax);
-fs = filterSampleFreq(sample);
+fs = filterSampleFreq(180,0.5);
 
 draw = 0;
 filtered = 1;
