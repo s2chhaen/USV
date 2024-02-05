@@ -8,8 +8,8 @@ clear;
 clc;
 format shortG
 
-% 1. Versuch: zum Erreichen des Überblick und groben Auswahl der Filter-Methode
-test1_active = 0;
+% 0. Versuch: zum Erreichen des Überblick und groben Auswahl der Filter-Methode
+test0_active = 1;
 % 2. Versuch: Zur Untersuchung des Effektes von Filtern 
 test2_active = 0;
 % 3. Versuch: Zur Untersuchung des Effektes von Filtern im flachen Bereich
