@@ -90,7 +90,7 @@ radar_fsmStateHandlerFunc_t radar_dataCbTable[RADAR_DATA_FSM_STATE_NUM] = {
 radar_fsmStateHandlerFunc_t* radar_allFsmLookuptable[] = {
 	(radar_fsmStateHandlerFunc_t*)&radar_syncCbTable,
 	(radar_fsmStateHandlerFunc_t*)&radar_dataCbTable
-};};
+};
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //externe FSM- Deklaration
@@ -114,3 +114,9 @@ radar_mainFsmSHandlerFunc_t radar_mainFsmLookupTable[RADAR_MAIN_FSM_STATE_NUM] =
 	&radar_mainErrorSHandlerFunc,
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//interne verwendete Funktionen
+
+static inline uint8_t checkFIFOFullState(){//TODO test again
+	return (radar_fifo.wPtr==radar_fifo.rPtr);
+}
