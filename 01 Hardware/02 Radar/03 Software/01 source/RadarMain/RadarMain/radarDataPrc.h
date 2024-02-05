@@ -11,6 +11,8 @@
 #ifndef RADARDATAPRC_H_
 #define RADARDATAPRC_H_
 
+#include <stdint.h>
+#include <string.h>
 
 
 
