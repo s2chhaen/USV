@@ -18,3 +18,8 @@ static uint8_t radar_protocol[RADAR_PROTOCOL_MAX_LEN]  = {0};
 volatile radarRxDataFIFO_t radar_fifo = {
 	.rPtr = 0, .wPtr = 0, .full = 0, .empty = 1
 };
+
+//Zeiger zur Ausgabe für Radar-Daten
+volatile float* radar_velData;
+volatile float* radar_disData;
+volatile uint8_t* radar_dataUpdated;
