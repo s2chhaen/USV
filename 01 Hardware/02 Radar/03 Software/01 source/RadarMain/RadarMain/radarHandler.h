@@ -40,5 +40,13 @@
 
 #define RADAR_VEL_RSP_LEN 11
 #define RADAR_DIS_RSP_LEN 9
+//Ausgabe Param für Main
+#define RADAR_OUTPUT_IDEAL_LEN 3
+//Arbeitszeit auf Radar-Seite
+#define RADAR_TOLERANCE_MS 20
+#define RADAR_WRK_TIME_MS 400
+//config 1 Startbit, 8 Databit, 0 Paritybit, 1 Endbit, Baud = 38,4kBaud
+#define RADAR_TX_TIME_US 521UL
+
 
 #endif /* RADARHANDLER_H_ */
