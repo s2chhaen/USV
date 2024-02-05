@@ -4,13 +4,11 @@
 % Version: 1.00
 % Revision: 1.00
 
-function fs = filterSampleFreq(sample)
-    if nargin~=1
-        error('Eingabe ungültig');
-    elseif ~isnumeric(sample)
+function fs = filterSampleFreq(lidarMaxAngleRange,lidarResoluation)
+    if nargin~=2
         error('Eingabe ungültig');
     else
-        %Annahme sample = f(x,t)
-        fs = numel(sample)/2;
+        wf = 0.5;
+        fs = wf*(lidarMaxAngleRange/lidarResoluation+1);
     end
 end
