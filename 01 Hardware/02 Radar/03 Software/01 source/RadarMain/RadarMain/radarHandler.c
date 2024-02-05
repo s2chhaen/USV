@@ -120,3 +120,7 @@ radar_mainFsmSHandlerFunc_t radar_mainFsmLookupTable[RADAR_MAIN_FSM_STATE_NUM] =
 static inline uint8_t checkFIFOFullState(){//TODO test again
 	return (radar_fifo.wPtr==radar_fifo.rPtr);
 }
+
+static inline uint8_t checkFIFOEmptyState(){//TODO test again
+	return (radar_fifo.wPtr==radar_fifo.rPtr) && (!radar_fifo.full);
+}
