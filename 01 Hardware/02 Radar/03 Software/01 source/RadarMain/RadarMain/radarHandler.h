@@ -134,4 +134,11 @@ typedef struct{
 	uint8_t rxStatus:1;//0: nicht aktiv/fertig, 1: aktiv
 }radarMgr_t;
 
+/* Definition der in main-verwendete FSM */
+extern radar_mainFsmSHandlerFunc_t radar_mainFsmLookupTable[RADAR_MAIN_FSM_STATE_NUM];
+
+extern uint8_t radar_initDev(const usartConfig_t* config, float* outVel_p, float* outDis_p,\
+							 uint8_t* outDataState_p, reg8Model_t* io_p);
+extern const radarStatus_t* radar_getStatus();
+
 #endif /* RADARHANDLER_H_ */
