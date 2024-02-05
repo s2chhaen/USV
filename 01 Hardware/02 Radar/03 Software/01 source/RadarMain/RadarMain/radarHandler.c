@@ -134,3 +134,13 @@ static inline uint8_t getFIFODataNum(){//TODO test again
 	}
 	return result;
 }
+
+static inline uint8_t getFIFOFreeSpace(){//TODO test again
+	uint8_t result;
+	if (radar_fifo.empty){
+		result = 0;
+	} else{
+		result = (RADAR_RX_STR_FIFO_LEN + radar_fifo.rPtr - radar_fifo.wPtr)%RADAR_RX_STR_FIFO_LEN;
+	}
+	return result;
+}
