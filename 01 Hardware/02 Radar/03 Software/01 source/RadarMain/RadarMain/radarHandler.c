@@ -290,3 +290,96 @@ static uint8_t radar_syncDataMsgRxSHandlerFunc(){
 static uint8_t radar_syncEndSHandlerFunc(){
 	return RADAR_SYNC_FSM_END_STATE;
 }
+
+//Getter(Datenempfangen)-FSM
+static uint8_t radar_dataStartSHandlerFunc(){
+	radar_mode = RADAR_GETTER_MODE;
+	radar_mgr.rxStatus = 1;
+	return RADAR_DATA_FSM_RX_PREP_STATE;
+}
+
+static uint8_t radar_dataRXPrepSHandlerFunc(){
+	uint8_t retVal = RADAR_DATA_FSM_RX_BEGIN_STATE;
+	uint8_t check = (radar_programPos == COM_PROGRAMM_TX_POS);
+	if (check){
+		USART_set_Bytes_to_receive(radar_comParam.usartNo,1);
+	} else{
+		radar_mgr.rxStatus = 0;
+		radar_status.dataBf.lineStatus = 1;
+		retVal = RADAR_DATA_FSM_END_STATE;
+	}
+	
+	return retVal;
+}
+
+static uint8_t radar_dataRXBeginSHandlerFunc(){
+	uint8_t retVal = RADAR_DATA_FSM_RX_STATE;
+	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength == 1) &&\
+					(radar_rxTempData[0] == RADAR_DATA_PROTOCOL_START_SYM) &&\
+					(!(radar_fifo.full));
+	if (check){
+		uint8_t tempWPtr = radar_fifo.wPtr;
+		uint8_t tempStrIdx = radar_fifo.dataStrIdx[tempWPtr];
+		radar_fifo.data[tempWPtr][tempStrIdx] = RADAR_DATA_PROTOCOL_START_SYM;
+		radar_fifo.dataStrIdx[tempWPtr]++;
+		USART_set_Bytes_to_receive(radar_comParam.usartNo,1);
+	} else{
+		radar_mgr.rxStatus = 0;
+		radar_status.dataBf.lineStatus = 1;
+		retVal = RADAR_DATA_FSM_END_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t radar_dataRXSHandlerFunc(){
+	uint8_t retVal = RADAR_DATA_FSM_RX_STATE;
+	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength == 1);
+	if (check){
+		uint8_t tempWPtr = radar_fifo.wPtr;
+		uint8_t tempStrIdx = radar_fifo.dataStrIdx[tempWPtr];
+		radar_fifo.data[tempWPtr][tempStrIdx] = radar_rxTempData[0];
+		radar_fifo.dataStrIdx[tempWPtr]++;
+		if (radar_rxTempData[0]==RADAR_DATA_PROTOCOL_NEAR_END_SYM){
+			retVal = RADAR_DATA_FSM_RX_TERMINAL_STATE;
+		}
+		USART_set_Bytes_to_receive(radar_comParam.usartNo,1);
+	} else{
+		radar_mgr.rxStatus = 0;
+		radar_status.dataBf.lineStatus = 1;
+		retVal = RADAR_DATA_FSM_END_STATE;
+	}
+	return retVal;
+}
+
+static uint8_t radar_dataRXTerminalSHandlerFunc(){
+	uint8_t retVal = RADAR_DATA_FSM_END_STATE;
+	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength == 1) &&\
+					(radar_rxTempData[0] == RADAR_PROTOCOL_END_SYM);
+	if (check){
+		uint8_t tempWPtr = radar_fifo.wPtr;
+		uint8_t tempStrIdx = radar_fifo.dataStrIdx[tempWPtr];
+		radar_fifo.data[tempWPtr][tempStrIdx] = RADAR_PROTOCOL_END_SYM;
+		radar_fifo.dataStrIdx[tempWPtr]++;
+		//feed NULL char to make string
+		radar_fifo.data[tempWPtr][tempStrIdx+1] = ASCII_NULL_CHAR;
+		radar_fifo.wPtr++;
+		radar_fifo.empty = 0;
+		radar_fifo.full = checkFIFOFullState();
+		radar_dataPackRemained--;
+		if (radar_dataPackRemained){
+			retVal = RADAR_DATA_FSM_RX_BEGIN_STATE;
+			USART_set_Bytes_to_receive(radar_comParam.usartNo,1);
+		} else{
+			radar_dataPackRemained = RADAR_DATA_REQ_MAX_PACK;
+			radar_mgr.rxStatus = 0;
+		}
+	} else{
+		radar_mgr.rxStatus = 0;
+		radar_status.dataBf.lineStatus = 1;
+	}
+	return retVal;
+}
+
+static uint8_t radar_dataEndSHandlerFunc(){
+	return RADAR_DATA_FSM_END_STATE;
+}
