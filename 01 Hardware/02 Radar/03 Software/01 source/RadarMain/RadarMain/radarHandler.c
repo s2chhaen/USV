@@ -152,3 +152,11 @@ static inline uint8_t radar_ioStreamStatusAvai(){
 static inline uint8_t radar_ioStreamDataAvai(){
 	return !(radar_ioStream->val & (1 << STREAM_RADAR_DATA_BIT_POS));
 }
+
+static inline void radar_fifoFlush(){
+	memset((uint8_t*)radar_fifo.dataStrIdx,0,RADAR_RX_STR_FIFO_LEN);
+	radar_fifo.rPtr = 0;
+	radar_fifo.wPtr = 0;
+	radar_fifo.full = 0;
+	radar_fifo.empty = 1;
+}
