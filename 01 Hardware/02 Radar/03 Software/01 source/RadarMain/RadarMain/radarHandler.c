@@ -33,3 +33,11 @@ volatile int8_t radar_tryTime = 1;
 volatile reg8Model_t* radar_ioStream = NULL;
 volatile uint8_t radar_programPos = COM_PROGRAMM_NORMAL_POS;
 	
+/* temp-Var zum Speichern des Params von der Rückruffunktion */
+//für usart TX - callback Funktion angewendet
+volatile uint8_t* radar_txTempData[1] = {0};
+volatile uint8_t* radar_txTempLength;
+volatile uint8_t radar_txTempMax_length;
+//für usart RX - callback Funktion angewendet
+volatile uint8_t* radar_rxTempData;
+volatile uint8_t radar_rxTempLength;
