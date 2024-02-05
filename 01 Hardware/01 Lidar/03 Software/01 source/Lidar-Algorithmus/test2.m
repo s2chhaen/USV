@@ -25,6 +25,10 @@ if draw == 1
     figureNo = figureNo + 1;
     legend('Original','mit Geräusch','Location','northeastoutside');
 end
+%% Berechnung der Wirkung des Filters %%
+
+% slopeO: Steigung des Originalzustandes, slopeF: Steigung nach dem Filtern,
+% diff_x: Wirkung des Filters auf einen Bereich
 
 % Mit dem Maximally-Flat-Methode-entworfenen Filter
 draw = 0;
