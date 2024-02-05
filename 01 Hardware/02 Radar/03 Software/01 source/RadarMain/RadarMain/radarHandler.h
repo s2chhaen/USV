@@ -48,5 +48,13 @@
 //config 1 Startbit, 8 Databit, 0 Paritybit, 1 Endbit, Baud = 38,4kBaud
 #define RADAR_TX_TIME_US 521UL
 
+/*enum: Arbeitsmodus vom Lidar*/
+enum radar_mode{
+	RADAR_SYNC_MODE,
+	RADAR_GETTER_MODE
+};
+#define RADAR_LAST_MODE RADAR_GETTER_MODE
+#define RADAR_MODE_NUM (RADAR_LAST_MODE+1)
+
 
 #endif /* RADARHANDLER_H_ */
