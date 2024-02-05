@@ -591,3 +591,14 @@ static bool radar_callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, 
 	radar_programPos = COM_PROGRAMM_NORMAL_POS;
 	return true;
 }
+
+static bool radar_callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
+	radar_rxTempLength = length;
+	radar_rxTempData = data;
+	radar_programPos = COM_PROGRAMM_RX_POS;
+	//FSM-State-Handler
+	radar_tempState = radar_fsmState[radar_mode];
+	radar_fsmState[radar_mode] = radar_allFsmLookuptable[radar_mode][radar_tempState]();
+	radar_programPos = COM_PROGRAMM_NORMAL_POS;
+	return true;
+}
