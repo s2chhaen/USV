@@ -18,6 +18,7 @@
 #define VEL_FIXED_POINT_BIT 4
 #define DIS_FIXED_POINT_BIT 4
 
+extern void data_compareNReturn(float vel, float dis, uint8_t* output_p, uint8_t outputLen);
 
 
 #endif /* RADARDATAPRC_H_ */
