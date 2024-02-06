@@ -137,14 +137,8 @@ typedef struct{
 }lidarMgr_t;
 
 //Prozessverwaltungsregister
-enum lidarStatusRegType{
-	LIDAR_STATUS_MODULE_REG_TYPE,
-	LIDAR_STATUS_SENSOR_REG_TYPE
-};
-
 typedef union{
-	uint16_t reg16;
-	uint8_t  reg8[LIDAR_STATUS_REG_LEN_BYTE];
+	uint8_t  reg8;
 	struct{ 
 		uint8_t sync:1;//bit 0=> 0: nicht sync, 1: sync
 		uint8_t fmwDevStatus:1;//bit 01=> 0: Gerät oder Firmware stimmt nicht, 1: stimmt das Gerät und Firmware
@@ -153,9 +147,7 @@ typedef union{
 		uint8_t devStatus:1;//bit 4 => 0: kein Fehler, 1: Fehler, siehe lidarStatus-Reg
 		uint8_t timeOut:1;//bit 05 => 0: kein Timeout-Fehler, 1: Timeout-Fehler
 		uint8_t :1;//bit 06 
-		uint8_t :1;//bit 07 
-		uint8_t lidarStatus:8;/*bit 8-15 => siehe "Telegramme zur Konfiguration und Bedienung der 
-							   *Lasermesssysteme LMS2xx-V2.30" S106*/
+		uint8_t :1;//bit 07
 	}dataBf;
 }lidarStatus_t;
 
