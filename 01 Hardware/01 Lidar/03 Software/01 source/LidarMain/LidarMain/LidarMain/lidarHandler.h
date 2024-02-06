@@ -44,7 +44,7 @@
 //Zwischenbuffer-Parameter
 #define LIDAR_RX_BUFFER_MAX_LEN 735UL
 //Lidar-Status
-#define LIDAR_STATUS_REG_LEN_BYTE 2
+#define LIDAR_STATUS_REG_LEN_BYTE 1
 
 /*enum: Arbeitsmodus vom Lidar*/
 enum lidarMode{
