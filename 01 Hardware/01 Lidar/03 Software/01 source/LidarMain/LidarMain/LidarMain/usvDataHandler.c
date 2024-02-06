@@ -341,6 +341,12 @@ static uint8_t fsm_setterTxStateHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Überprüfen der Antwort und Senden der Daten, falls es gibt noch
+ * 
+ * 
+ * \return uint8_t der nächste Zustand 
+ */
 static uint8_t fsm_setterRxStateHandlerFunc(){
 	uint8_t retVal = USV_FSM_SETTER_END_STATE;
 	uint8_t check = (usv_programPos == COM_PROGRAMM_RX_POS) && (usv_rxTempLength == 1) &&\
