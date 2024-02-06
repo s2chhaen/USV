@@ -418,6 +418,12 @@ static uint8_t usv_mainFsmStartSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Beginn des Zustandsendenvorganges und Warten auf Antwort
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmStatusTxSHandlerFunc(){
 	uint16_t regAdd = ER4_ADD;
 	uint8_t regLen = *usv_statusBufferLen;
@@ -430,6 +436,12 @@ static uint8_t usv_mainFsmStatusTxSHandlerFunc(){
 	return USV_MAIN_FSM_STATUS_RSP_POLLING_STATE;
 }
 
+/**
+ * \brief Warten auf die Antwort, sobald die Timeout-Zeit nicht um ist
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmStatusRspPollSHandlerFunc(){
 	uint8_t retVal = USV_MAIN_FSM_STATUS_RSP_POLLING_STATE;
 	if (usv_mgr.write){
@@ -450,6 +462,12 @@ static uint8_t usv_mainFsmStatusRspPollSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Überprüfen der Antwort
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmStatusRspCheckSHandlerFunc(){
 	uint8_t retVal = USV_MAIN_FSM_START_STATE;
 	if (usv_mgr.res){
