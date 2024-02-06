@@ -1,10 +1,10 @@
 /*
  * usvDataHandler.h
- *
+ * Description: Header-Datei für USV-Data-Handler-Modul
  * Created: 7/7/2023 5:25:53 AM
  * Author: Thach
  * Version: 1.4
- * Revision: 1.1
+ * Revision: 1.2
  */ 
 
 #ifndef USVDATAHANDLER_H_
