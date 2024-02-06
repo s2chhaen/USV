@@ -253,6 +253,16 @@ static inline void usv_sendProtocol(){
 	}
 }
 
+/**
+ * \brief Schreiben in einen Datenblock vom USV-Data-Modul
+ * 
+ * \param add Adresse des Ziels
+ * \param reg Adresse des Datenblockes
+ * \param input_p der Zeiger zu den zu übertragenden Daten
+ * \param length die DatenLänge
+ * 
+ * \return uint8_t 0: kein Fehler, sonst: Fehler
+ */
 static uint8_t usv_setRegister(uint8_t add, uint16_t reg, const uint8_t* input_p, uint16_t length){//Nur Protokoll senden
 	uint8_t retVal = NO_ERROR;
 	const uint16_t maxLen = getRegLen(USV_LAST_DATA_BLOCK_ADDR) + USV_LAST_DATA_BLOCK_ADDR;
