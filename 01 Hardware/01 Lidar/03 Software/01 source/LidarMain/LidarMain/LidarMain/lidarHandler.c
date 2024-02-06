@@ -327,7 +327,7 @@ static uint8_t lidar_paramFPHandleSHandlerFunc(){
 	uint8_t check = (lidar_programPos == COM_PROGRAMM_RX_POS) && (lidar_rxTempLength == 1);
 	if (check){
 		if (lidar_rxTempData[0] == LIDAR_PROTOCOL_START_SYM){
-			lidar_status.reg8[LIDAR_STATUS_MODULE_REG_TYPE] = 0;
+			lidar_status.reg8 = 0;
 			lidarTimer_setState(1);
 			lidar_rxBuffer[lidar_rxBufferIdx] = LIDAR_PROTOCOL_START_SYM;
 			lidar_rxBufferIdx++;
