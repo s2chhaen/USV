@@ -747,7 +747,7 @@ static uint8_t lidar_mainResetPollingSHandler(){
 				lidar_ioStream->val |= (1<<STREAM_LIDAR_STATUS_BIT_POS);
 			}
 			retVal = LIDAR_MAIN_SYNC_STATE;
-			lidar_status.reg8[LIDAR_STATUS_MODULE_REG_TYPE] = (1 << 5);
+			lidar_status.reg8 = (1 << 5);
 			lidar_rxBufferIdx = 0;
 		}
 	} else{
@@ -756,7 +756,7 @@ static uint8_t lidar_mainResetPollingSHandler(){
 			lidar_ioStream->val |= (1<<STREAM_LIDAR_STATUS_BIT_POS);
 		}
 		retVal = LIDAR_MAIN_SYNC_STATE;
-		lidar_status.reg8[LIDAR_STATUS_MODULE_REG_TYPE] = 0;
+		lidar_status.reg8 = 0;
 		lidar_rxBufferIdx = 0;
 	}
 	return retVal;
