@@ -677,24 +677,22 @@ static uint8_t lidar_mainDataCheckSHandler(){
 	static uint8_t checkFcn = 0;
 	uint8_t check = lidar_status.dataBf.lineStatus || lidar_status.dataBf.timeOut;
 	if (check){
-		lidar_status.dataBf.lidarStatus = 0;
 		retVal = LIDAR_MAIN_ERROR_STATE;
 	} else {
 		//Werte von Bit 1->3,7 gespeichert
-		uint8_t savedLidarState = lidar_status.dataBf.lidarStatus;
-		checkData = !(savedLidarState&0x80);//bit 7: Daten plausibel
-		checkFcn = (savedLidarState&0x07)<3;//bit 1->3: Lidar-Funktionailität
+		uint8_t savedLidarState = lidar_rxBuffer[lidar_rxBufferIdx-1];//TODO search where it saved
+		checkData = !(savedLidarState & 0x80);//bit 7: Daten plausibel
+		checkFcn = (savedLidarState & 0x07) < 3;//bit 1->3: Lidar-Funktionailität
 		check = lidar_checkRXData((uint8_t*)lidar_rxBuffer, lidar_rxBufferIdx,\
 								  lidar_tempChecksumVal);
 		if (check&&checkData&&checkFcn){
 			uint16_t configData = (lidar_rxBuffer[LIDAR_PROTOCOL_CMD_BYTE_POS + 1]) |\
 								  (lidar_rxBuffer[LIDAR_PROTOCOL_CMD_BYTE_POS+2] << 8);
-			check = ((configData&LIDAR_SET_CONFIG_BM) == LIDAR_SET_CONFIG);
+			check = ((configData & LIDAR_SET_CONFIG_BM) == LIDAR_SET_CONFIG);
 			if (check){
 				/* STX (1 Byte), Addr (1 Byte), Len (2 Bytes), CMD (1 Byte), DataConfig (2 Bytes),
 				 * Status (1 Byte)*/
 				(*lidar_rxBufferStrLen) = lidar_rxBufferIdx - 6 - 2;
-				lidar_status.dataBf.lidarStatus = lidar_rxBuffer[lidar_rxBufferIdx-1];
 				//Status-Byte Exklusiv
 				memmove((uint8_t*)lidar_rxBuffer,(uint8_t*)&(lidar_rxBuffer[LIDAR_PROTOCOL_CMD_BYTE_POS+1+2]),\
 						lidar_rxBufferIdx-6-2);
