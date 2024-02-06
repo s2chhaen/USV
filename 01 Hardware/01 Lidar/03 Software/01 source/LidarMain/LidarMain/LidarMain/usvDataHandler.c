@@ -383,6 +383,12 @@ static uint8_t fsm_setterRxStateHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief der Pause-Zustand, um Eindrängen der Eingabe aus unerwünschtem Interrupt zu vermeiden
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t fsm_setterEndSHandlerFunc(){
 	return USV_FSM_SETTER_END_STATE;
 }
