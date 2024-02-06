@@ -4,7 +4,7 @@
  * Created: 12/15/2023 10:00:07 AM
  * Author: Thach
  * Version: 1.0
- * Revision: 1.1
+ * Revision: 1.2
  */ 
 
 
@@ -30,7 +30,7 @@ typedef struct{
 	uint8_t portMux:2;
 }usartConfig_t;
 
-enum comProgrammPos{
+enum comProgramPos{
 	COM_PROGRAMM_NORMAL_POS, //nicht in interrupt
 	COM_PROGRAMM_TX_POS,//in USART-ISR von TX
 	COM_PROGRAMM_RX_POS,//in USART-ISR von RX
