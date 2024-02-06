@@ -342,7 +342,7 @@ static uint8_t fsm_setterTxStateHandlerFunc(){
 }
 
 /**
- * \brief Überprüfen der Antwort und Senden der Daten, falls es gibt noch
+ * \brief Überprüfen der Antwort und Senden der Daten, falls es noch gibt
  * 
  * 
  * \return uint8_t der nächste Zustand 
