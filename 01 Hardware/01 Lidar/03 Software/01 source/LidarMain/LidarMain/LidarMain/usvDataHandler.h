@@ -4,7 +4,7 @@
  * Created: 7/7/2023 5:25:53 AM
  * Author: Thach
  * Version: 1.4
- * Revision: 1.3
+ * Revision: 1.4
  */ 
 
 #ifndef USVDATAHANDLER_H_
@@ -78,7 +78,7 @@ typedef enum {
 	ER4_ADD = 0x203,//18-ER4 noch zu aktualisieren im USV-Dokument
 	ER5_ADD = 0x204,//19-ER5 noch zu aktualisieren im USV-Dokument
 	//Lidar
-	ES1_ADD =0x220//20-ES1
+	ES1_ADD = 0x220//20-ES1
 }usvRegAdd_t;
 #define USV_LAST_DATA_BLOCK_ADDR ES1_ADD
 
