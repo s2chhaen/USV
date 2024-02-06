@@ -190,6 +190,12 @@ static inline bool checkRxData(uint8_t* data, uint8_t dataLen, uint8_t rxChecksu
 	return crc8CodeGen(data,(uint16_t)dataLen)==rxChecksumValue;
 }
 
+/**
+ * \brief zum Überprüfen, ob IO-Stream frei zur Übertragung des Modul-Zustandes ist
+ * 
+ * 
+ * \return uint8_t 1: frei, 0: besetzt
+ */
 static inline uint8_t usv_ioStreamStatusAvai(){
 	return usv_ioStream->val & (1 << STREAM_LIDAR_STATUS_BIT_POS);
 }
