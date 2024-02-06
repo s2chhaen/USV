@@ -296,6 +296,13 @@ static uint8_t usv_setRegister(uint8_t add, uint16_t reg, const uint8_t* input_p
 
 //interne-FSM-Zustand-Handler-Implementierung
 //Info-Senden(Setter)-FSM
+/**
+ * \brief Aktivieren der FSM
+ * 
+ * 
+ * 
+ * \return uint8_t der nächste Zustand 
+ */
 static uint8_t fsm_setterStartStateHandlerFunc(){
 	return USV_FSM_SETTER_TX_STATE;
 }
