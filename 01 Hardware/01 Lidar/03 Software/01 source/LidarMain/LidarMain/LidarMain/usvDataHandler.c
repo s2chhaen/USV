@@ -200,6 +200,12 @@ static inline uint8_t usv_ioStreamStatusAvai(){
 	return usv_ioStream->val & (1 << STREAM_LIDAR_STATUS_BIT_POS);
 }
 
+/**
+ * \brief zum Überprüfen, ob IO-Stream frei zur Übertragung der Messdaten ist
+ * 
+ * 
+ * \return uint8_t 1: frei, 0: besetzt
+ */
 static inline uint8_t usv_ioStreamDataAvai(){
 	return usv_ioStream->val & (1 << STREAM_LIDAR_DATA_BIT_POS);
 }
