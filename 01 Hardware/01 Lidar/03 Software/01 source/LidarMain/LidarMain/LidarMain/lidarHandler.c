@@ -601,7 +601,6 @@ static uint8_t lidar_mainSyncSignalCheckSHandler(){
 		uint8_t checksum = lidar_checkRXData((uint8_t*)lidar_rxBuffer,lidar_rxBufferIdx,\
 											 lidar_tempChecksumVal);
 		if (checksum){
-			lidar_status.dataBf.lidarStatus = lidar_rxBuffer[lidar_rxBufferIdx-1];
 			memmove((uint8_t*)lidar_rxBuffer,(uint8_t*)&(lidar_rxBuffer[LIDAR_PROTOCOL_CMD_BYTE_POS+1]),\
 					lidar_rxBufferIdx-6);//Status-Byte Exklusiv
 			//siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30" S29
@@ -610,11 +609,11 @@ static uint8_t lidar_mainSyncSignalCheckSHandler(){
 			uint8_t checkVer = lidar_dataCheck((uint8_t*)&lidar_rxBuffer[LIDAR_INFOR_VER_BYTE_POS],\
 											   (const uint8_t*)LIDAR_VER_STR, LIDAR_VER_STR_LEN);
 			//siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30" S106
-			uint8_t savedStatusByte = lidar_status.dataBf.lidarStatus;
+			uint8_t savedStatusByte = lidar_rxBuffer[lidar_rxBufferIdx-1];//TODO check again
 			uint8_t checkError = (savedStatusByte & 0x07) < 3;
 			if (checkType&&checkVer&&checkError){
 				//wenn erfolgreich synchronisiert dann wird die Flaggen zurückgesetzt wird
-				lidar_status.reg8[LIDAR_STATUS_MODULE_REG_TYPE] = 0x01;
+				lidar_status.reg8 = 0x01;
 			} else{
 				lidar_status.dataBf.fmwDevStatus = !(checkType&&checkVer);
 				lidar_status.dataBf.devStatus = !checkError;
@@ -637,7 +636,7 @@ static uint8_t lidar_mainDataReqSHandler(){
 	uint8_t check = lidar_ioStreamStatusAvai() && lidar_ioStreamDataAvai() && lidar_mgr.init;
 	if (check){
 		lidar_mgr.rxStatus = 1;
-		lidar_status.reg8[LIDAR_STATUS_MODULE_REG_TYPE] = 0x01;
+		lidar_status.reg8 = 0x01;
 		static uint8_t dataContent = 0x01;//Subcommand Senden aller Werte
 		uint16_t dataLen = LIDAR_RX_BUFFER_MAX_LEN + 8;/* magic number: Länge der
 														  Anfrageprotokoll */
