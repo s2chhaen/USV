@@ -394,6 +394,12 @@ static uint8_t fsm_setterEndSHandlerFunc(){
 }
 
 //externe-FSM-Implementierung
+/**
+ * \brief Überprüfen des Types der Eingabe, Zustand-Eingabe besitzt höhere Priorität
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmStartSHandlerFunc(){
 	uint8_t retVal = USV_MAIN_FSM_START_STATE;
 	uint8_t checkStatus = usv_ioStreamStatusAvai();
