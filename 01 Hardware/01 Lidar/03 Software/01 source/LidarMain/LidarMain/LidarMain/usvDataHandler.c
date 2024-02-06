@@ -4,7 +4,7 @@
  * Created: 7/7/2023 8:42:59 AM
  * Author: Thach
  * Version: 1.4
- * Revision: 1.3
+ * Revision: 1.4
  */
 
 #include "usvDataHandler.h"
@@ -307,10 +307,17 @@ static uint8_t fsm_setterStartStateHandlerFunc(){
 	return USV_FSM_SETTER_TX_STATE;
 }
 
+/**
+ * \brief Beginn des Datenübertragungsvorgangs
+ * 
+ * 
+ * \return uint8_t der nächste Zustand 
+ */
 static uint8_t fsm_setterTxStateHandlerFunc(){
 	uint8_t retVal = USV_FSM_SETTER_TX_STATE;
 	if (usv_programPos == COM_PROGRAMM_TX_POS){
-		if (usv_protocolToHandleBytes){
+		//Senden der Daten und nach dem Senden warte es auf die Antwort
+		if (usv_protocolToHandleBytes){ //Datensenden
 			usv_txTempData[0] = (uint8_t*)&(protocol[usv_protocolIdx]);
 			if (usv_protocolToHandleBytes < usv_txTempMax_length){
 				*usv_txTempLength =  usv_protocolToHandleBytes;
@@ -320,7 +327,7 @@ static uint8_t fsm_setterTxStateHandlerFunc(){
 				usv_protocolToHandleBytes -= usv_txTempMax_length;
 				usv_protocolIdx += usv_txTempMax_length;
 			}
-		} else{
+		} else{ //Antwort empfangen
 			usv_protocolIdx = 0;
 			retVal = USV_FSM_SETTER_RX_STATE;
 			USART_set_Bytes_to_receive(usv_comParam.usartNo,1);
