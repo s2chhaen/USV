@@ -90,11 +90,11 @@ usv_mainFsmStateHandlerFunc_t usv_mainFsmLookupTable[USV_MAIN_FSM_STATE_NUM] = {
 
 //interne verwendete Funktionen
 /**
- * \brief die Position des Registers in der Liste suchen
+ * \brief die Länge des Registers in der Liste suchen
  * 
  * \param reg die Adresse des Registers
  * 
- * \return int8_t -1: kein gefunden, sonst: die Position in der Liste
+ * \return int8_t -1: kein gefunden, sonst: die Länge der Register
  */
 static inline int16_t getRegLen(uint16_t reg){
 	int16_t result = 0;
