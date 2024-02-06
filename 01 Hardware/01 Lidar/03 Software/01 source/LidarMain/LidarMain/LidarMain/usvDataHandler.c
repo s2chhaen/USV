@@ -159,7 +159,7 @@ static inline int16_t getRegLen(uint16_t reg){
 			result = 1;//17
 			break;
 		case ER4_ADD:
-			result = 2;//18
+			result = 1;//18
 			break;
 		case ER5_ADD:
 			result = 1;//19
@@ -342,7 +342,7 @@ static uint8_t usv_mainFsmStatusTxSHandlerFunc(){
 	uint8_t usvAddr = usv_mgr.usvAddr;
 	usv_setRegister(usvAddr,regAdd,usv_statusBuffer,regLen);
 	uint32_t timeOut_ms = (USV_BYTE_TRANSFER_TIME_US*(regLen+1)+USV_DST_PROG_WORK_TIME_US)/1000 +\
-						  USV_TOLERANCE_MS;
+						   USV_TOLERANCE_MS;
 	usvTimer_setCounter(timeOut_ms);
 	usvTimer_setState(1);
 	return USV_MAIN_FSM_STATUS_RSP_POLLING_STATE;
