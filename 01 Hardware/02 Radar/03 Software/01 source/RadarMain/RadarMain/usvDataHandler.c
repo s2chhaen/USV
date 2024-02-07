@@ -568,6 +568,16 @@ static uint8_t usv_mainFsmErrorSHandlerFunc(){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //in ISR zurückgerufte Funktionen
+/**
+ * \brief Ruckrüffunktion in der USART-TX-ISR
+ * 
+ * \param adress Adresse von USART des Ziel-Mikrocontrollers
+ * \param data Zeiger zum Array der noch zu weiter sendenden Daten
+ * \param length die Datenlänge
+ * \param max_length maximal verfügbare Länge im USART-FIFO-Buffers
+ * 
+ * \return bool immer true(wahr)
+ */
 static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, uint8_t max_length){
 	usv_txTempLength = length;
 	usv_txTempMax_length = max_length;
