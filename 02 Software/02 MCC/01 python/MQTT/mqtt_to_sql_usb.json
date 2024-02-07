@@ -12,6 +12,7 @@
 		"database": "usv"
 	},
 	"Table": {
+		"USV/Position/GPS": "GPS",
 		"USV/Position/Longitude": "SB2",
 		"USV/Position/Latitude": "SB3",
 		"USV/Position/Geschwindigkeit": "SB5",

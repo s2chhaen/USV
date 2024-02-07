@@ -6,9 +6,10 @@
     "password": " "
   },
   "topics": {
-    "USV/Position/Longitude": "13.708937444731157",
+    "USV/Position/GPS": "54.2805379546876#13.708937444731157",
     "USV/Position/Latitude": "54.2805379546876",
-    "USV/Position/Geschwindigkeit": "11.1",
+	"USV/Position/Longitude": "13.708937444731157",
+	"USV/Position/Geschwindigkeit": "11.1",
     "USV/Position/Kurswinkel": "293",
 	"USV/Antrieb/Schub": "0",
     "USV/Antrieb/Ruder": "-0.28",

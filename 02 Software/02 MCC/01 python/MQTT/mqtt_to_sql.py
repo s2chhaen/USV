@@ -20,11 +20,12 @@ Program history
 01.02.2024    V. 1.0    Start
 02.02.2024    V. 1.1    SQL-Injektionen verhindern
 05.02.2024    V. 1.2    Fehlerbehandlung
+06.02.2024    V. 1.3    Ausnahme für GPS-Koordinaten
 
 @author: Prof. Jörg Grabow (grabow@amesys.de)
 """
 
-__version__ = '1.2'
+__version__ = '1.3'
 __author__ = 'Joe Grabow'
 
 
@@ -83,20 +84,31 @@ def read_config():
     return config_data
 
 
-# Callback-Funktion für den Empfang von Nachrichten
+# Callback-Funktion für den Empfang von MQTT Nachrichten
 def on_message(client, userdata, msg):
-    sql_table = config["Table"][msg.topic]  # Topic der SQL Tabelle zuordnen
-    #print(msg.topic)
-    #print(format(sql_table))
-    sql_payload = msg.payload.decode()  # Payload des Topic
-    #print(sql_payload)
+    sql_table = config["Table"].get(msg.topic)  # Topic der SQL Tabelle zuordnen
+    #sql_table = config["Table"][msg.topic]  # Topic der SQL Tabelle zuordnen
+    if not sql_table:
+        print(f"Keine Zuordnung für Topic '{msg.topic}' gefunden.")
+        return
+
     try:
-        cursor.execute("INSERT INTO {} (Messung) VALUES (%s)".format(sql_table), (sql_payload,))
+        if sql_table == "GPS":  # Ausnahmebehandlung für GPS-Koordinaten
+            gps_position = msg.payload.decode()
+            latitude, longitude = map(float, gps_position.split("#"))
+            cursor.execute("INSERT INTO {} (Latitude, Longitude) VALUES (%s, %s)".format(sql_table), (latitude, longitude))
+        else:  # alle restlichen Topics
+            sql_payload = msg.payload.decode()  # Payload des Topic
+            cursor.execute("INSERT INTO {} (Messung) VALUES (%s)".format(sql_table), (sql_payload,))
+
         conn.commit()
         print("Erfolgreich eingefügt.")
     except Exception as e:
         print(f"Fehler beim Einfügen: {e}")
+
     return
+
+
 
 #def main():
 global config
