@@ -524,6 +524,12 @@ static uint8_t lidar_paramEndSHandlerFunc(){
 }
 
 //Reset- Rücksetzen
+/**
+ * \brief Senden der Anfrage zum Rücksetzen des Lidars
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_resetStartSHandlerFunc(){
 	uint8_t retVal = LIDAR_RESET_FSM_RX_STATE;
 	uint8_t check = (lidar_programPos == COM_PROGRAMM_TX_POS);
@@ -538,6 +544,12 @@ static uint8_t lidar_resetStartSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Empfangen der Antwort aus dem Lidar
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_resetRxSHandlerFunc(){
 	uint8_t retVal = LIDAR_RESET_FSM_TERMINAL_STATE;
 	uint8_t check = (lidar_programPos == COM_PROGRAMM_TX_POS);
@@ -553,11 +565,23 @@ static uint8_t lidar_resetRxSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Beendung des Rücksetzenvorganges
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_resetTerminalSHandlerFunc(){
 	lidar_mgr.resetStatus = 0;
 	return LIDAR_RESET_FSM_END_STATE;
 }
 
+/**
+ * \brief Sperrzustand zum Vermeiden der unerwünschten USART-Interrupt
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_resetEndSHandlerFunc(){
 	return LIDAR_RESET_FSM_END_STATE;
 }
