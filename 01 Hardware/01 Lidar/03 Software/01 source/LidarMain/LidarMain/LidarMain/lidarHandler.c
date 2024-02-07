@@ -329,6 +329,12 @@ static inline uint8_t lidar_setProtocol(uint8_t cmd, uint16_t cmdDataLen){
 	return tempIdx;
 }
 
+/**
+ * \brief Auslösen des Protokollsendenvorganges
+ * 
+ * 
+ * \return void
+ */
 static inline void lidar_sendProtocol(){
 	uint8_t temp1 = 0;
 	lidar_protocolIdx = 0;
