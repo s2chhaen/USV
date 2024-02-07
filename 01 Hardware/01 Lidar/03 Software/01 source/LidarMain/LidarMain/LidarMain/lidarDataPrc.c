@@ -33,6 +33,15 @@ static inline int32_t fil_qFExtend(int32_t input, uint8_t bits){ //qF: Q-Format
 	return (int32_t)((int64_t)input<<bits)/((int64_t)cFactorARM);
 }
 
+/**
+ * \brief Initalisierung der Datenverarbeitungseinheit
+ * 
+ * \param inFilCofs_p Der Zeiger zu den Koeffizienten von FIR-Filter
+ * \param inLen Anzahl der FIR-Filter-Koeffizienten
+ * \param io_p Register vom IO-Stream
+ * 
+ * \return uint8_t 0: erfolgreich, sonst nicht
+ */
 uint8_t fil_init(const int16_t* inFilCofs_p, uint8_t inLen, reg8Model_t* io_p){
 	uint8_t result = NO_ERROR;
 	uint8_t check = (inFilCofs_p != NULL) && (io_p != NULL) && (inLen == (FIL_ORDER+1));
