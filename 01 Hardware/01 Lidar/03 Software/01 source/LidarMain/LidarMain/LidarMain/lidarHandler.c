@@ -359,6 +359,12 @@ static inline uint8_t lidar_ioStreamStatusAvai(){
 	return !(lidar_ioStream->val & (1 << STREAM_LIDAR_STATUS_BIT_POS));
 }
 
+/**
+ * \brief Überprüfung, ob das IO-Stream für Datensenden frei ist
+ * 
+ * 
+ * \return uint8_t 0: frei, sonst nicht
+ */
 static inline uint8_t lidar_ioStreamDataAvai(){
 	return !(lidar_ioStream->val & (1 << STREAM_LIDAR_DATA_BIT_POS));
 }
