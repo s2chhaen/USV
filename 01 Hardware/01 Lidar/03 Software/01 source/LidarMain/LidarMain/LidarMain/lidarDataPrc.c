@@ -161,6 +161,12 @@ static inline void shiftPhaseCompensation(){
 	fil_dataBufferIdx = PHASE_SHIFT_SPL_MAX;
 }
 
+/**
+ * \brief Durchführung der Filterung (Letzter-Wert-Wiederholung -> Filtern -> Phasenkompensation)
+ * 
+ * 
+ * \return uint8_t 0: erfolgreich, sonst Fehler
+ */
 uint8_t fil_run(){
 	uint8_t result = NO_ERROR;
 	if (fil_mgr.init && fil_mgr.set){
