@@ -1,8 +1,10 @@
 /*
  * asciiTable.h
- *
+ * Description: Die Header-Datei enthält alle Ascii-Zeichen
  * Created: 10/17/2023 3:13:45 PM
- *  Author: Thach
+ * Author: Thach
+ * Version: 1.0
+ * Revision: 1.0
  */
 
 #ifndef ASCIITABLE_H_INCLUDED
