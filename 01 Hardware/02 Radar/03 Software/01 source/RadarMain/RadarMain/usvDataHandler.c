@@ -175,6 +175,16 @@ static inline int16_t getRegLen(uint16_t reg){
 	return result;
 }
 
+/**
+ * \brief Überprüfen der Daten mit Hilfer der CRC8-Checksum-Funktion
+ * 
+ * \param data der Zeiger zum Daten-Array
+ * \param dataLen Die Länge des Daten-Arrays
+ * \param rxChecksumValue der durch CRC8 erzeugte Wert
+ * \param crc8Polynom Das Polynom vom CRC8
+ * 
+ * \return bool true/1: Daten richtig empfangen, false/0: Daten verfälscht
+ */
 static inline bool checkRxData(uint8_t* data,uint8_t dataLen, uint8_t rxChecksumValue, uint8_t crc8Polynom){
 	return crc8CodeGen(data,(uint16_t)dataLen)==rxChecksumValue;
 }
