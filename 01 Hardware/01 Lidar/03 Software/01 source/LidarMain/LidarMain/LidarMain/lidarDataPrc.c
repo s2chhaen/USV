@@ -70,8 +70,13 @@ static inline void fil_setData(uint8_t* data, uint16_t dataLen){
 	}	
 }
 
+/**
+ * \brief Umwandlung in Q(32-FIXED_POINT_BITS).(FIXED_POINT_BITS) Format
+ * 
+ * 
+ * \return void
+ */
 static inline void fil_convertData(){
-	//Umwandlung in Q(32-FIXED_POINT_BITS).(FIXED_POINT_BITS) Format
 	for (int i = 0; i < DATA_SPL_NUM; i++){
 		fil_dataBuffer[i] <<= FIXED_POINT_BITS;
 	}
