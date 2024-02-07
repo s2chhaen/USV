@@ -300,6 +300,15 @@ static int16_t lidar_getCmdDataLen(uint8_t cmdNum, uint8_t segNum){
 }
 #pragma GCC pop_options
 
+/**
+ * \brief Erzeugen eines Protokoll in Abhängigkeit vom Kommando und Speichern des Protokoll
+ * in TX-Buffer zum Senden 
+ * 
+ * \param cmd Kommando
+ * \param cmdDataLen die Länge der Kommando-Parameter
+ * 
+ * \return uint8_t die Länge des Protokolls
+ */
 static inline uint8_t lidar_setProtocol(uint8_t cmd, uint16_t cmdDataLen){
 	uint8_t tempIdx = 0;
 	lidar_protocol[LIDAR_START_BYTE_POS] = LIDAR_PROTOCOL_START_SYM;
