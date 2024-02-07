@@ -56,8 +56,15 @@ uint8_t fil_init(const int16_t* inFilCofs_p, uint8_t inLen, reg8Model_t* io_p){
 	return result;
 }
 
+/**
+ * \brief Umwandlung der Eingabe von 2 8-Bits-Zahlen in einer 16-Bits-Zahl
+ * 
+ * \param data der Zeiger zu den Daten
+ * \param dataLen die Datenlänge
+ * 
+ * \return void
+ */
 static inline void fil_setData(uint8_t* data, uint16_t dataLen){
-	/*Umwandlung der Daten von 2 8-Bits-Zahlen in einer 16-Bits-Zahl*/
 	for (volatile uint16_t i = 0; i < dataLen/2; i++){
 		fil_dataBuffer[i] = (int64_t)(data[2*i]|(data[2*i+1] << 8)) & 0x1FFF;
 	}	
