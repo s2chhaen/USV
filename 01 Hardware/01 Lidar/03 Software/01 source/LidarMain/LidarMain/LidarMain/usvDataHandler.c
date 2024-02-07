@@ -524,6 +524,12 @@ static uint8_t usv_mainFsmDataRspPollSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Überprüfen der Antwort
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmDataRspCheckStateFunc(){
 	uint8_t retVal = USV_MAIN_FSM_START_STATE;
 	if (usv_mgr.res){
