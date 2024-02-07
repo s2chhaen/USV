@@ -140,6 +140,14 @@ lidar_mainFsmSHandlerFunc_t lidar_mainFsmLookupTable[LIDAR_MAIN_FSM_STATE_NUM] =
 
 //interne verwendete Funktionen
 
+/**
+ * \brief Funktion zur Erzeugung des Checksum-Wertes (spezifisch für LidarLMS2xx)
+ * 
+ * \param input der Zeiger zum Daten-Array
+ * \param length Datenlänge
+ * 
+ * \return uint16_t Ein 16-bits-langer Wert
+ */
 uint16_t lidar_checksum16(uint8_t* input, uint16_t length){
 	/* siehe "Telegramme zur Konfiguration und Bedienung der Lasermesssysteme LMS2xx-V2.30"
 	 * für weitere Informationen*/
