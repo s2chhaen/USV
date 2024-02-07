@@ -1,10 +1,10 @@
 /*
  * lidarDataPrc.h
- *
+ * Beschreibung: Header-Datei für Datenverarbeitungseinheit
  * Created: 12/1/2023 2:30:09 PM
  * Author: Thach
  * Version: 1.0
- * Revision: 1.0
+ * Revision: 1.1
  */ 
 
 
