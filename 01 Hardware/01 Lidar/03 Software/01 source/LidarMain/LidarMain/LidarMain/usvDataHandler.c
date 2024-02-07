@@ -498,6 +498,12 @@ static uint8_t usv_mainFsmDataTxSHandlerFunc(){
 	return USV_MAIN_FSM_DATA_RSP_POLLING_STATE;
 }
 
+/**
+ * \brief Warten auf die Antwort, sobald die Timeout-Zeit nicht um ist
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmDataRspPollSHandlerFunc(){
 	uint8_t retVal = USV_MAIN_FSM_DATA_RSP_POLLING_STATE;
 	if (usv_mgr.write){
