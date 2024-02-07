@@ -20,8 +20,15 @@ volatile int32_t fil_dataBuffer[DATA_BUFFER_LEN] = {0};
 volatile uint16_t fil_dataBufferIdx = 0;
 static uint16_t fil_dataBufferLen = 0;
 
+/**
+ * \brief Umwandlung vom U(16-bits).(bits) zum U(32-bits).(bits)-Format
+ * 
+ * \param input die umzuwandelnde Zahl
+ * \param bits die Anzahl des Bits nach der Komma
+ * 
+ * \return int32_t die umgewandelte Zahl
+ */
 static inline int32_t fil_qFExtend(int32_t input, uint8_t bits){ //qF: Q-Format
-	/*Umwandlung vom U(16-bits).(bits) zum U(32-bits).(bits)-Format*/
 	const int32_t cFactorARM = (1<<bits) - 1;//cFactor: converting factor
 	return (int32_t)((int64_t)input<<bits)/((int64_t)cFactorARM);
 }
