@@ -598,7 +598,7 @@ static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, u
 /**
  * \brief Ruckrüffunktion in der USART-RX-ISR
  * 
- * \param adress Adresse von USART des Ziel-Mikrocontrollers
+ * \param adress Adresse von USART des Mikrocontrollers
  * \param data Zeiger zum Array der empfangenen Daten
  * \param length die Datenlänge
  * 
