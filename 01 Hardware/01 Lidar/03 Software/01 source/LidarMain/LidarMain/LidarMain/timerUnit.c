@@ -19,6 +19,15 @@ static uint16_t usvTimer_res = 0;
 volatile int16_t lidarTimer_stepCounter = 0;
 volatile int16_t usvTimer_stepCounter = 0;
 
+/**
+ * \brief Initialisierung der Timer-Einheit
+ * 
+ * \param rezConfig das Auflösungstyp für CLK-Generator
+ * \param resUSV Auflösung für USV-Data-Handler-Wächter
+ * \param resLidar Auflösung für Sensor-Handler-Wächter
+ * 
+ * \return uint8_t 0: kein Fehler, sonst: Fehler
+ */
 uint8_t timer_init(uint8_t rezConfig, uint16_t resUSV, uint16_t resLidar){
 	uint8_t result = NO_ERROR;
 	volatile uint8_t config = 0x00;//keine Optimierung hier
