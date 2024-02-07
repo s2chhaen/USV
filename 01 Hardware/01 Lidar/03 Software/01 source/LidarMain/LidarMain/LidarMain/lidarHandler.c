@@ -178,6 +178,12 @@ static inline uint8_t lidar_rspVal(uint8_t cmdOAddr){
 	return (cmdOAddr+0x80);
 }
 
+/**
+ * \brief eine Routine zur empfangen der Daten über USART und Kopieren im internen Buffer 
+ * 
+ * 
+ * \return void
+ */
 static inline void lidar_rxRountine(){
 	if (lidar_rxBufferToHandleBytes <= usartFIFOMaxLen){
 		lidar_expectedRxBytes = lidar_rxBufferToHandleBytes;
