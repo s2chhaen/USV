@@ -480,6 +480,12 @@ static uint8_t usv_mainFsmStatusRspCheckSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Beginn des Datensendenvorganges und Warten auf Antwort
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmDataTxSHandlerFunc(){
 	uint16_t regAdd = ES1_ADD;
 	uint16_t regLen = *usv_dataBufferLen;
