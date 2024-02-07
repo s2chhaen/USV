@@ -207,6 +207,15 @@ static inline uint8_t lidar_checkRXData(uint8_t* data, uint16_t dataLen, uint16_
 	return (lidar_checksum16(data,dataLen)==rxChecksumValue);
 }
 
+/**
+ * \brief Zur Überprüfung der Zeichenfolge im Protokoll
+ * 
+ * \param input_p der Zeiger zur zu checkenden Daten
+ * \param defaultVal_p der Zeiger zur festgelegten Daten
+ * \param defaultValLen die Länge der festgelegten Daten
+ * 
+ * \return uint8_t 1: richtig, 0: falsch
+ */
 static uint8_t lidar_dataCheck(uint8_t* input_p, const uint8_t* defaultVal_p, uint8_t defaultValLen){
 	uint8_t result = 1;
 	for (volatile uint8_t i = 0; i < defaultValLen; i++){
