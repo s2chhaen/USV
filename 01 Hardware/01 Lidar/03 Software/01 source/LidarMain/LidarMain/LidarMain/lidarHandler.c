@@ -1064,7 +1064,19 @@ static bool lidar_callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //externe Funktionen
-uint8_t lidar_initDev(const usartConfig_t* config, uint16_t crc16Polynom, uint8_t* output_p, uint16_t* outLen_p, reg8Model_t* io_p){
+/**
+ * \brief Initialisierung des Lidar-Handler-Moduls
+ * 
+ * \param config Zeiger zur Struktur der Konfigurationsparameter
+ * \param crc16Polynom Checksum-Polynom
+ * \param output_p der Zeiger zum externen Buffer, wobei die Messwerte gespeichert werden
+ * \param outLen_p der Zeiger zur Länge des Ausgabe-Buffers
+ * \param io_p der Zeiger zum IO-Stream-Register
+ * 
+ * \return uint8_t 0: kein Fehler, sonst: Fehler
+ */
+uint8_t lidar_initDev(const usartConfig_t* config, uint16_t crc16Polynom, uint8_t* output_p,\
+					  uint16_t* outLen_p, reg8Model_t* io_p){
 	uint8_t result = NO_ERROR;
 	uint8_t check = (config!=NULL) && (output_p!=NULL) && (outLen_p!=NULL) && (io_p != NULL) &&\
 					(*outLen_p >= LIDAR_RX_BUFFER_MAX_LEN);
