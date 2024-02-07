@@ -1042,6 +1042,15 @@ static bool lidar_callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, 
 	return true;
 }
 
+/**
+ * \brief Funktion zum Rückruf in der USART-RX-ISR
+ * 
+ * \param adress Adresse des Mikroncontrollers USART-Moduls
+ * \param data Zeiger zu schon empfangenen Daten
+ * \param length die Datenlänge
+ * 
+ * \return bool immer true/wahr
+ */
 static bool lidar_callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	lidar_rxTempLength = length;
 	lidar_rxTempData = data;
