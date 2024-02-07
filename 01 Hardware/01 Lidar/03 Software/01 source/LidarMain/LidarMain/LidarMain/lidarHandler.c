@@ -229,6 +229,14 @@ static uint8_t lidar_dataCheck(uint8_t* input_p, const uint8_t* defaultVal_p, ui
 
 #pragma GCC push_options
 #pragma GCC optimize("O3")
+/**
+ * \brief Ausgabe der Länge des Datenblockes im Lidar-Modul
+ * 
+ * \param cmdNum Hauptkommando
+ * \param segNum Unterkommando
+ * 
+ * \return int16_t -1: keine gefunden, sonst die Länge des Datenblockes
+ */
 static int16_t lidar_getCmdDataLen(uint8_t cmdNum, uint8_t segNum){
 	int16_t retVal;//keine Optimierung
 	switch(cmdNum){
