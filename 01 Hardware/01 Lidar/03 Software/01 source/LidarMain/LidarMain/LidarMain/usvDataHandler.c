@@ -576,7 +576,7 @@ static uint8_t usv_mainFsmErrorSHandlerFunc(){
  * \brief Ruckrüffunktion in der USART-TX-ISR
  * 
  * \param adress Adresse von USART des Ziel-Mikrocontrollers
- * \param data Zeiger zum Array der empfangenen Daten
+ * \param data Zeiger zum Array der noch zu weiter sendenden Daten
  * \param length die Datenlänge
  * \param max_length maximal verfügbare Länge im USART-FIFO-Buffers
  * 
