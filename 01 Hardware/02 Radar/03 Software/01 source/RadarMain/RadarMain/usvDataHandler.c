@@ -232,6 +232,12 @@ static inline uint8_t usv_setProtocol(uint8_t add, uint16_t reg, uint8_t* input_
 	return USV_DATA_BEGIN_POS+1+length+1;//begin bei 0
 }
 
+/**
+ * \brief Auslösen der Datensendenvorgang vom protocol-Buffer
+ * 
+ * 
+ * \return void
+ */
 static inline void usv_sendProtocol(){//trigger send new protocol
 	uint8_t temp1 = 0;
 	usv_protocolIdx = 0;
