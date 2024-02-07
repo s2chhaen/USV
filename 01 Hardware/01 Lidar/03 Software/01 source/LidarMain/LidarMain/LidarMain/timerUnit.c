@@ -127,6 +127,13 @@ const int16_t usvTimer_getCounter(){
 }
 
 //Funktion zum Steuern des Timers für Lidar
+/**
+ * \brief Ein-/Ausschalten des Lidar-Handler-Wächters
+ * 
+ * \param state 0: Ausschalten, sonst Einschalten
+ * 
+ * \return void
+ */
 void lidarTimer_setState(uint8_t state){
 	if (timer_status.init){
 		if (state){
@@ -137,11 +144,24 @@ void lidarTimer_setState(uint8_t state){
 	}
 }
 
+/**
+ * \brief Setzen des Timeout-Wertes für Lidar-Handler-Wächter
+ * 
+ * \param value der erwünschte Timeout-Wert in us/ms/s
+ * 
+ * \return void
+ */
 void lidarTimer_setCounter(uint32_t value){
 	lidarTimer_stepCounter = (int16_t)(value/(uint32_t)lidarTimer_res);
 	TCB1.CNT = 0;
 }
 
+/**
+ * \brief Lesen der übrige Zeit des Wächter
+ * 
+ * 
+ * \return const int16_t die übrige Zeit in Zählschritte
+ */
 const int16_t lidarTimer_getCounter(){
 	return lidarTimer_stepCounter;
 }
