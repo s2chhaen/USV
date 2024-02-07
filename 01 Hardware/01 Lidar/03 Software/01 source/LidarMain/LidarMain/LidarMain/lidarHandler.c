@@ -1018,6 +1018,16 @@ static uint8_t lidar_mainErrorSHandler(){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //in ISR zurückgerufte Funktionen
+/**
+ * \brief Funktion zum Rückruf in der USART-TX-ISR
+ * 
+ * \param adress Adresse des Mikroncontrollers USART-Moduls
+ * \param data Zeiger zu den zu weiter sendenden Daten
+ * \param length Zeiger zur Datenlänge
+ * \param max_length die maximalen verfügbaren Plätze im USART-FIFO
+ * 
+ * \return bool immer true/wahr
+ */
 static bool lidar_callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, uint8_t max_length){
 	lidar_txTempLength = length;
 	lidar_txTempMax_length = max_length;
