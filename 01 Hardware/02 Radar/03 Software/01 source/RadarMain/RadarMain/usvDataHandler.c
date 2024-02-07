@@ -660,6 +660,13 @@ uint8_t usv_initDev(const usartConfig_t* config, uint8_t crc8Polynom, reg8Model_
 	return result;
 }
 
+/**
+ * \brief Einstellung der Adresse dieses Modul zur Kommunikation mit USV-Data-Modul
+ * 
+ * \param addr die erwünschte Adresse
+ * 
+ * \return extern void
+ */
 extern void usv_setAddr(uint8_t addr){
 	usv_mgr.usvAddr = addr;
 }
