@@ -295,10 +295,22 @@ static uint8_t usv_setRegister(uint8_t add, uint16_t reg, const uint8_t* input_p
 
 //interne-FSM-Zustand-Handler-Implementierung
 //Info-Senden(Setter)-FSM	
+/**
+ * \brief Aktivieren der FSM
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t fsm_setterStartStateHandlerFunc(){
 	return USV_FSM_SETTER_TX_STATE;
 }
 
+/**
+ * \brief Beginn des Datenübertragungsvorgangs
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t fsm_setterTxStateHandlerFunc(){
 	uint8_t retVal = USV_FSM_SETTER_TX_STATE;
 	if (usv_programPos == COM_PROGRAMM_TX_POS){
@@ -326,6 +338,12 @@ static uint8_t fsm_setterTxStateHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Überprüfen der Antwort und Senden der Daten, falls es noch gibt
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t fsm_setterRxStateHandlerFunc(){
 	uint8_t retVal = USV_FSM_SETTER_END_STATE;
 	uint8_t check = (usv_programPos == COM_PROGRAMM_RX_POS) && (usv_rxTempLength == 1) &&\
@@ -362,6 +380,12 @@ static uint8_t fsm_setterRxStateHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief der Pause-Zustand, um Eindrängen der Eingabe aus unerwünschtem Interrupt zu vermeiden
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t fsm_setterEndSHandlerFunc(){
 	return USV_FSM_SETTER_END_STATE;
 }
