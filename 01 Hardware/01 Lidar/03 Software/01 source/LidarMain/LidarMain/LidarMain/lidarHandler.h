@@ -1,10 +1,10 @@
 /*
  * lidarHandler.h
- *
+ * Beschreibung: Header-Datei für Lidar-Handler-Einheit
  * Created: 11/26/2023 4:03:53 PM
  * Author: Thach
  * Version: 1.0
- * Revision: 1.1
+ * Revision: 1.2
  */ 
 
 
