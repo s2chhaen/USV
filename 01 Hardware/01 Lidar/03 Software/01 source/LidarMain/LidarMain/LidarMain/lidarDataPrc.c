@@ -82,8 +82,15 @@ static inline void fil_convertData(){
 	}
 }
 
+/**
+ * \brief Kopieren der Eingabe im internen Buffer und Umwandlung im passenden Format
+ * 
+ * \param data Der Zeiger zur Ausgabe
+ * \param dataLen Länge der Ausgabe
+ * 
+ * \return uint8_t 0: erfolgreich, sonst Fehler
+ */
 uint8_t fil_setNConvertData(uint8_t* data, uint16_t dataLen){
-	/*Kopieren der Eingabe im internen Buffer und Umwandlung im passenden Format*/
 	uint8_t result = NO_ERROR;
 	uint16_t tempLen = dataLen/2;
 	uint8_t check = (data!=NULL) && (dataLen > 0) && (tempLen <= DATA_SPL_NUM);
