@@ -121,6 +121,13 @@ static inline void redundacyAdd(int64_t tempVal){
 	fil_dataBufferLen += PHASE_SHIFT_SPL_MAX;
 }
 
+/**
+ * \brief Durchführung der Datenfilterung durch FIR-Filter
+ * 
+ * \param tempVal die temporäre Variablen zum Speichern des Wertes
+ * 
+ * \return void
+ */
 static inline void filtering(int64_t tempVal){
 	/* Formel: y(n) = a0*x(n) + a1*x(n-1) + ... + aM*x(n-M)
 	 * x(n<0) = 0, M: Ordnung des Filters
