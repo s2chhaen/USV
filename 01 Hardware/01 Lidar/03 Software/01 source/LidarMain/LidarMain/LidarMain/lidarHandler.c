@@ -201,7 +201,7 @@ static inline void lidar_rxRountine(){
  * \param dataLen die Datenlänge
  * \param rxChecksumValue der vom Quellgerät erzeugende Wert
  * 
- * \return uint8_t 0: richtig, sonst falsch
+ * \return uint8_t 1: richtig, 0: falsch
  */
 static inline uint8_t lidar_checkRXData(uint8_t* data, uint16_t dataLen, uint16_t rxChecksumValue){
 	return (lidar_checksum16(data,dataLen)==rxChecksumValue);
