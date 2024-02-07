@@ -371,6 +371,17 @@ static inline uint8_t lidar_ioStreamDataAvai(){
 
 #pragma GCC push_options
 #pragma GCC optimize("O2")
+/**
+ * \brief Senden der Anfrage der Daten zum Lidar
+ * 
+ * \param addr Adresse des Lidars
+ * \param cmd Hauptkommando/Adresse des Datenblockes
+ * \param segNum Subkommando/Anteil des Datenblockes
+ * \param input_p Zeiger zu den Hauptkommando-Parameter
+ * \param inputLen die Anzahl der Parameter
+ * 
+ * \return uint8_t 0: erfolgreich, sonst Fehler
+ */
 static uint8_t lidar_dataGet(uint8_t addr, uint8_t cmd, uint8_t segNum, uint8_t* input_p, uint8_t inputLen){
 	uint8_t result = NO_ERROR;
 	lidar_addr = addr;
