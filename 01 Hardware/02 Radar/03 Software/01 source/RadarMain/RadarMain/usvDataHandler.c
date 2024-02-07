@@ -612,14 +612,17 @@ static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 
 //externe Funktionen
 
+
 /**
  * \brief Initalisierung des Handlers
  * 
- * \param dev_p Zeiger zum zu initalisierenden Handler 
- * \param inputRxFunc_p der Zeiger zur Datenempfangen Funktion
- * \param inputTxFunc_p der Zeiger zur Datensenden Funktion
- * \param inputWaitFunc_p der Zeiger zur Warte Funktion
- * \param inputCrc8 der Checksum-CRC8 Polynom
+ * \param config Zeiger zur Konfigurationsstruktur
+ * \param crc8Polynom Checksum-CRC8 Polynom
+ * \param io_p Zeiger zum IO-Stream-Registers
+ * \param dataBuffer_p Zeiger zum Buffer, wo die Daten gespeichert wird
+ * \param dataBufferLen_p Zeiger zur Länge des Daten-Buffers
+ * \param statusBuffer_p Zeiger zum Buffer, wo der Zustand gespeichert wird
+ * \param statusBufferLen_p Zeiger zur Länge des Zustand-Buffers
  * 
  * \return uint8_t 0: keinen Fehler, sonst Fehler
  */
