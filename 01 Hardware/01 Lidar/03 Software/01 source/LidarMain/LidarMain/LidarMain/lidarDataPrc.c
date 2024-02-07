@@ -149,6 +149,12 @@ static inline void filtering(int64_t tempVal){
 	fil_dataBufferLen -= PHASE_SHIFT_SPL_MAX;
 }
 
+/**
+ * \brief Durchführung der Kompensation der FIR-verursachten Phase
+ * 
+ * 
+ * \return void
+ */
 static inline void shiftPhaseCompensation(){
 	/*Anzahl vom "PHASE_SHIFT_SPL_MAX" der ersten Werte wird weggeworfen 
 	 *für die Phasen-Verschiebung-Kompensation*/
