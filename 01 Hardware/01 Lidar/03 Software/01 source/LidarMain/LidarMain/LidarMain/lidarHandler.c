@@ -1106,6 +1106,13 @@ uint8_t lidar_initDev(const usartConfig_t* config, uint16_t crc16Polynom, uint8_
 	return result;
 }
 
+/**
+ * \brief Rückgabe der Zustand-Register im Form eines konstanten Wertes
+ * 
+ * 
+ * \return const lidarStatus_t* Zeiger zum Zustand-Register, das in Form eines konstanten Wertes
+ * ist
+ */
 const lidarStatus_t* lidar_getStatus(){
 	return (lidarStatus_t*)&lidar_status;
 }
