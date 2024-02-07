@@ -745,6 +745,12 @@ static uint8_t lidar_getterEndSHandlerFunc(){
 #pragma GCC pop_options
 
 //externe-FSM-Implementierung
+/**
+ * \brief Rucksetzen aller Zustand-Register und Beginn der Datenempfangvorganges
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_mainSyncSHandler(){
 	uint8_t retVal = LIDAR_MAIN_SYNC_STATE;
 	uint8_t check = lidar_mgr.init && lidar_ioStreamStatusAvai() && lidar_ioStreamDataAvai();
@@ -760,6 +766,12 @@ static uint8_t lidar_mainSyncSHandler(){
 	return retVal;
 }
 
+/**
+ * \brief Warten auf das Meldung-nach-ON-Protokoll vom Lidar
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_mainSyncPollingSHandler(){
 	uint8_t retVal = LIDAR_MAIN_SYNC_POLLING_STATE;
 	if (lidar_mgr.syncStatus){
@@ -780,6 +792,12 @@ static uint8_t lidar_mainSyncPollingSHandler(){
 	return retVal;
 }
 
+/**
+ * \brief Auswerten des Lidar-Meldung-nach-ON-Protokoll
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_mainSyncSignalCheckSHandler(){
 	uint8_t retVal = LIDAR_MAIN_DATA_REQ_STATE;
 	if (lidar_status.dataBf.lineStatus || lidar_status.dataBf.timeOut){
@@ -818,6 +836,12 @@ static uint8_t lidar_mainSyncSignalCheckSHandler(){
 	return retVal;
 }
 
+/**
+ * \brief Beginn des Datenempfangvorganges durch Anfragesenden
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_mainDataReqSHandler(){
 	uint8_t retVal = LIDAR_MAIN_RSP_POLLING_STATE;
 	uint8_t check = lidar_ioStreamStatusAvai() && lidar_ioStreamDataAvai() && lidar_mgr.init;
@@ -838,6 +862,12 @@ static uint8_t lidar_mainDataReqSHandler(){
 	return retVal;
 }
 
+/**
+ * \brief Warten auf die Rückmeldung vom Lidar
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_mainRspPollingSHandler(){
 	uint8_t retVal = LIDAR_MAIN_RSP_POLLING_STATE;
 	if (lidar_mgr.rxStatus){
@@ -858,6 +888,12 @@ static uint8_t lidar_mainRspPollingSHandler(){
 	return retVal;
 }
 
+/**
+ * \brief Auswerten der Antwort und Kopieren der Messwerte im internen Buffer
+ * zur weiteren Bearbeitung
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_mainDataCheckSHandler(){
 	uint8_t retVal = LIDAR_MAIN_DATA_REQ_STATE;
 	static uint8_t checkData = 0;
@@ -903,6 +939,12 @@ static uint8_t lidar_mainDataCheckSHandler(){
 	return retVal;
 }
 
+/**
+ * \brief Anfangen des Rücksetzvorgang durch Stoppen der Übertragung und Senden
+ * der Anfrage zum Rücksetzen
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_mainResetSHandler(){
 	uint8_t retVal = LIDAR_MAIN_RESET_STATE;
 	uint8_t check = lidar_ioStreamStatusAvai() && lidar_ioStreamDataAvai() && lidar_mgr.init;
@@ -920,6 +962,12 @@ static uint8_t lidar_mainResetSHandler(){
 	return retVal;
 }
 
+/**
+ * \brief  Warte auf die Rückmeldung vom Lidar
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_mainResetPollingSHandler(){
 	uint8_t retVal = LIDAR_MAIN_RESET_POLLING_STATE;
 	if (lidar_mgr.resetStatus){
@@ -949,6 +997,12 @@ static uint8_t lidar_mainResetPollingSHandler(){
 	return retVal;
 }
 
+/**
+ * \brief Fehler-Behandlungszustand: nach den 3 nicht erfolgreichen Versuchen
+ * wird der Rücksetzvorgang angefangt
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_mainErrorSHandler(){
 	uint8_t retVal = LIDAR_MAIN_DATA_REQ_STATE;
 	lidar_tryTime--;
