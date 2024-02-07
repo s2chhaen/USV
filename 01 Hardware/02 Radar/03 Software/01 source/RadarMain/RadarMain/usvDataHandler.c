@@ -1,10 +1,10 @@
 /*
  * usvDataHandler.c
- *
+ * Description: Quellcode-Datei der usvDataHandler.h/Radar-Version
  * Created: 7/7/2023 8:42:59 AM
  * Author: Thach
- * Version: 1.4
- * Revision: 1.2
+ * Version: 1.5
+ * Revision: 1.0
  */
 
 #include "usvDataHandler.h"
@@ -159,7 +159,7 @@ static inline int16_t getRegLen(uint16_t reg){
 			result = 1;//17
 			break;
 		case ER4_ADD:
-			result = 2;//18
+			result = 1;//18
 			break;
 		case ER5_ADD:
 			result = 1;//19
