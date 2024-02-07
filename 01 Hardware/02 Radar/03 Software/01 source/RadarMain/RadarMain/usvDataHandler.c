@@ -391,6 +391,12 @@ static uint8_t fsm_setterEndSHandlerFunc(){
 }
 
 //externe-FSM-Implementierung
+/**
+ * \brief Überprüfen des Types der Eingabe, Zustand-Eingabe besitzt höhere Priorität
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmStartSHandlerFunc(){
 	uint8_t retVal = USV_MAIN_FSM_START_STATE;
 	uint8_t checkStatus = usv_ioStreamStatusAvai();
@@ -408,6 +414,12 @@ static uint8_t usv_mainFsmStartSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Beginn des Zustandsendenvorganges und Warten auf Antwort
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmStatusTxSHandlerFunc(){
 	uint16_t regAdd = ER5_ADD;
 	uint8_t regLen = *usv_statusBufferLen;
@@ -420,6 +432,12 @@ static uint8_t usv_mainFsmStatusTxSHandlerFunc(){
 	return USV_MAIN_FSM_STATUS_RSP_POLLING_STATE;
 }
 
+/**
+ * \brief Warten auf die Antwort, sobald die Timeout-Zeit nicht um ist
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmStatusRspPollSHandlerFunc(){
 	uint8_t retVal = USV_MAIN_FSM_STATUS_RSP_POLLING_STATE;
 	if (usv_mgr.write){
@@ -440,6 +458,12 @@ static uint8_t usv_mainFsmStatusRspPollSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Überprüfen der Antwort
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmStatusRspCheckSHandlerFunc(){
 	uint8_t retVal = USV_MAIN_FSM_START_STATE;
 	if (usv_mgr.res){
@@ -452,6 +476,12 @@ static uint8_t usv_mainFsmStatusRspCheckSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Beginn des Datensendenvorganges und Warten auf Antwort
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmDataTxSHandlerFunc(){
 	uint16_t regAdd = SB8_ADD;
 	uint16_t regLen = *usv_dataBufferLen;
@@ -464,6 +494,12 @@ static uint8_t usv_mainFsmDataTxSHandlerFunc(){
 	return USV_MAIN_FSM_DATA_RSP_POLLING_STATE;
 }
 
+/**
+ * \brief Warten auf die Antwort, sobald die Timeout-Zeit nicht um ist
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmDataRspPollSHandlerFunc(){
 	uint8_t retVal = USV_MAIN_FSM_DATA_RSP_POLLING_STATE;
 	if (usv_mgr.write){
@@ -484,6 +520,12 @@ static uint8_t usv_mainFsmDataRspPollSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Überprüfen der Antwort
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmDataRspCheckStateFunc(){
 	uint8_t retVal = USV_MAIN_FSM_START_STATE;
 	if (usv_mgr.res){
@@ -496,6 +538,12 @@ static uint8_t usv_mainFsmDataRspCheckStateFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Fehler-Behandlung-Routine
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmErrorSHandlerFunc(){
 	usv_mgr.res = 0;
 	usv_tryTime--;
