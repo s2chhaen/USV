@@ -595,6 +595,15 @@ static bool usartCallbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, u
 	return true;
 }
 
+/**
+ * \brief Ruckrüffunktion in der USART-RX-ISR
+ * 
+ * \param adress Adresse von USART des Ziel-Mikrocontrollers
+ * \param data Zeiger zum Array der empfangenen Daten
+ * \param length die Datenlänge
+ * 
+ * \return bool bool immer true(wahr)
+ */
 static bool usartCallbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	usv_rxTempLength = length;
 	usv_rxTempData = data;
