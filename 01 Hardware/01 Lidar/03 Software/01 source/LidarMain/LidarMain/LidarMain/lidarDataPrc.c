@@ -181,6 +181,16 @@ uint8_t fil_run(){
 	return result;
 }
 
+/**
+ * \brief Einpacken der verarbeiteten Daten und Exportieren zum Ausgabe-Array
+ * 
+ * \param output_p das Daten-Buffer der Ausgabe
+ * \param outLen die Länge des Ausgabe-Buffers
+ * \param usmlType Index-Typ für die Ausgabe (gerade oder ungerade Mitglied-Index)
+ * \param outFPBit Bits-Anzahl der Nachkommastelle der Ausgabe
+ * 
+ * \return uint8_t 0: erfolgreich, sonst Fehler
+ */
 uint8_t fil_compressNReturn(uint8_t* output_p, uint16_t outLen, uint8_t usmlType, uint8_t outFPBit){
 	uint8_t result = NO_ERROR;
 	uint8_t check = (output_p != NULL) && (outLen == LIDAR_OUTPUT_IDEAL_LEN);
