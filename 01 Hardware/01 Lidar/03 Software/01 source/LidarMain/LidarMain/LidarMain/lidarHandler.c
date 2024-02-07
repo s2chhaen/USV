@@ -587,6 +587,12 @@ static uint8_t lidar_resetEndSHandlerFunc(){
 }
 
 //Getter-Daten-RX- Datenempfangen
+/**
+ * \brief Beginn des Datenempfangenvorgangs
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_getterStartSHandlerFunc(){
 	lidar_mode = LIDAR_GETTER_MODE;
 	lidar_mgr.rxStatus = 1;
@@ -595,6 +601,12 @@ static uint8_t lidar_getterStartSHandlerFunc(){
 
 #pragma GCC push_options
 #pragma GCC optimize("O3")
+/**
+ * \brief Senden aller Bytes im Datenanfrageprotokoll und empfangen der Daten
+ * nach der Erledigen des Sendvorganges
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_getterTXSHandlerFunc(){
 	uint8_t retVal = LIDAR_GETTER_FSM_TX_STATE;
 	uint8_t check = (lidar_programPos == COM_PROGRAMM_TX_POS);
@@ -622,6 +634,12 @@ static uint8_t lidar_getterTXSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Empfangen der Bestätigung vom Lidar
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_getterRX1stCheckSHandlerFunc(){
 	uint8_t retVal = LIDAR_GETTER_FSM_RX_CHECK_2_OHD_STATE;
 	uint8_t check = (lidar_programPos == COM_PROGRAMM_RX_POS) && (lidar_rxTempLength == 1) &&\
@@ -637,6 +655,12 @@ static uint8_t lidar_getterRX1stCheckSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief empfangen der ersten Verwaltungsdaten, Auswerten dieser Daten
+ * zum weiteren Datenempfangen und Speichern dieser zur weiteren Bearbeitung
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_getterRX2ndCheckSHandlerFunc(){
 	uint8_t retVal = LIDAR_GETTER_FSM_RX_DATA_STATE;
 	uint8_t check = (lidar_programPos == COM_PROGRAMM_RX_POS) && (lidar_rxTempLength == 5);
@@ -663,6 +687,12 @@ static uint8_t lidar_getterRX2ndCheckSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Empfangen des Protokolldatenteils Speichern dieser zur weiteren Bearbeitung
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_getterRXDataSHandlerFunc(){
 	uint8_t retVal = LIDAR_GETTER_FSM_RX_DATA_STATE;
 	uint8_t check = (lidar_programPos == COM_PROGRAMM_RX_POS) &&\
@@ -686,6 +716,12 @@ static uint8_t lidar_getterRXDataSHandlerFunc(){
 	return retVal;
 } 
 
+/**
+ * \brief Empfangen des Checksum-Wert und Speichern dieses Wertes zur weiteren Bearbeitung
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_getterRX3rdSHandlerFunc(){
 	uint8_t check = (lidar_programPos == COM_PROGRAMM_RX_POS) && (lidar_rxTempLength == 2);
 	if (check){
@@ -697,6 +733,12 @@ static uint8_t lidar_getterRX3rdSHandlerFunc(){
 	return LIDAR_GETTER_FSM_END_STATE;
 }
 
+/**
+ * \brief Sperrzustand (Pause-Zustand) zum Vermeiden der unerwünschten USART-Interrupt
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_getterEndSHandlerFunc(){
 	return LIDAR_GETTER_FSM_END_STATE;
 }
