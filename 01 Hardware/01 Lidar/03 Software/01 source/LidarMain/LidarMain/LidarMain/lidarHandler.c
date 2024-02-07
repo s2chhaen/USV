@@ -514,8 +514,8 @@ static uint8_t lidar_paramRX2ndCheckSHandlerFunc(){
 }
 
 /**
- * \brief Sperrzustand zum Vermeiden der unerwünschten USART-Interrupt
- * 
+ * \brief Sperrzustand (Pause-Zustand) zum Vermeiden der unerwünschten USART-Interrupt
+ * oder des unerwünschten Aktivieren der FSM
  * 
  * \return uint8_t der nächste Zustand
  */
@@ -577,8 +577,8 @@ static uint8_t lidar_resetTerminalSHandlerFunc(){
 }
 
 /**
- * \brief Sperrzustand zum Vermeiden der unerwünschten USART-Interrupt
- * 
+ * \brief Sperrzustand (Pause-Zustand) zum Vermeiden der unerwünschten USART-Interrupt
+ * oder des unerwünschten Aktivieren der FSM
  * 
  * \return uint8_t der nächste Zustand
  */
@@ -735,7 +735,7 @@ static uint8_t lidar_getterRX3rdSHandlerFunc(){
 
 /**
  * \brief Sperrzustand (Pause-Zustand) zum Vermeiden der unerwünschten USART-Interrupt
- * 
+ * oder des unerwünschten Aktivieren der FSM
  * 
  * \return uint8_t der nächste Zustand
  */
