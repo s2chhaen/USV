@@ -1,10 +1,10 @@
 /*
- * RadarMain.c
- *
+ * main.c
+ * Beschreibung: Hauptdatei, wo das Hauptprogramm implementiert wird
  * Created: 12/19/2023 12:32:42 PM
  * Author : Thach
  * Version: 1.1
- * Revision: 1.0
+ * Revision: 1.1
  */ 
 
 
