@@ -542,6 +542,12 @@ static uint8_t usv_mainFsmDataRspCheckStateFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Fehler-Behandlung-Routine
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t usv_mainFsmErrorSHandlerFunc(){
 	usv_mgr.res = 0;
 	usv_tryTime--;
