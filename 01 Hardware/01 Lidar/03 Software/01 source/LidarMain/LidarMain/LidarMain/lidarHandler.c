@@ -1117,6 +1117,13 @@ const lidarStatus_t* lidar_getStatus(){
 	return (lidarStatus_t*)&lidar_status;
 }
 
+/**
+ * \brief Setzen der Adresse des Lidars
+ * 
+ * \param input die Adresse
+ * 
+ * \return void
+ */
 void lidar_setAddr(uint8_t input){
 	lidar_addr = input;
 }
