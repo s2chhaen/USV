@@ -402,11 +402,23 @@ static uint8_t lidar_dataGet(uint8_t addr, uint8_t cmd, uint8_t segNum, uint8_t*
 
 //interne-FSM-Zustand-Handler-Implementierung
 /* Parametrierung/Synchronisierung */
+/**
+ * \brief Beginn des Empfangen des Synchronisierungsprotokolls
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_paramStartSHandlerFunc(){
 	USART_set_Bytes_to_receive(lidar_comParam.usartNo, 1);//checken des Floating-Pins
 	return LIDAR_PARAM_FP_HANDLE_STATE;
 }
 
+/**
+ * \brief Erkennung des Protokolls durch Erkennen des START-Bytes
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_paramFPHandleSHandlerFunc(){
 	uint8_t retVal = LIDAR_PARAM_FP_HANDLE_STATE;
 	uint8_t check = (lidar_programPos == COM_PROGRAMM_RX_POS) && (lidar_rxTempLength == 1);
@@ -429,6 +441,12 @@ static uint8_t lidar_paramFPHandleSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Empfangen der ersten Verwaltungsdaten, Auswerten dieser Daten
+ *  zum weiteren Datenempfangen und Speichern zur späteren Bearbeitung
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_paramRX1stCheckSHandlerFunc(){
 	uint8_t retVal = LIDAR_PARAM_FSM_RX_STATE;
 	uint8_t check = (lidar_programPos == COM_PROGRAMM_RX_POS) && (lidar_rxTempLength == 4) &&\
@@ -448,6 +466,12 @@ static uint8_t lidar_paramRX1stCheckSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Empfangen des Datenteils des Protokolls und Speichern der empfangenen Daten
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_paramRXSHandlerFunc(){
 	uint8_t retVal = LIDAR_PARAM_FSM_RX_STATE;
 	uint8_t check = (lidar_programPos == COM_PROGRAMM_RX_POS) &&\
@@ -471,6 +495,12 @@ static uint8_t lidar_paramRXSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Empfangen des Checksum-Wert (16-bits-lang) und Speichern zur weiteren Bearbeitung
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_paramRX2ndCheckSHandlerFunc(){
 	uint8_t check = (lidar_programPos == COM_PROGRAMM_RX_POS) && (lidar_rxTempLength == 2);
 	if (check){
@@ -483,6 +513,12 @@ static uint8_t lidar_paramRX2ndCheckSHandlerFunc(){
 	return LIDAR_PARAM_FSM_END_STATE;
 }
 
+/**
+ * \brief Sperrzustand zum Vermeiden der unerwünschten USART-Interrupt
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t lidar_paramEndSHandlerFunc(){
 	return LIDAR_PARAM_FSM_END_STATE;
 }
