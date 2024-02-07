@@ -209,6 +209,17 @@ static inline uint8_t usv_ioStreamDataAvai(){
 	return usv_ioStream->val & (1 << STREAM_RADAR_DATA_BIT_POS);
 }
 
+/**
+ * \brief Erstellung eines Übertragungsprotokoll und Speichern des Inhaltes in einem Buffer
+ * 
+ * \param add die Zieladresse
+ * \param reg die Adresse des Zieldatenblockes
+ * \param input_p der Zeiger zu den zu übertragenden Daten
+ * \param length die Datenlänge
+ * \param wr Schreiben/Lesen-Flag
+ * 
+ * \return uint8_t die Länge des Protokolls
+ */
 static inline uint8_t usv_setProtocol(uint8_t add, uint16_t reg, uint8_t* input_p, uint8_t length, uint8_t wr){
 	protocol[USV_START_BYTE_POS] = USV_PROTOCOL_START_BYTE;
 	protocol[USV_OBJ_ID_BYTE_POS] = add;
