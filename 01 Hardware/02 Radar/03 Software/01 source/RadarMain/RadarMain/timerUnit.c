@@ -87,6 +87,13 @@ uint8_t timer_init(uint8_t rezConfig, uint16_t resUSV, uint16_t resRadar){
 }
 
 //Funktion zum Steuern des Timers für USVData
+/**
+ * \brief Ein-/Ausschalten des USV-Data-Handler-Wächters
+ * 
+ * \param state 0: Ausschalten, sonst Einschalten
+ * 
+ * \return void
+ */
 void usvTimer_setState(uint8_t state){
 	if (timer_status.init){
 		if (state){
@@ -97,11 +104,24 @@ void usvTimer_setState(uint8_t state){
 	}
 }
 
+/**
+ * \brief Setzen des Timeout-Wertes für USV-Data-Handler-Wächter
+ * 
+ * \param value der erwünschte Timeout-Wert in us/ms/s
+ * 
+ * \return void
+ */
 void usvTimer_setCounter(uint32_t value){
 	usvTimer_stepCounter = (int16_t)(value/(uint32_t)usvTimer_res);
 	TCB0.CNT = 0;
 }
 
+/**
+ * \brief Lesen der übrige Zeit des Wächter
+ * 
+ * 
+ * \return const int16_t die übrige Zeit in Zählschritte
+ */
 const int16_t usvTimer_getCounter(){
 	return usvTimer_stepCounter;
 }
