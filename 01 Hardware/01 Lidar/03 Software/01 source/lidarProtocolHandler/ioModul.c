@@ -97,7 +97,7 @@ void getData(uint8_t* data, uint16_t* dataLen)
     }
 }
 
-/** \brief Ausgabe der Daten in einem Text-Datei
+/** \brief Ausgabe der Daten in einem Text-Datei (Daten im Format 32-Bits)
  *
  * \param name uint8_t* Name der Text-Datei
  * \param len uint16_t Länge der Namen
