@@ -208,6 +208,14 @@ static inline void radar_fifoFlush(){
 	radar_fifo.empty = 1;
 }
 
+/**
+ * \brief Suchen der Nummer-Ziffer-Folge in Zeichenfolge
+ * 
+ * \param input_p der Zeiger zur Zeichenfolge
+ * \param inputLen die Länge der Zeichenfolge
+ * 
+ * \return uint8_t Anfangsposition vom Nummer-Ziffer-Folge
+ */
 static uint8_t searchNumFormatInStr(uint8_t* input_p, uint8_t inputLen){
 	uint8_t result = 0;
 	if (inputLen < (RADAR_RX_STR_MAX_LEN-1)){
