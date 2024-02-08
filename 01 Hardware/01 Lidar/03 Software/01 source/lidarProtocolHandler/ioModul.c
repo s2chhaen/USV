@@ -36,6 +36,12 @@ static inline uint8_t char2hexNum(uint8_t input)
     return result;
 }
 
+/** \brief Datenlesen aus einem Pfad und Speichern der Daten in einem Buffer
+ *
+ * \param path char* der Pfad zur Datei im Form einer Zeichenfolge
+ * \return void
+ *
+ */
 void readFile(char* path)
 {
     FILE *input = fopen(path,"r");
