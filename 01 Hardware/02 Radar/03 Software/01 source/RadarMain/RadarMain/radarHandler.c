@@ -237,6 +237,12 @@ static uint8_t searchNumFormatInStr(uint8_t* input_p, uint8_t inputLen){
 
 //interne-FSM-Zustand-Handler-Implementierung
 //Sync
+/**
+ * \brief Beginn der Synchronisation
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_syncStartSHandlerFunc(){
 	uint8_t retVal = RADAR_SYNC_FSM_RESET_MSG_BEGIN_STATE;
 	uint8_t check = (radar_programPos == COM_PROGRAMM_NORMAL_POS) || (radar_programPos == COM_PROGRAMM_TX_POS);
@@ -252,6 +258,12 @@ static uint8_t radar_syncStartSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Erkennung des START-Bytes Daten der Rücksetznachricht
+ * zum Beginnen des Empfangenvorganges und Speichern des START-Bytes
+ * im FIFO-Buffer
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_syncResetMsgBeginSHandlerFunc(){
 	uint8_t retVal = RADAR_SYNC_FSM_RESET_MSG_RX_STATE;
 	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength == 1);
@@ -275,6 +287,12 @@ static uint8_t radar_syncResetMsgBeginSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Empfangen der Daten der Rücksetznachricht vom Radar
+ * und Speichern dieser im FIFO-Buffer
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_syncResetMsgRxSHandlerFunc(){
 	uint8_t retVal = RADAR_SYNC_FSM_RESET_MSG_RX_STATE;
 	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength==1);
@@ -300,6 +318,12 @@ static uint8_t radar_syncResetMsgRxSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Empfangen des START-Bytes der Datennachricht
+ * und Speichern dieser im FIFO-Buffer
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_syncDataMsgBeginSHandlerFunc(){
 	uint8_t retVal = RADAR_SYNC_FSM_DATA_MSG_RX_STATE;
 	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength==1) &&\
@@ -318,6 +342,12 @@ static uint8_t radar_syncDataMsgBeginSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Empfangen der Daten der Datennachricht
+ * und Speichern dieser im FIFO-Buffer
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_syncDataMsgRxSHandlerFunc(){
 	uint8_t retVal = RADAR_SYNC_FSM_DATA_MSG_RX_STATE;
 	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength == 1);
@@ -342,6 +372,12 @@ static uint8_t radar_syncDataMsgRxSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Sperrzustand (Pause-Zustand) zum Vermeiden der unerwünschten USART-Interrupt
+ * oder des unerwünschten Aktivieren der FSM
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_syncEndSHandlerFunc(){
 	return RADAR_SYNC_FSM_END_STATE;
 }
