@@ -1,3 +1,12 @@
+/**
+ * ioModul.h
+ * Description: Quellcode-Teil der ioModul.h-Datei
+ * Author: Thach
+ * Created: 10/05/2023
+ * Version: 1.0
+ * Revision: 1.0
+ */
+
 #include "ioModul.h"
 
 static uint8_t buffer[BUFFER_MAX_LENGTH] = {0};
