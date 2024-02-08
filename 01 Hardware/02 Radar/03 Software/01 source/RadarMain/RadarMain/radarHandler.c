@@ -512,6 +512,12 @@ static uint8_t radar_dataEndSHandlerFunc(){
 }
 
 //Externe-FSM
+/**
+ * \brief Beginn der Synchronisation
+ *
+ *
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_mainSyncHandlerFunc(){
 	uint8_t retVal = RADAR_MAIN_FSM_SYNC_STATE;
 	uint8_t check = radar_mgr.init && radar_ioStreamStatusAvai() && radar_ioStreamDataAvai();
@@ -525,6 +531,12 @@ static uint8_t radar_mainSyncHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Warten auf die Rückmeldung vom Radar
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_mainSyncPollingSHandlerFunc(){
 	uint8_t retVal = RADAR_MAIN_FSM_SYNC_POLLING_STATE;
 	if (radar_mgr.syncStatus){
@@ -545,6 +557,12 @@ static uint8_t radar_mainSyncPollingSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Überprüfen und Auswerten der empfangenen Daten
+ * und Speichern der Messdaten
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_mainSyncDataCheckSHandlerFunc(){
 	uint8_t retVal = RADAR_MAIN_FSM_DATA_REQ_STATE;
 	if (radar_status.dataBf.lineStatus || radar_status.dataBf.timeOut){
@@ -586,6 +604,12 @@ static uint8_t radar_mainSyncDataCheckSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Beginn des Datenempfangenvorgangs durch Senden einer Datenanfrage zum Radar
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_mainDataReqSHandlerFunc(){
 	uint8_t retVal = RADAR_MAIN_FSM_DATA_REQ_STATE;
 	uint8_t check = radar_mgr.init && radar_ioStreamStatusAvai() && radar_ioStreamDataAvai();
@@ -604,6 +628,12 @@ static uint8_t radar_mainDataReqSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Warten auf die Rückmeldung vom Radar
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_mainRspPollingSHandlerFunc(){
 	uint8_t retVal = RADAR_MAIN_FSM_RSP_POLLING_STATE;
 	if (radar_mgr.rxStatus){
@@ -624,6 +654,12 @@ static uint8_t radar_mainRspPollingSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Überprüfen der empfangenen Daten und Speichern der Messdaten 
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_mainDataCheckSHandlerFunc(){
 	uint8_t retVal = RADAR_MAIN_FSM_DATA_REQ_STATE;
 	uint8_t check = radar_status.dataBf.lineStatus || radar_status.dataBf.timeOut;
@@ -672,6 +708,12 @@ static uint8_t radar_mainDataCheckSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Beginn des Rücksetzvorganges durch Senden einer Rücksetzanfrage zum Radar
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_mainResetSHandlerFunc(){
 	uint8_t retVal = RADAR_MAIN_FSM_RESET_STATE;
 	uint8_t check = radar_mgr.init && radar_ioStreamStatusAvai() && radar_ioStreamDataAvai();
@@ -689,6 +731,12 @@ static uint8_t radar_mainResetSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Fehler-Behandlung: Wenn die Versuche 3 erreicht, wird die Rücksetzen durchgeführt
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_mainErrorSHandlerFunc(){
 	uint8_t retVal = RADAR_MAIN_FSM_DATA_REQ_STATE;
 	radar_tryTime--;
