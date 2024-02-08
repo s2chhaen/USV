@@ -1,6 +1,6 @@
 /*
  * main.h
- * Beschreibung: Header-Datei der main.c-Datei
+ * Description: Header-Datei der main.c-Datei
  * Created: 12/13/2023 2:55:29 PM
  * Author: Thach
  * Version: 1.1
