@@ -26,6 +26,13 @@ static int32_t qFormatARM2TI(int64_t input, uint16_t bits){
     return result;
 }
 
+/** \brief Initialisierung des Moduls
+ *
+ * \param inputFFCofs int16_t* Zeiger zum Filter-Koeffizienten-Array
+ * \param ffLen uint16_t Array-Länge
+ * \return void
+ *
+ */
 void fir_init(int16_t* inputFFCofs, uint16_t ffLen){
     uint8_t checkFf = ffLen==(FIR_FILTER_ORDER+1);
 
