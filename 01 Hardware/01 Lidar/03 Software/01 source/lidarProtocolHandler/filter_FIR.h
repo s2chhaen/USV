@@ -1,3 +1,13 @@
+/**
+ * filter_FIR.h
+ * Description: Header-Datei für Filterungsvorgang
+ * Author: Thach
+ * Created: 10/08/2023
+ * Version: 1.0
+ * Revision: 1.0
+ */
+
+
 #ifndef FILTER_FIR_H_INCLUDED
 #define FILTER_FIR_H_INCLUDED
 
