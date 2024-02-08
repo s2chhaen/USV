@@ -1021,7 +1021,7 @@ static uint8_t lidar_mainErrorSHandler(){
 /**
  * \brief Funktion zum Rückruf in der USART-TX-ISR
  * 
- * \param adress Adresse des Mikroncontrollers USART-Moduls
+ * \param adress Adresse des Ziel-Mikroncontrollers USART-Moduls
  * \param data Zeiger zu den zu weiter sendenden Daten
  * \param length Zeiger zur Datenlänge
  * \param max_length die maximalen verfügbaren Plätze im USART-FIFO
