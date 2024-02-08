@@ -1,3 +1,13 @@
+/**
+ * crcCalculator.h
+ * Description: Header-Datei für Checksum-Berechnung
+ * warning: crc16 wird spezifisch für Lidar LMS2xx implementiert
+ * Author: Thach
+ * Created: 10/08/2023
+ * Version: 1.0
+ * Revision: 1.0
+ */
+
 #ifndef CRCCALCULATOR_H_INCLUDED
 #define CRCCALCULATOR_H_INCLUDED
 
