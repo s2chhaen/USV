@@ -147,6 +147,16 @@ void writeFileInt32(uint8_t* name, uint16_t len, uint8_t format, int32_t* value,
     }
 }
 
+/** \brief Ausgabe der Daten in einem Text-Datei (Daten im Format 64-Bits)
+ *
+ * \param name uint8_t* Name der Text-Datei
+ * \param len uint16_t Länge der Namen
+ * \param format uint8_t Format csv oder txt
+ * \param value int64_t* Zeiger zur auszugebenden Daten
+ * \param valLen uint16_t Datenlänge
+ * \return void
+ *
+ */
 void writeFileInt64(uint8_t* name, uint16_t len, uint8_t format, int64_t* value, uint16_t valLen)
 {
     //TODO Fehlertrennung
