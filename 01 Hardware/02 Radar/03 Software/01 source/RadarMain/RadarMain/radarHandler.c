@@ -1,10 +1,10 @@
 /*
  * radarHandler.c
- *
+ * Beschreibung: Quellcode-Datei der radarHandler.h-Datei
  * Created: 12/12/2023 11:56:26 AM
  * Author: Thach
  * Version: 1.0
- * Revision: 1.1
+ * Revision: 1.2
  */ 
 
 #include "radarHandler.h"
