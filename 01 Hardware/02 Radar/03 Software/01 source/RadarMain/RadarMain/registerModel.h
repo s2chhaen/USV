@@ -1,6 +1,6 @@
 /*
  * registerModel.h
- * Beschreibung: Struktur eines 8-Bits-langen Registers
+ * Description: Struktur eines 8-Bits-langen Registers
  * Created: 12/15/2023 2:16:11 AM
  * Author: Thach
  * Version: 1.0
