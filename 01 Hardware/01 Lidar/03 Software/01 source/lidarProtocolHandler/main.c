@@ -1,3 +1,13 @@
+/**
+ * main.c
+ * Description: Hauptdatei, wo das Hauptprogramm implementiert wird,
+ * für Versuch im Abschnitt 6.1.2 (Dokumentation)
+ * Author: Thach
+ * Created: 10/07/2023 3:13:45 PM
+ * Version: 1.0
+ * Revision: 1.0
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -26,7 +36,7 @@ int main()
     int32_t measuredVal[800] = {0};
     uint16_t measuredValLen = sizeof(measuredVal)/sizeof(int32_t);
     int64_t output[800] = {0};
-    //Messwerte
+    //Messwerte lesen
     readFile("30h-01h-Messwerte-anfordern.txt");
     getData(data,&dataLen);
     protocolCheck = checkData(data,dataLen);
@@ -38,11 +48,14 @@ int main()
         measuredVal[i] <<= FIXED_POINT_BITS;
 
     }
+    //schreiben der ungefilterten Daten in Matlab-Ordner
     writeFileInt32((uint8_t*)"../Lidar-Algorithmus/lidarValues_raw", \
                    sizeof("../Lidar-Algorithmus/lidarValues_raw")/sizeof(uint8_t), \
                    TEXT_FORM, measuredVal,measuredValLen);
+    //Filterung mit FIR-Filter
     fir_init((int16_t*)wr_num,wr_numLen);
     fir_runFiP(measuredVal,output,measuredValLen);
+    //schreiben der gefilterten Daten in Matlab-Ordner
     writeFileInt64((uint8_t*)"../Lidar-Algorithmus/lidarValues_filtered", \
                    sizeof("../Lidar-Algorithmus/lidarValues_filtered")/sizeof(uint8_t), \
                    TEXT_FORM, output,measuredValLen);
