@@ -122,6 +122,12 @@ radar_mainFsmSHandlerFunc_t radar_mainFsmLookupTable[RADAR_MAIN_FSM_STATE_NUM] =
 
 //interne verwendete Funktionen
 
+/**
+ * \brief Überprüfen, ob das FIFO-Buffer voll ist oder nicht
+ * 
+ * 
+ * \return uint8_t 1: voll, 0: nicht voll
+ */
 static inline uint8_t checkFIFOFullState(){//TODO test again
 	return (radar_fifo.wPtr==radar_fifo.rPtr);
 }
