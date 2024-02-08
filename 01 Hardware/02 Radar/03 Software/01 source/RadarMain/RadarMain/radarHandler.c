@@ -184,6 +184,12 @@ static inline uint8_t radar_ioStreamStatusAvai(){
 	return !(radar_ioStream->val & (1 << STREAM_RADAR_STATUS_BIT_POS));
 }
 
+/**
+ * \brief Überprüfung, ob das IO-Stream für Datensenden frei ist
+ * 
+ * 
+ * \return uint8_t 0: frei, sonst nicht
+ */
 static inline uint8_t radar_ioStreamDataAvai(){
 	return !(radar_ioStream->val & (1 << STREAM_RADAR_DATA_BIT_POS));
 }
