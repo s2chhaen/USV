@@ -505,7 +505,7 @@ static uint8_t radar_dataRXTerminalSHandlerFunc(){
  * \brief Sperrzustand (Pause-Zustand) zum Vermeiden der unerwünschten USART-Interrupt
  * oder des unerwünschten Aktivieren der FSM
  *
- * \return uint8_t
+ * \return uint8_t der nächste Zustand
  */
 static uint8_t radar_dataEndSHandlerFunc(){
 	return RADAR_DATA_FSM_END_STATE;
