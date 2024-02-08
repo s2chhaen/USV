@@ -1,10 +1,10 @@
 /*
  * radarDataPrc.h
- *
+ * Description: Header-Datei der Datenverarbeitungseinheit
  * Created: 12/19/2023 5:54:04 PM
  * Author: Thach
  * Version: 1.0
- * Revision: 1.1
+ * Revision: 1.2
  */ 
 
 
