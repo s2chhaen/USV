@@ -28,7 +28,6 @@ int main()
     int64_t output[800] = {0};
     //Messwerte
     readFile("30h-01h-Messwerte-anfordern.txt");
-    //readFile("36h-02h-Messwerte-anfordern.txt");
     getData(data,&dataLen);
     protocolCheck = checkData(data,dataLen);
     dataLen = sizeof(data)/sizeof(uint8_t);
