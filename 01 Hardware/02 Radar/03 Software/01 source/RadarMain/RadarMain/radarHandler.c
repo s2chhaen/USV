@@ -128,15 +128,27 @@ radar_mainFsmSHandlerFunc_t radar_mainFsmLookupTable[RADAR_MAIN_FSM_STATE_NUM] =
  * 
  * \return uint8_t 1: voll, 0: nicht voll
  */
-static inline uint8_t checkFIFOFullState(){//TODO test again
+static inline uint8_t checkFIFOFullState(){
 	return (radar_fifo.wPtr==radar_fifo.rPtr);
 }
 
-static inline uint8_t checkFIFOEmptyState(){//TODO test again
+/**
+ * \brief  Überprüfen, ob das FIFO-Buffer leer ist oder nicht
+ *
+ *
+ * \return uint8_t 1: leer, 0: nicht leer
+ */
+static inline uint8_t checkFIFOEmptyState(){
 	return (radar_fifo.wPtr==radar_fifo.rPtr) && (!radar_fifo.full);
 }
 
-static inline uint8_t getFIFODataNum(){//TODO test again
+/**
+ * \brief Ausgabe der Anzahl der Zeichenfolgen im FIFO
+ * 
+ * 
+ * \return uint8_t die Anzahl der empfangenen Daten vom Radar
+ */
+static inline uint8_t getFIFODataNum(){
 	uint8_t result;
 	if (radar_fifo.full){
 		result = RADAR_RX_STR_FIFO_LEN;
