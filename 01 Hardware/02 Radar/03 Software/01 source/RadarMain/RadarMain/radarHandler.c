@@ -777,6 +777,15 @@ static bool radar_callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, 
 	return true;
 }
 
+/**
+ * \brief Funktion zum Rückruf in der USART-RX-ISR
+ * 
+ * \param adress Adresse des Mikroncontrollers USART-Moduls
+ * \param data Zeiger zu schon empfangenen Daten
+ * \param length die Datenlänge
+ * 
+ * \return bool immer true/wahr
+ */
 static bool radar_callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 	radar_rxTempLength = length;
 	radar_rxTempData = data;
