@@ -1,3 +1,13 @@
+/**
+ * ioModul.h
+ * Description: Header-Datei für Datenlesen aus der Text-Datei und
+ * -schreiben in Form der Text-Datei
+ * Author: Thach
+ * Created: 10/05/2023
+ * Version: 1.0
+ * Revision: 1.0
+ */
+
 #ifndef _IOMODUL_H_
 #define _IOMODUL_H_
 
