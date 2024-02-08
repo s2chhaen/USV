@@ -9,8 +9,19 @@
 
 #include "radarDataPrc.h"
 
-extern void data_compareNReturn(float vel, float dis, uint8_t* output_p, uint8_t outputLen){
-	if (outputLen >= 3){
+/**
+ * \brief Umwandlung der Geschwindigkeit und des Abstandes in Q4.4 und UQ7.4-Format
+ * und Speichern der beiden in einem Ausgabe-Buffer 
+ *
+ * \param vel die Geschwindigkeit in Floating-Point-Format
+ * \param dis der Abstand in Floating-Point-Format
+ * \param output_p das Ausgabe-Buffer
+ * \param outputLen die Länge des Ausgabe-Buffers
+ * 
+ * \return extern void
+ */
+void data_compareNReturn(float vel, float dis, uint8_t* output_p, uint8_t outputLen){
+	if (outputLen >= 3){//TODO test again
 		int8_t tempVel = (int8_t)(vel * (1 << VEL_FIXED_POINT_BIT));
 		uint16_t tempDis = (uint16_t) (dis *(1 << DIS_FIXED_POINT_BIT));
 		output_p[0] = tempDis & 0xff;
