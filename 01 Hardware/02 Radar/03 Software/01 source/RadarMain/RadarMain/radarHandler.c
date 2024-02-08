@@ -839,6 +839,12 @@ uint8_t radar_initDev(const usartConfig_t* config, float* outVel_p, float* outDi
 	return result;
 }
 
+/**
+ * \brief Rückgabe der Zustand-Register im Form eines konstanten Wertes
+ * 
+ * 
+ * \return const radarStatus_t* Zeiger zum Zustand-Register, das in Form eines konstanten Wertes
+ */
 const radarStatus_t* radar_getStatus(){
 	return (const radarStatus_t*)&radar_status;
 }
