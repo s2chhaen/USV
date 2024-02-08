@@ -23,7 +23,6 @@ void fir_init(int16_t* inputFFCofs, uint16_t ffLen){
     if(!checkFf){
         printf("Die Ordnung von Filterpolynom nicht gleich der vom Filter");
     } else{
-        //TODO Implementiert es mit memcpy von string.h
         for(int i = 0; i< ffLen; i++){
             ffCofs[i] = qFormatARM2TI(inputFFCofs[i],FIXED_POINT_BITS);
             ffCofsFloat[i] = inputFFCofs[i]*1.0000/CONVERT_FACTOR_INT;
@@ -41,8 +40,6 @@ void fir_runFiP(int32_t* data, int64_t* output, uint16_t len){
     int64_t tempOut[OUTPUT_MAX_LEN] = {0};
     int32_t temp = 0;
     const uint8_t bufferLen = FIR_OLD_VALUES_BUFFER_LEN;
-    //TODO zu testen
-    //memcpy(tempBuff,data,len*sizeof(tempBuff[0])/sizeof(uint8_t));
     for(int i = 0; i<len; i++)
     {
         tempBuff[i] = (int64_t)data[i];
@@ -59,24 +56,13 @@ void fir_runFiP(int32_t* data, int64_t* output, uint16_t len){
     for(int i = 0; i < len; i++)
     {
         tempOut[i] = ((int64_t)ffCofs[0])*((int64_t)tempBuff[i])>>FIXED_POINT_BITS;
-//#define FIR_TEMP_VAR_P
-#ifdef FIR_TEMP_VAR_P
-        idxPtr = old.endIdx;//P1
-#else
-        old.beginIdx = old.endIdx;//P2
-#endif // FIR_TEMP_VAR_P
+        old.beginIdx = old.endIdx;
         for(int j = 1; j <= FIR_FILTER_ORDER; j++)
         {
-
-#ifdef FIR_TEMP_VAR_P
-            tempOut[i] += ((int64_t)ffCofs[j])*((int64_t)old.data[(idxPtr-j+1+bufferLen)%bufferLen])>>FIXED_POINT_BITS;///OK
-#else
-            tempOut[i] += ((int64_t)ffCofs[j])*((int64_t)old.data[old.beginIdx])>>FIXED_POINT_BITS;///OK
+            tempOut[i] += ((int64_t)ffCofs[j])*((int64_t)old.data[old.beginIdx])>>FIXED_POINT_BITS;
             old.beginIdx--;
-#endif // FIR_TEMP_VAR_P
         }
         //Aktualisieren der alten Werte
-        //old.beginIdx++;
         old.endIdx++;
         old.data[old.endIdx] = tempBuff[i];
     }
@@ -84,6 +70,5 @@ void fir_runFiP(int32_t* data, int64_t* output, uint16_t len){
     for(int i = phaseShift_sample; i<len; i++)
     {
         output[i-phaseShift_sample] = tempOut[i];
-        //printf("output[%d] = %" PRIi64 "\n",i-phaseShift_sample,tempOut[i]);///TODO löschen nach dem Testen
     }
 }
