@@ -174,6 +174,12 @@ static inline uint8_t getFIFOFreeSpace(){
 	return result;
 }
 
+/**
+ * \brief Überprüfung, ob das IO-Stream für Zustandsenden frei ist
+ * 
+ * 
+ * \return uint8_t 0: frei, sonst nicht
+ */
 static inline uint8_t radar_ioStreamStatusAvai(){
 	return !(radar_ioStream->val & (1 << STREAM_RADAR_STATUS_BIT_POS));
 }
