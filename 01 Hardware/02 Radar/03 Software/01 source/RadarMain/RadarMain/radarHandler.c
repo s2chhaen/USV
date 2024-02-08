@@ -753,6 +753,16 @@ static uint8_t radar_mainErrorSHandlerFunc(){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //in ISR zurückgerufte Funktionen
+/**
+ * \brief Funktion zum Rückruf in der USART-TX-ISR
+ * 
+ * \param adress Adresse des Ziel-Mikroncontrollers USART-Moduls
+ * \param data Zeiger zu den zu weiter sendenden Daten
+ * \param length Zeiger zur Datenlänge
+ * \param max_length die maximalen verfügbaren Plätze im USART-FIFO
+ * 
+ * \return bool immer true/wahr
+ */
 static bool radar_callbackTx(uint8_t* adress, uint8_t* data[], uint8_t* length, uint8_t max_length){
 	radar_txTempLength = length;
 	radar_txTempMax_length = max_length;
