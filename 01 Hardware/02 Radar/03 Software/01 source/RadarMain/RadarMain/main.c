@@ -1,6 +1,6 @@
 /*
  * main.c
- * Beschreibung: Hauptdatei, wo das Hauptprogramm implementiert wird
+ * Description: Hauptdatei, wo das Hauptprogramm implementiert wird
  * Created: 12/19/2023 12:32:42 PM
  * Author : Thach
  * Version: 1.1
