@@ -383,12 +383,24 @@ static uint8_t radar_syncEndSHandlerFunc(){
 }
 
 //Getter(Datenempfangen)-FSM
+/**
+ * \brief Beginn des Datenempfangvorganges
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_dataStartSHandlerFunc(){
 	radar_mode = RADAR_GETTER_MODE;
 	radar_mgr.rxStatus = 1;
 	return RADAR_DATA_FSM_RX_PREP_STATE;
 }
 
+/**
+ * \brief Vorbereitung zum Empfangen der Daten
+ *
+ *
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_dataRXPrepSHandlerFunc(){
 	uint8_t retVal = RADAR_DATA_FSM_RX_BEGIN_STATE;
 	uint8_t check = (radar_programPos == COM_PROGRAMM_TX_POS);
@@ -403,6 +415,12 @@ static uint8_t radar_dataRXPrepSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Erkennung des Datenempfangens durch Erkennung und Speichern des START-Bytes
+ *
+ *
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_dataRXBeginSHandlerFunc(){
 	uint8_t retVal = RADAR_DATA_FSM_RX_STATE;
 	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength == 1) &&\
@@ -422,6 +440,12 @@ static uint8_t radar_dataRXBeginSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Empfangen und Speichern der Daten vom Radar
+ * 
+ * 
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_dataRXSHandlerFunc(){
 	uint8_t retVal = RADAR_DATA_FSM_RX_STATE;
 	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength == 1);
@@ -442,6 +466,12 @@ static uint8_t radar_dataRXSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Beendung des Datenempfangendaten, wenn die Anzahl der Nachricht 2 erreicht.
+ * Speichern des END-Bytes im FIFO-Buffer und Bilden eines Zeichenfolge (Hizufüge \n am Ende)
+ *
+ * \return uint8_t der nächste Zustand
+ */
 static uint8_t radar_dataRXTerminalSHandlerFunc(){
 	uint8_t retVal = RADAR_DATA_FSM_END_STATE;
 	uint8_t check = (radar_programPos == COM_PROGRAMM_RX_POS) && (radar_rxTempLength == 1) &&\
@@ -471,6 +501,12 @@ static uint8_t radar_dataRXTerminalSHandlerFunc(){
 	return retVal;
 }
 
+/**
+ * \brief Sperrzustand (Pause-Zustand) zum Vermeiden der unerwünschten USART-Interrupt
+ * oder des unerwünschten Aktivieren der FSM
+ *
+ * \return uint8_t
+ */
 static uint8_t radar_dataEndSHandlerFunc(){
 	return RADAR_DATA_FSM_END_STATE;
 }
