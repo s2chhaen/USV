@@ -158,7 +158,13 @@ static inline uint8_t getFIFODataNum(){
 	return result;
 }
 
-static inline uint8_t getFIFOFreeSpace(){//TODO test again
+/**
+ * \brief Ausgabe der freien Plätze im FIFO-Buffer
+ * 
+ * 
+ * \return uint8_t die noch verfügbaren Plätze im FIFO-Buffer
+ */
+static inline uint8_t getFIFOFreeSpace(){
 	uint8_t result;
 	if (radar_fifo.empty){
 		result = 0;
