@@ -1,3 +1,12 @@
+/**
+ * filter_FIR.c
+ * Description: Quellcode-Datei für filter_FIR.h-Datei
+ * Author: Thach
+ * Created: 10/08/2023
+ * Version: 1.0
+ * Revision: 1.0
+ */
+
 #include "filter_FIR.h"
 
 static uint8_t init = 0;
