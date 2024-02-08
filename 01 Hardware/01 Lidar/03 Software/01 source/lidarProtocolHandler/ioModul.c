@@ -97,6 +97,16 @@ void getData(uint8_t* data, uint16_t* dataLen)
     }
 }
 
+/** \brief Ausgabe der Daten in einem Text-Datei
+ *
+ * \param name uint8_t* Name der Text-Datei
+ * \param len uint16_t Länge der Namen
+ * \param format uint8_t Format csv oder txt
+ * \param value int32_t* Zeiger zur auszugebenden Daten
+ * \param valLen uint16_t Datenlänge
+ * \return void
+ *
+ */
 void writeFileInt32(uint8_t* name, uint16_t len, uint8_t format, int32_t* value, uint16_t valLen)
 {
     //TODO Fehlertrennung
