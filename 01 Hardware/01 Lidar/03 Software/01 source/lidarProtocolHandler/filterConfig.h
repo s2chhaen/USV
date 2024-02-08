@@ -1,3 +1,12 @@
+/**
+ * filterConfig.h
+ * Description: Header-Datei zum Speichern der Filter-Parameter
+ * Author: Thach
+ * Created: 10/08/2023
+ * Version: 1.0
+ * Revision: 1.0
+ */
+
 #ifndef FILTERCONFIG_H_INCLUDED
 #define FILTERCONFIG_H_INCLUDED
 
