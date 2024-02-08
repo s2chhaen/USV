@@ -49,6 +49,14 @@ void fir_init(int16_t* inputFFCofs, uint16_t ffLen){
     }
 }
 
+/** \brief Ausführung der Filterung
+ *
+ * \param data int32_t* Eingabe-Daten-Array
+ * \param output int64_t* Ausgabe-Array
+ * \param len uint16_t Länge des Ausgabe/Eingabe-Arrays (Annahme: beide gleicheinander)
+ * \return void
+ *
+ */
 void fir_runFiP(int32_t* data, int64_t* output, uint16_t len){
     uint8_t idxPtr = 0;
     uint8_t phaseShift_sample = 0;
