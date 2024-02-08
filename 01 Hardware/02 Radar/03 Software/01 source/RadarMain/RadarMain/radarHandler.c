@@ -799,6 +799,17 @@ static bool radar_callbackRx(uint8_t adress, uint8_t data[], uint8_t length){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Extern
+/**
+ * \brief Initialisierung des Radar-Handler-Moduls
+ * 
+ * \param config Zeiger zur Struktur der Konfigurationsparameter
+ * \param outVel_p Zeiger zum externen Buffer, wobei die Geschwindigkeit gespeichert wird
+ * \param outDis_p Zeiger zum externen Buffer, wobei der Abstand gespeichert wird
+ * \param outDataState_p Zeiger zum Flag, das als Kennzeichen für die Datenverfügbarkeit dient
+ * \param io_p Zeiger zum IO-Stream-Register
+ * 
+ * \return uint8_t 0: erfolgreich, sonst: Fehler
+ */
 uint8_t radar_initDev(const usartConfig_t* config, float* outVel_p, float* outDis_p,\
 					  uint8_t* outDataState_p, reg8Model_t* io_p){
 	uint8_t result = NO_ERROR;
