@@ -60,5 +60,6 @@ int main()
                    sizeof("../Lidar-Algorithmus/lidarValues_filtered")/sizeof(uint8_t), \
                    TEXT_FORM, output,measuredValLen);
 #endif // SEG_1_ACTIVE
+    printf("Ausgabe in .\\01 Hardware\\01 Lidar\\03 Software\\01 source\\Lidar-Algorithmus");
     return 0;
 }
