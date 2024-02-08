@@ -3,7 +3,7 @@
  * Description: Hauptdatei, wo das Hauptprogramm implementiert wird,
  * für Versuch im Abschnitt 6.1.2 (Dokumentation)
  * Author: Thach
- * Created: 10/07/2023 3:13:45 PM
+ * Created: 10/07/2023
  * Version: 1.0
  * Revision: 1.0
  */
