@@ -76,6 +76,13 @@ void readFile(char* path)
     }
 }
 
+/** \brief Ausgabe der gelesen Daten aus dem lokalen Buffer
+ *
+ * \param data uint8_t* Zeiger zum Ausgabe-Buffer
+ * \param dataLen uint16_t* Zeiger zur Variable zum Speichern der Datenlänge
+ * \return void
+ *
+ */
 void getData(uint8_t* data, uint16_t* dataLen)
 {
     if((*dataLen) > stringPtr)
