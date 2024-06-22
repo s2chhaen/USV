@@ -32,6 +32,9 @@ dist/
 # Custom ignores
 # ignores folder
 
+*.raw
+*.b#*
+*.s#*
 
 
 
