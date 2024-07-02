@@ -12,3 +12,8 @@ MQTT_to_SQL.pdf | Umwandlung von APRS-Daten in MQTT Daten sowie Ablage der MQTT-
 
 
 ![MMC-Datenfluss](Datenfluss.png "Datenfluss")
+
+
+### MMC-Dashbord 
+
+![MMC-Dashboard](Grafana.png "Dashboard")
