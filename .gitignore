@@ -35,6 +35,7 @@ dist/
 *.raw
 *.b#*
 *.s#*
+*.graphml
 
 
 
