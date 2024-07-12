@@ -1,0 +1,15 @@
+{
+    "ServerHost": "euro.aprs2.net",
+    "ServerPort": 14580,
+    "Callsign": "DL3AKB",
+    "SSID": "-8",
+    "Password": "MjAzOTc=",
+    "Latitude": "5039.91N",
+    "Longitude": "01107.22E",
+    "Comment": "USV Nordwind",
+    "Status": "on trip",
+    "Status_Packet": false,
+    "Primary_Symbol_Key": "/",
+    "Secondary_Symbol_Key": "s",
+    "Delay": 30
+}
