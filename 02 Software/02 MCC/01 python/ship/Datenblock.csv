@@ -1,9 +1,9 @@
 Adresse;Byte;Bezeichner;Funktion;Wert
-0;1;SB1;Error Status global;0,0
+0;1;SB1;Error Status global;80,0
 1;4;SB2;Längengrad (Fusion);0,0
 5;4;SB3;Breitengrad (Fusion);0,0
 9;1;SB4;SatFix (deprecate);0,0
-A;2;SB5;Geschwindigkeit (Fusion);6,0
+A;2;SB5;Geschwindigkeit (Fusion);4,0
 C;2;SB6;Kurswinkel (Fusion);293,0
 E;3;SB7;Timestamp;0,0
 12;2;SB8;Radar Entfernung;0,0
@@ -26,14 +26,14 @@ E;3;SB7;Timestamp;0,0
 108;8;AF2;Führung Punkt B, Länge, Breite;0,0
 110;2;AF3;Führung Geschwindigkeit;0,0
 112;2;AF4;Führung Epsilon;0,0
-120;2;AS1;Schub;100,0
-122;2;AS2;Ruder;150,0
-130;2;EM1;Spannung Akku 1;24,20
-132;2;EM2;Strom Akku 1;55,40
-134;2;EM3;Ladung Akku 1;55,00
-136;2;EM4;Spannung Akku 2;19,30
-138;2;EM5;Strom Akku 2;51,70
-13A;2;EM6;Ladung Akku 2;52,00
+120;2;AS1;Schub;0,9
+122;2;AS2;Ruder;0,5
+130;2;EM1;Spannung Akku 1;0,0
+132;2;EM2;Strom Akku 1;55,0
+134;2;EM3;Restladung Akku 1;55,00
+136;2;EM4;Spannung Akku 2;0,0
+138;2;EM5;Strom Akku 2;52,0
+13A;2;EM6;Restladung Akku 2;52,00
 13C;2;EM7;Ladespannung Solar;24,00
 13E;1;EM8;Board-Temperatur;18,60
 13F;2;EM9;Spannung Lidar;24,10
