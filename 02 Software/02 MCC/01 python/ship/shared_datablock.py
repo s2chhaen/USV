@@ -47,10 +47,10 @@ data = {
     "AS2": 0, # Ruder
     "EM1": 0, # Spannung Akku 1
     "EM2": 0, # Strom Akku 1
-    "EM3": 0, # Ladung Akku 1
+    "EM3": 0, # Restladung Akku 1
     "EM4": 0, # Spannung Akku 2
     "EM5": 0, # Strom Akku 2
-    "EM6": 0, # Ladung Akku 2
+    "EM6": 0, # Restladung Akku 2
     "EM7": 0, # Ladespannung Solar
     "EM8": 0, # Board-Temperatur
     "EM9": 0, # Spannung Lidar
