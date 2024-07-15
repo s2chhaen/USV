@@ -132,7 +132,7 @@ read_config()  # APRS config
 check_config()
 t_paket = 0  # Start Number of Telemetrie-Paket
 p_delay = 6  # time between two frames
-tx_flag = 1  # 0 without transmit / 1 transmit over APRS
+tx_flag = 0  # 0 without transmit / 1 transmit over APRS
 
 while True:
     aprs_msg = dz_ship.get_data(p_delay, t_paket)

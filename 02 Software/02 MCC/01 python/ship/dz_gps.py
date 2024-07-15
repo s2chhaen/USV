@@ -4,6 +4,7 @@ Created on Thu Jul 11 12:59:51 2024
 
 Program history
 11.07.2024    V. 00.01    start
+15.07.2024    V. 00.02    adjust fictional velocity data to reality
 
 GPS Simulator
 The program dz_gps.py reads a planned route from a csv table and determines the 
@@ -15,7 +16,7 @@ to the get_data(delay) function.
 @author: Prof. Grabow (grabow@amesys.de)
 """
 
-__version__ = '00.01'
+__version__ = '00.02'
 __author__ = 'Joe Grabow'
 
 import shared_datablock
@@ -72,7 +73,10 @@ def get_data(delay):
         distance = get_distance(lat1, long1, lat2, long2) * 1000  # distance in Meter
         bearing = get_bearing(lat1, long1, lat2, long2)  # bearing in degree
         velocity = distance / delay  # velocity in m/s
-        shared_datablock.data["SB5"] = velocity  # velocity  
+        velocity = velocity / 5  # adjust fictional data to reality
+        if velocity > 4.066:  # limit for 100% Trust
+            velocity = 4.066
+        shared_datablock.data["SB5"] = velocity  # velocity in m/s  
         shared_datablock.data["SB6"] = bearing  # bearing   
     
     shared_datablock.data["SB2"] = long1  # longitude
