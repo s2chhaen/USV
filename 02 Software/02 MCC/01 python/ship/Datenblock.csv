@@ -1,7 +1,7 @@
 Adresse;Byte;Bezeichner;Funktion;Wert
 0;1;SB1;Error Status global;80,0
-1;4;SB2;Längengrad (Fusion);0,0
-5;4;SB3;Breitengrad (Fusion);0,0
+1;4;SB2;Längengrad (Fusion);12,3
+5;4;SB3;Breitengrad (Fusion);7,9
 9;1;SB4;SatFix (deprecate);0,0
 A;2;SB5;Geschwindigkeit (Fusion);4,0
 C;2;SB6;Kurswinkel (Fusion);293,0
