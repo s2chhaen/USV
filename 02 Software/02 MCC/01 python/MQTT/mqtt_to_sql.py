@@ -54,7 +54,7 @@ def connect_to_database():
     try:
         conn = mysql.connector.connect(
             host=config["sql"]["host"],
-            user=config["sql"]["username"],
+            user=base64.b64decode(config["sql"]["username"]).decode('utf-8'),
             password=base64.b64decode(config["sql"]["password"]).decode('utf-8'),
             database=config["sql"]["database"]
         )
