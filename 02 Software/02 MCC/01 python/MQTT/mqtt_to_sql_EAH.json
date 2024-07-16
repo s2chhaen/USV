@@ -1,12 +1,12 @@
 {
 	"mqtt": {
-		"broker": "agg-usv.one.fc.eah-jena.de",
+		"broker": "xx.xx.xx.xx",
 		"port": 1883,
 		"username": " ",
 		"password": " "
 	},
 	"sql": {
-		"host": "agg-usv.one.fc.eah-jena.de",
+		"host": "xx.xx.xx.xx",
 		"username": "YWRtaW4=",
 		"password": "dXN2ZWFo",
 		"database": "usv"
