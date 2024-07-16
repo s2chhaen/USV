@@ -22,14 +22,13 @@ Program history
 05.02.2024    V. 1.2    Fehlerbehandlung
 06.02.2024    V. 1.3    Ausnahme für GPS-Koordinaten
 15.07.2024    V. 1.4    Tabelle angepaßt, Logging hinzugefügt
+16.07.2024    V. 1.5    Kommandozeilenparameter zum Logging
 
 @author: Prof. Jörg Grabow (grabow@amesys.de)
 """
 
 __version__ = '1.4'
 __author__ = 'Joe Grabow'
-
-
 import json
 import base64
 import paho.mqtt.client as mqtt
@@ -37,20 +36,31 @@ import mysql.connector
 import time
 import atexit
 import logging
+import argparse
 
+# ArgumentParser erstellen
+parser = argparse.ArgumentParser(description="Skript mit Logging.")
+parser.add_argument('--log', action='store_true', help='Aktiviere Logging')
+args = parser.parse_args()  # Argumente parsen
 
-# logging
-logfile = 'mqtt_to_sql.log'
+if args.log:
+    # Logging
+    logfile = 'mqtt_to_sql.log'
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        filename=logfile,
+        filemode='w'
+        )
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    filename=logfile,  
-    filemode='w'   
-)
+# Konfiguration laden
+def read_config():
+    with open("mqtt_to_sql.json", "r") as config_file:
+        config_data = json.load(config_file)
+    return config_data
 
-# SQL-Server
-def connect_to_database():
+# SQL-Server Verbindung
+def connect_to_database(config):
     try:
         conn = mysql.connector.connect(
             host=config["sql"]["host"],
@@ -61,12 +71,11 @@ def connect_to_database():
         logging.info('SQL Datenbank verbunden')
         return conn
     except mysql.connector.Error as e:
-        print(f"Fehler bei der Verbindung zur Datenbank: {e}")
+        logging.error(f"Fehler bei der Verbindung zur Datenbank: {e}")
         return None
 
-
-# MQTT-Broker
-def connect_to_mqtt():
+# MQTT-Broker Verbindung
+def connect_to_mqtt(config, on_connect, on_message):
     client = mqtt.Client()
     client.on_connect = on_connect
     client.on_message = on_message
@@ -74,89 +83,61 @@ def connect_to_mqtt():
     client.connect(config["mqtt"]["broker"], config["mqtt"]["port"], 60)
     return client
 
-
-# close all connections
-def close_connections():
-    client.disconnect()
+# Verbindungen schließen
+def close_connections(client, conn):
+    if client.is_connected():
+        client.disconnect()
+        logging.info('MQTT-Broker getrennt')
     if conn:
         conn.close()
         logging.info('SQL Datenbank geschlossen')
-        logging.info('MQTT-Broker getrennt')
-
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         logging.info('MQTT-Broker verbunden')
-        # Topic abonnieren (Multi-level-Wildcard) 
         client.subscribe(config["topics"]["main"])
     else:
-        print(f"Verbindung fehlgeschlagen, Code: {rc}")
+        logging.error(f"Verbindung fehlgeschlagen, Code: {rc}")
 
-def read_config():
-    with open("mqtt_to_sql.json", "r") as config_file:
-        config_data = json.load(config_file)
-    return config_data
-
-
-# Callback-Funktion für den Empfang von MQTT Nachrichten
 def on_message(client, userdata, msg):
-    global config
-    
-    #print(f"Nachricht empfangen: {msg.payload.decode()} von Topic: {msg.topic}")
-    sql_table = config["Table"].get(msg.topic)  # Topic der SQL Tabelle zuordnen
-    #sql_table = config["Table"][msg.topic]  # Topic der SQL Tabelle zuordnen
+    sql_table = config["Table"].get(msg.topic)
     if not sql_table:
-        print(f"Keine Zuordnung für Topic '{msg.topic}' gefunden.")
+        logging.warning(f"Keine Zuordnung für Topic '{msg.topic}' gefunden.")
         return
 
     try:
-        if sql_table == "gps":  # Ausnahmebehandlung für GPS-Koordinaten
-            gps_position = msg.payload.decode()
-            latitude, longitude = map(float, gps_position.split("#"))
-            cursor.execute("INSERT INTO {} (Latitude, Longitude) VALUES (%s, %s)".format(sql_table), (latitude, longitude))
-        else:  # alle restlichen Topics
-            sql_payload = msg.payload.decode()  # Payload des Topic
-            cursor.execute("INSERT INTO {} (Messung) VALUES (%s)".format(sql_table), (sql_payload,))
-
+        payload = msg.payload.decode()
+        if sql_table == "gps":
+            latitude, longitude = map(float, payload.split("#"))
+            cursor.execute(f"INSERT INTO {sql_table} (Latitude, Longitude) VALUES (%s, %s)", (latitude, longitude))
+        else:
+            cursor.execute(f"INSERT INTO {sql_table} (Messung) VALUES (%s)", (payload,))
         conn.commit()
-        logging.info('SQL Daten geschrieben')
-        #print("Erfolgreich eingefügt.")
+        logging.info(f'Daten erfolgreich in Tabelle {sql_table} eingefügt')
     except Exception as e:
-        print(f"Fehler beim Einfügen: {e}")
+        logging.error(f"Fehler beim Einfügen: {e}")
 
-    return
+# Main
+if __name__ == "__main__":
+    print('MQTT to SQL gestartet')
+    logging.info('MQTT to SQL gestartet')
 
+    config = read_config()
+    conn = connect_to_database(config)
+    if not conn:
+        logging.error('Datenbankverbindung konnte nicht hergestellt werden. Programm wird beendet.')
+        exit(1)
 
-#def main():
-global config
+    cursor = conn.cursor()
 
-print('MQTT to SQL gestartet')
+    client = connect_to_mqtt(config, on_connect, on_message)
+    client.loop_start()
 
-# Lese die Konfigurationsdaten
-config = read_config()
+    atexit.register(close_connections, client, conn)
 
-# Verbindung zur Datenbank herstellen
-conn = connect_to_database()
-cursor = conn.cursor()  # Ein Cursor-Objekt erstellen
-
-# MQTT-Client initialisieren
-client = connect_to_mqtt()
-client.on_connect = on_connect
-client.on_message = on_message
-
-# Loop starten, um auf Nachrichten zu warten
-# client.loop_forever()
-client.loop_start()  # Starte den Netzwerk-Loop im Hintergrund
-    
-# MQTT-Nachrichten empfangen
-try:
-    while True:
-        time.sleep(0.1)  # kurze Pause, um Nachricht zu empfangen
-except KeyboardInterrupt:
-    client.loop_stop()
-    atexit.register(close_connections)
-
-
-
-
-
+    try:
+        while True:
+            time.sleep(0.1)
+    except KeyboardInterrupt:
+        client.loop_stop()
+        logging.info('Programm durch Benutzer beendet')
