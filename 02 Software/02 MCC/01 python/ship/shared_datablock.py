@@ -4,13 +4,14 @@ Created on Thu Jul 11 12:37:56 2024
 
 Program history
 11.07.2024    V. 00.01    start
+15.07.2024    V. 00.02    encoding ISO-8859-1
 
 USV Datenblock
 
 @author: Prof. Grabow (grabow@amesys.de)
 """
 
-__version__ = '00.01'
+__version__ = '00.02'
 __author__ = 'Joe Grabow'
 
 import csv
@@ -71,7 +72,7 @@ def read_csv_to_dict(file_path):
     """ read datablock from Datenblock.csv"""
     data_dict = {}
 
-    with open(file_path, 'r', newline='') as csvfile:
+    with open(file_path, 'r', newline='', encoding='ISO-8859-1') as csvfile:
         csv_reader = csv.reader(csvfile, delimiter=';')
         
         # Überspringe die erste Zeile
