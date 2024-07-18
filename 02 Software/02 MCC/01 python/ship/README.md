@@ -31,4 +31,8 @@ nautic.py | Tool für nautische Berechnungen
 
 ![GPS-System](dz_drive.png "USV-Drive")
 
+#### Datenkanal zum MQTT-Broker
+
+![GPS-System](dz_data2mqtt.png "MQTT-Datenkanal")
+
 
