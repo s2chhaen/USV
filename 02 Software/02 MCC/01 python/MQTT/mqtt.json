@@ -1,0 +1,27 @@
+{
+  "mqtt": {
+    "broker": "192.168.178.39",
+    "port": 1883,
+    "username": " ",
+    "password": " "
+  },
+  "topics": {
+    "USV/Position/GPS": "54.2805379546876#13.708937444731157",
+    "USV/Position/Latitude": "54.2805379546876",
+	"USV/Position/Longitude": "13.708937444731157",
+	"USV/Position/Geschwindigkeit": "11.1",
+    "USV/Position/Kurswinkel": "293",
+	"USV/Antrieb/Schub": "0",
+    "USV/Antrieb/Ruder": "-0.28",
+    "USV/Energie/Akku1/Spannung": "24.2",
+    "USV/Energie/Akku1/Strom": "55.4",
+    "USV/Energie/Akku1/Kapazitaet": "55",
+    "USV/Energie/Akku2/Spannung": "19.3",
+	"USV/Energie/Akku2/Strom": "51.6",
+    "USV/Energie/Akku2/Kapazitaet": "52",	
+    "USV/Energie/Solar/Spannung": "24.6",
+    "USV/Energie/Lidar/Spannung": "24.1",
+	"USV/System/Temperatur": "18.6",
+    "USV/Status/Errorbyte": "0011"		
+  }
+}
