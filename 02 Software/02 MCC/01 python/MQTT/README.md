@@ -7,7 +7,7 @@ mqtt_to_sql.py | MQTT-Client
 mqtt_to_sql.log | Logdatei für MQTT-Client
 lan_to_mqtt.py | Binary Daten vom WLan/Lan zum MQTT Broker senden
 mqtt.json | Konfiguration für MQTT-Broker
-dz_data2mqtt | Shared_Datablock an MQTT-Broker senden 
+dz_data2mqtt.py | Shared_Datablock an MQTT-Broker senden 
 
 
 ## Übersichtsdarstellung des Datenfluss der einzelnen Module
@@ -18,7 +18,7 @@ dz_data2mqtt | Shared_Datablock an MQTT-Broker senden
 
 #### Datenkanal zum MQTT-Broker
 
-![MQTT-Client](mqtt_to_sql.png "MQTT-Client")
+![MQTT-Client](lan_to_mqtt.png "MQTT-Client")
 
 
 
