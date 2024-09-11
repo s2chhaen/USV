@@ -1,0 +1,2 @@
+conversion.c:11:7:convFixedToF32	32	static
+conversion.c:26:6:convF32ToFixed	40	static

@@ -1,0 +1,3 @@
+debug.c:6:6:initDebug	8	static
+debug.c:10:6:sendFloatToUSB	72	static
+debug.c:16:6:sendStrToUSB	16	static

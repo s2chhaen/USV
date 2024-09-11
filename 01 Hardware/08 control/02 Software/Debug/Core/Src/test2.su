@@ -1,0 +1,6 @@
+test2.c:8:6:reverse	32	static
+test2.c:24:5:intToStr	32	static
+test2.c:43:6:ftoa	48	static
+test2.c:67:6:initTest2	8	static
+test2.c:72:6:sendFloatToUSB	72	static
+test2.c:85:6:sendStrToUSB	16	static

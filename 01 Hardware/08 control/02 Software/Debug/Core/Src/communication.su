@@ -1,0 +1,9 @@
+communication.c:17:6:initCom	8	static
+communication.c:23:8:updateSensorBlock	40	static
+communication.c:48:8:updateFuehrungsgrBlock	40	static
+communication.c:68:6:updateLocalData	24	static
+communication.c:116:8:readData	48	dynamic
+communication.c:177:8:updateStellgrBlock	24	static
+communication.c:188:6:updateBusData	24	static
+communication.c:202:8:sendData	40	dynamic
+communication.c:242:9:CRC8	24	static
