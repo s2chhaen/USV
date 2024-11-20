@@ -4,13 +4,14 @@ Created on Thu Jul 11 12:37:56 2024
 
 Program history
 11.07.2024    V. 00.01    start
+20.11.2024    V. 00.02    Lichterführung
 
 USV Datenblock
 
 @author: Prof. Grabow (grabow@amesys.de)
 """
 
-__version__ = '00.01'
+__version__ = '00.02'
 __author__ = 'Joe Grabow'
 
 import csv
@@ -54,6 +55,7 @@ data = {
     "EM7": 0, # Ladespannung Solar
     "EM8": 0, # Board-Temperatur
     "EM9": 0, # Spannung Lidar
+    "LF1": 0, # Licht ON/OFF
     "ER1": 0, # ESB GPS
     "ER2": 0, # ESB Kompass
     "ER3": 0, # ESB Control
@@ -63,6 +65,7 @@ data = {
     "ER7": 0, # ESB Antrieb
     "ER8": 0, # ESB Solar
     "ER9": 0, # ESB APRS
+    "ER10": 0, # ESB Licht
     "ES1": 0 # Lidar Entfernung
 }
 """
