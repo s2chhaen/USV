@@ -37,6 +37,7 @@ E;3;SB7;Timestamp;
 13C;2;EM7;Ladespannung Solar;24,00
 13E;1;EM8;Board-Temperatur;18,60
 13F;2;EM9;Spannung Lidar;24,10
+150;1;LF1;Licht ON/OFF;
 200;1;ER1;ESB GPS;
 201;1;ER2;ESB Kompass;
 202;1;ER3;ESB Control;
@@ -46,4 +47,5 @@ E;3;SB7;Timestamp;
 206;1;ER7;ESB Antrieb;
 207;1;ER8;ESB Solar;
 208;1;ER9;ESB APRS;
+209;1;ER10;ESB Licht;
 220;362;ES1;Lidar Entfernung;

@@ -1,0 +1,1 @@
+{"initWLAN": true, "WLANconfigFile": "./WLAN.json", "Hostname": "USV-Ethernet-Bridge", "ntpHost": "melab-server.fritz.box", "flagWriteToLog": true}
