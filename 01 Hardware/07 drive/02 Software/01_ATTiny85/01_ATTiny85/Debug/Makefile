@@ -37,6 +37,7 @@ SUBDIRS :=
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
+../InitOSCCAL.c \
 ../main.c \
 ../USI_UART.c
 
@@ -48,18 +49,22 @@ ASM_SRCS +=
 
 
 OBJS +=  \
+InitOSCCAL.o \
 main.o \
 USI_UART.o
 
 OBJS_AS_ARGS +=  \
+InitOSCCAL.o \
 main.o \
 USI_UART.o
 
 C_DEPS +=  \
+InitOSCCAL.d \
 main.d \
 USI_UART.d
 
 C_DEPS_AS_ARGS +=  \
+InitOSCCAL.d \
 main.d \
 USI_UART.d
 
@@ -77,6 +82,13 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+./InitOSCCAL.o: .././InitOSCCAL.c
+	@echo Building file: $<
+	@echo Invoking: XC8 C Compiler : 2.36
+	$(QUOTE)C:\Program Files\Microchip\xc8\v2.36\bin\xc8-cc.exe$(QUOTE)  -mcpu=ATtiny85  -mdfp="C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.10.348\xc8"  -c -x c -funsigned-char -funsigned-bitfields -mext=cci -D__ATtiny85__ -DDEBUG -DF_CPU=8000000  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
 ./main.o: .././main.c
 	@echo Building file: $<
 	@echo Invoking: XC8 C Compiler : 2.36
