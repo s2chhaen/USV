@@ -394,7 +394,6 @@ ISR(USI_OVF_vect)
 			else														// If buffer is full trash data and set buffer full flag.
 			{
 				USI_UART_state.RX_Buffer_Overflow = TRUE;				// Store state to take actions elsewhere in the application code
-				PORTB ^= (1 << PB2);									// LED toggeln
 			}
 			
 			if (USI_UART_state.TX_aborted)								// Check if Tx was aborted somewhere at first byte.

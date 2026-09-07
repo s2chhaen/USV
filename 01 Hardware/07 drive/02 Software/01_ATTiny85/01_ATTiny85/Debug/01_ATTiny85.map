@@ -471,19 +471,19 @@ END GROUP
  .debug_abbrev  0x0000000000000645      0x177 USI_UART.o
  .debug_abbrev  0x00000000000007bc       0x14 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.10.348/xc8/avr/lib/avr25/memx-const\libattiny85.a(eerd_byte.o)
 
-.debug_line     0x0000000000000000      0xaf1
+.debug_line     0x0000000000000000      0xaeb
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x0000000000000000       0xf5 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.10.348/xc8/avr/lib/avr25/memx-const/crtattiny85.o
  .debug_line    0x00000000000000f5      0x168 InitOSCCAL.o
  .debug_line    0x000000000000025d      0x38c main.o
- .debug_line    0x00000000000005e9      0x486 USI_UART.o
- .debug_line    0x0000000000000a6f       0x82 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.10.348/xc8/avr/lib/avr25/memx-const\libattiny85.a(eerd_byte.o)
+ .debug_line    0x00000000000005e9      0x480 USI_UART.o
+ .debug_line    0x0000000000000a69       0x82 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.10.348/xc8/avr/lib/avr25/memx-const\libattiny85.a(eerd_byte.o)
 
-.debug_frame    0x0000000000000000      0x188
+.debug_frame    0x0000000000000000      0x184
  *(.debug_frame)
  .debug_frame   0x0000000000000000       0x50 InitOSCCAL.o
  .debug_frame   0x0000000000000050       0x84 main.o
- .debug_frame   0x00000000000000d4       0xb4 USI_UART.o
+ .debug_frame   0x00000000000000d4       0xb0 USI_UART.o
 
 .debug_str      0x0000000000000000      0x20d
  *(.debug_str)
@@ -492,11 +492,11 @@ END GROUP
  .debug_str     0x000000000000018c       0x81 main.o
  .debug_str     0x000000000000020d        0x0 USI_UART.o
 
-.debug_loc      0x0000000000000000      0x3e9
+.debug_loc      0x0000000000000000      0x3dc
  *(.debug_loc)
  .debug_loc     0x0000000000000000      0x192 InitOSCCAL.o
  .debug_loc     0x0000000000000192      0x14f main.o
- .debug_loc     0x00000000000002e1      0x108 USI_UART.o
+ .debug_loc     0x00000000000002e1       0xfb USI_UART.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -624,155 +624,155 @@ LOAD data_init
                 0x00000000008000b4        0x1 USI_UART.o
 
 .text.__vector_14
-                0x0000000000000096      0x1ec
+                0x0000000000000096      0x1e0
  .text.__vector_14
-                0x0000000000000096      0x1ec USI_UART.o
+                0x0000000000000096      0x1e0 USI_UART.o
                 0x0000000000000096                __vector_14
 
 .text.__vector_2
-                0x0000000000000282       0xb8
+                0x0000000000000276       0xb8
  .text.__vector_2
-                0x0000000000000282       0xb8 USI_UART.o
-                0x0000000000000282                __vector_2
+                0x0000000000000276       0xb8 USI_UART.o
+                0x0000000000000276                __vector_2
 
 .text.USI_UART_Transmit_Byte
-                0x000000000000033a       0x92
+                0x000000000000032e       0x92
  .text.USI_UART_Transmit_Byte
-                0x000000000000033a       0x92 USI_UART.o
-                0x000000000000033a                USI_UART_Transmit_Byte
+                0x000000000000032e       0x92 USI_UART.o
+                0x000000000000032e                USI_UART_Transmit_Byte
 
-.text.main      0x00000000000003cc       0x6a
- .text.main     0x00000000000003cc       0x6a main.o
-                0x00000000000003cc                main
+.text.main      0x00000000000003c0       0x6a
+ .text.main     0x00000000000003c0       0x6a main.o
+                0x00000000000003c0                main
 
 .text.OSCCALInit
-                0x0000000000000436       0x60
+                0x000000000000042a       0x60
  .text.OSCCALInit
-                0x0000000000000436       0x60 InitOSCCAL.o
-                0x0000000000000436                OSCCALInit
+                0x000000000000042a       0x60 InitOSCCAL.o
+                0x000000000000042a                OSCCALInit
 
 .text.Timer_shot_100_ms
-                0x0000000000000496       0x5a
+                0x000000000000048a       0x5a
  .text.Timer_shot_100_ms
-                0x0000000000000496       0x5a main.o
-                0x0000000000000496                Timer_shot_100_ms
+                0x000000000000048a       0x5a main.o
+                0x000000000000048a                Timer_shot_100_ms
 
 .text.check_and_set_UART_state
-                0x00000000000004f0       0x58
+                0x00000000000004e4       0x58
  .text.check_and_set_UART_state
-                0x00000000000004f0       0x58 main.o
-                0x00000000000004f0                check_and_set_UART_state
+                0x00000000000004e4       0x58 main.o
+                0x00000000000004e4                check_and_set_UART_state
 
 .text.USI_UART_Receive_Byte
-                0x0000000000000548       0x56
+                0x000000000000053c       0x56
  .text.USI_UART_Receive_Byte
-                0x0000000000000548       0x56 USI_UART.o
-                0x0000000000000548                USI_UART_Receive_Byte
+                0x000000000000053c       0x56 USI_UART.o
+                0x000000000000053c                USI_UART_Receive_Byte
 
 .text.check_OK_on_Start
-                0x000000000000059e       0x52
+                0x0000000000000592       0x52
  .text.check_OK_on_Start
-                0x000000000000059e       0x52 main.o
-                0x000000000000059e                check_OK_on_Start
+                0x0000000000000592       0x52 main.o
+                0x0000000000000592                check_OK_on_Start
 
 .text.check_motor_and_set_status
-                0x00000000000005f0       0x50
+                0x00000000000005e4       0x50
  .text.check_motor_and_set_status
-                0x00000000000005f0       0x50 main.o
-                0x00000000000005f0                check_motor_and_set_status
+                0x00000000000005e4       0x50 main.o
+                0x00000000000005e4                check_motor_and_set_status
 
 .text.__vector_10
-                0x0000000000000640       0x44
+                0x0000000000000634       0x44
  .text.__vector_10
-                0x0000000000000640       0x44 USI_UART.o
-                0x0000000000000640                __vector_10
+                0x0000000000000634       0x44 USI_UART.o
+                0x0000000000000634                __vector_10
 
 .text.USI_UART_Initialise_Receiver
-                0x0000000000000684       0x42
+                0x0000000000000678       0x42
  .text.USI_UART_Initialise_Receiver
-                0x0000000000000684       0x42 USI_UART.o
-                0x0000000000000684                USI_UART_Initialise_Receiver
+                0x0000000000000678       0x42 USI_UART.o
+                0x0000000000000678                USI_UART_Initialise_Receiver
 
 .text.Timer_and_PWM_Init
-                0x00000000000006c6       0x2a
+                0x00000000000006ba       0x2a
  .text.Timer_and_PWM_Init
-                0x00000000000006c6       0x2a main.o
-                0x00000000000006c6                Timer_and_PWM_Init
+                0x00000000000006ba       0x2a main.o
+                0x00000000000006ba                Timer_and_PWM_Init
 
 .text.check_for_valid_value
-                0x00000000000006f0       0x24
+                0x00000000000006e4       0x24
  .text.check_for_valid_value
-                0x00000000000006f0       0x24 main.o
-                0x00000000000006f0                check_for_valid_value
+                0x00000000000006e4       0x24 main.o
+                0x00000000000006e4                check_for_valid_value
 
 .text.Bit_Reverse
-                0x0000000000000714       0x20
+                0x0000000000000708       0x20
  .text.Bit_Reverse
-                0x0000000000000714       0x20 USI_UART.o
-                0x0000000000000714                Bit_Reverse
+                0x0000000000000708       0x20 USI_UART.o
+                0x0000000000000708                Bit_Reverse
 
 .text.USI_UART_Flush_Buffers
-                0x0000000000000734       0x1a
+                0x0000000000000728       0x1a
  .text.USI_UART_Flush_Buffers
-                0x0000000000000734       0x1a USI_UART.o
-                0x0000000000000734                USI_UART_Flush_Buffers
+                0x0000000000000728       0x1a USI_UART.o
+                0x0000000000000728                USI_UART_Flush_Buffers
 
-.text.avrlibc   0x000000000000074e       0x12
- .text.avrlibc  0x000000000000074e       0x12 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.10.348/xc8/avr/lib/avr25/memx-const\libattiny85.a(eerd_byte.o)
-                0x000000000000074e                eeprom_read_byte
+.text.avrlibc   0x0000000000000742       0x12
+ .text.avrlibc  0x0000000000000742       0x12 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.10.348/xc8/avr/lib/avr25/memx-const\libattiny85.a(eerd_byte.o)
+                0x0000000000000742                eeprom_read_byte
 
 .text.USI_UART_Data_In_Receive_Buffer
-                0x0000000000000760        0xe
+                0x0000000000000754        0xe
  .text.USI_UART_Data_In_Receive_Buffer
-                0x0000000000000760        0xe USI_UART.o
-                0x0000000000000760                USI_UART_Data_In_Receive_Buffer
+                0x0000000000000754        0xe USI_UART.o
+                0x0000000000000754                USI_UART_Data_In_Receive_Buffer
 
-.text.exit      0x000000000000076e        0xe
- .text.exit     0x000000000000076e        0xe c:/program files/microchip/xc8/v2.36/avr/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25/memx-const\libc.a(exit.o)
-                0x000000000000076e                exit
+.text.exit      0x0000000000000762        0xe
+ .text.exit     0x0000000000000762        0xe c:/program files/microchip/xc8/v2.36/avr/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25/memx-const\libc.a(exit.o)
+                0x0000000000000762                exit
 
-.text.libgcc    0x000000000000077c        0xc
- .text.libgcc   0x000000000000077c        0xc c:/program files/microchip/xc8/v2.36/avr/bin/../lib/gcc/avr/5.4.0/avr25/memx-const\libgcc.a(_tablejump2.o)
-                0x000000000000077c                __tablejump2__
+.text.libgcc    0x0000000000000770        0xc
+ .text.libgcc   0x0000000000000770        0xc c:/program files/microchip/xc8/v2.36/avr/bin/../lib/gcc/avr/5.4.0/avr25/memx-const\libgcc.a(_tablejump2.o)
+                0x0000000000000770                __tablejump2__
 
-.text           0x0000000000000788        0x2
- .text          0x0000000000000788        0x2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.10.348/xc8/avr/lib/avr25/memx-const/crtattiny85.o
-                0x0000000000000788                __vector_1
-                0x0000000000000788                __vector_12
-                0x0000000000000788                __bad_interrupt
-                0x0000000000000788                __vector_6
-                0x0000000000000788                __vector_3
-                0x0000000000000788                __vector_11
-                0x0000000000000788                __vector_13
-                0x0000000000000788                __vector_7
-                0x0000000000000788                __vector_5
-                0x0000000000000788                __vector_4
-                0x0000000000000788                __vector_9
-                0x0000000000000788                __vector_8
+.text           0x000000000000077c        0x2
+ .text          0x000000000000077c        0x2 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATtiny_DFP/1.10.348/xc8/avr/lib/avr25/memx-const/crtattiny85.o
+                0x000000000000077c                __vector_1
+                0x000000000000077c                __vector_12
+                0x000000000000077c                __bad_interrupt
+                0x000000000000077c                __vector_6
+                0x000000000000077c                __vector_3
+                0x000000000000077c                __vector_11
+                0x000000000000077c                __vector_13
+                0x000000000000077c                __vector_7
+                0x000000000000077c                __vector_5
+                0x000000000000077c                __vector_4
+                0x000000000000077c                __vector_9
+                0x000000000000077c                __vector_8
 
 .text.__dummy_fini
-                0x000000000000078a        0x2
+                0x000000000000077e        0x2
  .text.__dummy_fini
-                0x000000000000078a        0x2 c:/program files/microchip/xc8/v2.36/avr/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25/memx-const\libc.a(exit.o)
-                0x000000000000078a                _fini
+                0x000000000000077e        0x2 c:/program files/microchip/xc8/v2.36/avr/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25/memx-const\libc.a(exit.o)
+                0x000000000000077e                _fini
 
 .text.__dummy_funcs_on_exit
-                0x000000000000078c        0x2
+                0x0000000000000780        0x2
  .text.__dummy_funcs_on_exit
-                0x000000000000078c        0x2 c:/program files/microchip/xc8/v2.36/avr/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25/memx-const\libc.a(exit.o)
-                0x000000000000078c                __funcs_on_exit
+                0x0000000000000780        0x2 c:/program files/microchip/xc8/v2.36/avr/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25/memx-const\libc.a(exit.o)
+                0x0000000000000780                __funcs_on_exit
 
 .text.__dummy_simulator_exit
-                0x000000000000078e        0x2
+                0x0000000000000782        0x2
  .text.__dummy_simulator_exit
-                0x000000000000078e        0x2 c:/program files/microchip/xc8/v2.36/avr/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25/memx-const\libc.a(exit.o)
-                0x000000000000078e                __simulator_exit
+                0x0000000000000782        0x2 c:/program files/microchip/xc8/v2.36/avr/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25/memx-const\libc.a(exit.o)
+                0x0000000000000782                __simulator_exit
 
-.text._Exit     0x0000000000000790        0x2
- .text._Exit    0x0000000000000790        0x2 c:/program files/microchip/xc8/v2.36/avr/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25/memx-const\libc.a(_Exit.o)
-                0x0000000000000790                _Exit
+.text._Exit     0x0000000000000784        0x2
+ .text._Exit    0x0000000000000784        0x2 c:/program files/microchip/xc8/v2.36/avr/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr25/memx-const\libc.a(_Exit.o)
+                0x0000000000000784                _Exit
 
 .data.motor_state
-                0x00000000008000ad        0x1 load address 0x0000000000000792
+                0x00000000008000ad        0x1 load address 0x0000000000000786
  .data.motor_state
                 0x00000000008000ad        0x1 main.o
